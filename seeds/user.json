@@ -1,0 +1,29 @@
+[
+    {
+        "_id": { "$oid" : "5bf5240b2cf75905a8d23c1e" },
+        "role" : "ADMIN",
+        "email" : "admin@mail.fr",
+        "firstName" : "Admin",
+        "lastName" : "Admin",
+        "created" : "2018-11-21T09:23:23.326Z",
+        "hashedPassword": "yXgCS6TbCz54e0e3883a9ca4dcbc20a72a250b66a81806a22138bd5a766d46a3f0551904d805382acb72290f711da9bd1e74dd9b79a6ef855ca7b4e353d264f7a866ee7af2"
+    },
+    {
+        "_id" : { "$oid" : "5bf5240b2cf759090923c1f0" },
+        "role" : "CUSTOMER",
+        "email" : "customer@mail.fr",
+        "geoPosition" : [],
+        "address" : null,
+        "addressCity" : null,
+        "addressPostalCode" : null,
+        "birthdate" : "2018-12-05T23:00:00.000Z",
+        "firstName" : "Gérard",
+        "lastName" : "Gontrand",
+        "gender" : true,
+        "phoneNumber" : "0789123123",
+        "rfr" : 14123,
+        "lastLogin" : "2018-12-07T18:23:14.121Z",
+        "created" : "2018-12-07T18:23:14.121Z",
+        "hashedPassword": "yXgCS6TbCz54e0e3883a9ca4dcbc20a72a250b66a81806a22138bd5a766d46a3f0551904d805382acb72290f711da9bd1e74dd9b79a6ef855ca7b4e353d264f7a866ee7af2"
+    }
+]
