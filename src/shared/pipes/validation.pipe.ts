@@ -12,7 +12,7 @@ export class ValidationPipe implements PipeTransform<any> {
         Object.keys(value).forEach((key) => {
             if (typeof value[key] === 'string') {
                 value[key] = value[key].trim();
-                if (key !== 'phoneNumber' && key !== 'birthdate' && key !== 'familyComposition') {
+                if (key !== 'puzzle') {
                     value[key] = value[key].replace(/[&\\#+()$~%'"*?<>{}]/g, '');
                 }
             }
