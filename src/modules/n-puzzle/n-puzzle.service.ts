@@ -1,17 +1,23 @@
 import { Component, BadRequestException } from '@nestjs/common';
 import { ResolvePuzzleDto } from './dto/resolve-puzzle.dto';
 import * as _ from 'lodash'
+import { NPuzzle } from 'n-puzzle-entity/dist/server/n-puzzle/n-puzzle.entity'
 
 @Component()
 export class NPuzzleService {
   constructor( ) { }
 
-  async resolvePuzzle(dto: ResolvePuzzleDto): Promise<number[][]> {
-    let board: number[][] = this.checkFile(dto.puzzle)
-    return board
+  async resolvePuzzle(dto: ResolvePuzzleDto): Promise<NPuzzle> {
+    let fileChecker: FileChecker = this.checkFile(dto.puzzle)
+    let finalBoard: number[][] = this.generateFinalBoard(fileChecker.size);
+    let nPuzzle = new NPuzzle()
+    nPuzzle.final = finalBoard
+    nPuzzle.origin = fileChecker.board
+    nPuzzle.type = dto.type
+    return nPuzzle
   }
 
-  checkFile(fileString: string): number[][] {
+  checkFile(fileString: string): FileChecker {
     let fileLines: string[] = _.compact(fileString.split('\n').map(line => {
       line = line.trim()
       if (!(line.length && line[0] === '#')) {
@@ -44,6 +50,26 @@ export class NPuzzleService {
       }
     }
     
-    return board
+    return new FileChecker(size, board)
+  }
+
+  generateFinalBoard(size: number): number[][] {
+    let final = Array(size)
+    final = final.fill(Array(size), 0, size)
+    let nbCase = size * size
+
+    
+
+    return final
+  }
+}
+
+class FileChecker {
+  size: number
+  board: number[][]
+
+  constructor(size:number, board: number[][]) {
+    this.size = size
+    this.board = board
   }
 }
