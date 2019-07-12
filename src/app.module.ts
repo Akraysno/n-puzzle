@@ -13,6 +13,7 @@ import { CryptoOptions } from './modules/crypto/crypto-options.interface';
 import { BindRolesFuncsMiddleware } from './modules/user/middlewares/bind-roles-funcs.middleware';
 import * as i18n from 'i18n';
 import { CronModule } from 'modules/cron/cron.module';
+import { NPuzzleModule } from 'modules/n-puzzle/n-puzzle.module';
 
 const {
   ENV,
@@ -48,6 +49,7 @@ const CRYPTO_CONFIG: CryptoOptions = {
     AuthModule.forRoot(AUTH_CONFIG),
     UserModule,
     CronModule,
+    NPuzzleModule
   ],
   controllers: [],
   components: [],
