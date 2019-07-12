@@ -15,7 +15,8 @@
     "db:drop": "mongo n-puzzle --eval \"db.dropDatabase()\"",
     "db:seed": "node ./seed",
     "db:reset": "npm run db:drop && npm run db:seed",
-    "entity": "npm update n-puzzle-entity"
+    "entity": "npm update n-puzzle-entity",
+    "init": "npm i; npm run db:seed; npm run start:dev"
   },
   "dependencies": {
     "@nest-modules/mailer": "^0.2.1",

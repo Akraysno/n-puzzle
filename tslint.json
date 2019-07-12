@@ -34,6 +34,9 @@
             false
         ],
         "no-empty-interface": false,
+        "no-console": false,
+        "trailing-comma": false,
+        "semicolon": false,
         "no-empty": false,
         "arrow-parens": false,
         "object-literal-sort-keys": false,

@@ -19,7 +19,7 @@ async function bootstrap() {
     windowMs: 1 * 60 * 1000, // 1 minute
     max: 100, // limit each IP to 100 requests per windowMs
     handler: (req, res) => {
-      //send to slack (req.statusCode, `To many requests from ${req.ip} (Method: ${req.method}, URL: ${req.url})`)
+      // send to slack (req.statusCode, `To many requests from ${req.ip} (Method: ${req.method}, URL: ${req.url})`)
       res.status(429).send('Too many requests');
       console.log(`${req.method} ${req.url}\x1b[31m 429\x1b[0m - - ${res._contentLength}`)
     }
