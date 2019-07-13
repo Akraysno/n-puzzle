@@ -54,12 +54,50 @@ export class NPuzzleService {
   }
 
   generateFinalBoard(size: number): number[][] {
-    let final = Array(size)
-    final = final.fill(Array(size), 0, size)
-    let nbCase = size * size
+    let final = Array(size).fill(null, 0, size).map(row => {
+      return Array(size).fill(-1, 0, size)
+    })
+    let nbCase: number = size * size
+    let dirIsHoriz: boolean = true
+    let x: number = 0
+    let y: number = 0
+    let xNeg: boolean = false
+    let yNeg: boolean = false
+    let nbCaseFilled: number = 0
 
-    
-
+    while (nbCase !== nbCaseFilled) {
+      final[x][y] = nbCaseFilled + 1 < nbCase ? nbCaseFilled + 1 : 0
+      if (dirIsHoriz === true) {
+        if (y < size - 1) {
+          if (final[x][y + (yNeg ? -1 : 1)] === -1) {
+            y += (yNeg ? -1 : 1)
+          } else {
+            x += (xNeg ? -1 : 1)
+            dirIsHoriz = false
+            yNeg = !yNeg
+          }
+        } else {
+          x += (xNeg ? -1 : 1)
+          dirIsHoriz = false
+          yNeg = !yNeg
+        }
+      } else {
+        if (x < size - 1) {
+          if (final[x + (xNeg ? -1 : 1)][y] === -1) {
+            x += (xNeg ? -1 : 1)
+          } else {
+            y += (yNeg ? -1 : 1)
+            dirIsHoriz = true
+            xNeg = !xNeg
+          }
+        } else {
+          y += (yNeg ? -1 : 1)
+          dirIsHoriz = true
+          xNeg = !xNeg
+        }
+      }
+      nbCaseFilled++
+    }
     return final
   }
 }
