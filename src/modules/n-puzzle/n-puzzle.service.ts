@@ -108,6 +108,21 @@ export class NPuzzleService {
     }
     return final
   }
+
+  searchNumberInBoard(board: number[][], search: number) {
+    let coords = new Coordinates()
+    try {
+      board.forEach((row: number[], index: number) => {
+        let searchIndex: number = row.indexOf(search)
+        if (searchIndex !== -1) {
+          coords.row = index
+          coords.cell = searchIndex
+          throw 'found';
+        }
+      })
+    } catch (e) { }
+    return coords
+  }
 }
 
 class FileChecker {
@@ -118,4 +133,9 @@ class FileChecker {
     this.size = size
     this.board = board
   }
+}
+
+class Coordinates {
+  row: number
+  cell: number
 }
