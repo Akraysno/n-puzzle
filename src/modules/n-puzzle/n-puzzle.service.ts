@@ -49,6 +49,14 @@ export class NPuzzleService {
         throw new BadRequestException('La taille du puzzle et la longueur des lignes ne correspondent pas')
       }
     }
+
+    // Verify numbers in board
+    let numbersList = _.flattenDeep(board).sort((a, b) => a > b ? 1 : -1)
+    numbersList.forEach((num: number, index: number) => {
+      if (num !== index) {
+        throw new BadRequestException('Les nombres sur la plateau sont incorrect')
+      }
+    });
     
     return new FileChecker(size, board)
   }
