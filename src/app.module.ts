@@ -14,6 +14,7 @@ import { BindRolesFuncsMiddleware } from './modules/user/middlewares/bind-roles-
 import * as i18n from 'i18n';
 import { CronModule } from 'modules/cron/cron.module';
 import { NPuzzleModule } from 'modules/n-puzzle/n-puzzle.module';
+import { TestModule } from './modules/test/test.module'
 
 const {
   ENV,
@@ -49,7 +50,8 @@ const CRYPTO_CONFIG: CryptoOptions = {
     AuthModule.forRoot(AUTH_CONFIG),
     UserModule,
     CronModule,
-    NPuzzleModule
+    NPuzzleModule,
+    TestModule,
   ],
   controllers: [],
   components: [],

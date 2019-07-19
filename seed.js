@@ -13,8 +13,11 @@ glob('./seeds/*.json', (err, files) => {
         const filename = file.split('/').slice(-1)[0]
         const collectionName = filename.split('.')[0]
         console.log('['+chalk.green('SEEDING'), collectionName+' -> ' + file + ']')
-        exec(`mongoimport --verbose --db n-puzzle --collection ${collectionName} --file ${file} --jsonArray`, (err, stdout, stderr) => {
+        exec(`/usr/local/mongodb/bin/mongoimport --verbose --db n-puzzle --collection ${collectionName} --file ${file} --jsonArray`, (err, stdout, stderr) => {
             console.error(stderr)
         })
+    //            exec(`mongoimport --verbose --db n-puzzle --collection ${collectionName} --file ${file} --jsonArray`, (err, stdout, stderr) => {
+        //             console.error(stderr)
+        //         })
     })
 })

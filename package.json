@@ -17,7 +17,8 @@
     "db:reset": "npm run db:drop && npm run db:seed",
     "entity": "npm update n-puzzle-entity",
     "init": "npm i; npm run db:seed; npm run start:dev",
-    "puzzle": "node ./puzzle-generator"
+    "puzzle": "node ./puzzle-generator",
+    "puzle": "python ./puzzlegen.py"
   },
   "dependencies": {
     "@nest-modules/mailer": "^0.2.1",

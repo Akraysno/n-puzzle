@@ -16,7 +16,7 @@ export class NPuzzleService {
     nPuzzle.type = dto.type
     return nPuzzle
   }
-
+  // check if fichier est valide
   checkFile(fileString: string): FileChecker {
     let fileLines: string[] = _.compact(fileString.split('\n').map(line => {
       line = line.trim()
@@ -57,10 +57,11 @@ export class NPuzzleService {
         throw new BadRequestException('Les nombres sur la plateau sont incorrect')
       }
     });
-    
+
     return new FileChecker(size, board)
   }
 
+  // genere un Board
   generateFinalBoard(size: number): number[][] {
     let final = Array(size).fill(null, 0, size).map(row => {
       return Array(size).fill(-1, 0, size)
@@ -109,8 +110,9 @@ export class NPuzzleService {
     return final
   }
 
+  // done la pos of la row et la column
   searchNumberInBoard(board: number[][], search: number) {
-    let coords = new Coordinates()
+    let coords = new TileCoords()
     try {
       board.forEach((row: number[], index: number) => {
         let searchIndex: number = row.indexOf(search)
@@ -129,13 +131,13 @@ class FileChecker {
   size: number
   board: number[][]
 
-  constructor(size:number, board: number[][]) {
+  constructor(size: number, board: number[][]) {
     this.size = size
     this.board = board
   }
 }
 
-class Coordinates {
+export class TileCoords {
   row: number
   cell: number
 }
