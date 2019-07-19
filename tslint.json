@@ -38,6 +38,7 @@
         "trailing-comma": false,
         "semicolon": false,
         "no-empty": false,
+        "prefer-const": false,
         "arrow-parens": false,
         "object-literal-sort-keys": false,
         "no-unused-expression": false,

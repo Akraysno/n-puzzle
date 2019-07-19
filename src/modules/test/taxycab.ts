@@ -3,10 +3,13 @@ import { NPuzzleService, TileCoords } from '../n-puzzle/n-puzzle.service'
 export class ManHattanDistance {
 	constructor( private readonly Npuzzle: NPuzzleService) { }
 
-	CalcDist(dest: any, Board: number[][]): number {
+	CalcDist(Goal: any, Board: number[][]): number {
 		// Calc dist for a D1 array
 		const TmpDist = (x, indexX) => {
-			const SubDist = x.map((y, indexY) => (Math.abs((indexX - dest.x)) + Math.abs((indexY - dest.y))))
+			const SubDist = x.map((y, indexY) => {
+				const dest: any = this.Npuzzle.searchNumberInBoard(Goal, Goal[indexX][indexY])
+				return (Math.abs((indexX - dest.row)) + Math.abs((indexY - dest.cell)))
+			})
 			// reduce the D1 array to return only total dist
 			SubDist.reduce((accumulator, currentValue) => accumulator + currentValue)
 			return SubDist[0]
@@ -21,7 +24,7 @@ export class ManHattanDistance {
 	lookPossibilities(board: number[][], tile: number = 0): OptionList[] {
 		let coords = this.Npuzzle.searchNumberInBoard(board, tile)
 		let options: OptionList[] = []
-		
+
 		if (coords.row - 1 >= 0) { // top
 			let newBoard = board.slice()
 			let tmpTile = newBoard[coords.row - 1][coords.cell]
@@ -74,14 +77,18 @@ export class ManHattanDistance {
 		return directions
 	}
 
-	DoStuff(open: OptionList[]): OptionList[] {
+	DoStuff(open: OptionList[], closed: OptionList[]): OptionList[] {
 		const current: OptionList = open[0]
 		const NewPossible: OptionList[] = this.lookPossibilities(current.board)
-		const Indextmp: any = NewPossible.findIndex() // find smallest x.dist and check if equivalent in closed
-		const tmp = NewPossible.splice(Indextmp).shift()
-		NewPossible.forEach((x) => open.push(x))
+		const Indextmp: any = NewPossible.findIndex(() => {
+			return toto
+		}) // find smallest x.dist and check if equivalent in closed
+		const tmp = NewPossible.splice(Indextmp, 1).shift()
+		NewPossible.forEach((x) => {
+			open.push(x)
+		})
 		// put current into closed ; is closed in DB ?
-		open.push()
+		closed.push(current)
 		open[0] = tmp
 		return open
 	}
@@ -89,7 +96,7 @@ export class ManHattanDistance {
 	LoopOver(Board: number[][], open: OptionList[], closed: OptionList[]): OptionList[] {
 		while (open.length > 0) {
 			open.sort() // sort by dist and len
-			this.DoStuff(open) // eval the possible Board, then put current into closed and new possibility in open
+			this.DoStuff(open, closed) // eval the possible Board, then put current into closed and new possibility in open
 		}
 	}
 }
@@ -97,11 +104,13 @@ export class ManHattanDistance {
 class OptionList {
 	dist?: number
 	len?: number
+	fScore?: number
 	board?: number[][]
 
 	constructor(value?: OptionList) {
 		this.dist = value.dist
 		this.len = value.len
+		this.fScore = value.fScore
 		this.board = value.board
 	}
 }
