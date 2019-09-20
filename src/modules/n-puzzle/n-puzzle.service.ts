@@ -21,9 +21,9 @@ export class NPuzzleService {
     nPuzzle.origin = fileChecker.board
     nPuzzle.type = type
     console.log(nPuzzle.final)
+    nPuzzle = this.solve(nPuzzle)
     return nPuzzle
   }
-  // check if fichier est valide
 
   /**
    * Check if file is a valid board
@@ -127,9 +127,16 @@ export class NPuzzleService {
     return final
   }
 
+  solve(nPuzzle: NPuzzle) {
+    let currentBoard = _.cloneDeep(nPuzzle.origin)
+    let possibilities = this.searchPossibilities(currentBoard)
+    console.log(possibilities)
+    return nPuzzle
+  }
+
   /**
    * Search a tile in the board passed in params
-   * Returns the coordinates of the found tile
+   * Return the coordinates of the found tile
    * 
    * @param board 
    * @param search 
@@ -149,6 +156,46 @@ export class NPuzzleService {
     return coords
   }
 
+  calcDist(tile: number, board: number[][], final: number[][]) {
+
+  }
+
+	searchPossibilities(board: number[][], tile: number = 0): OptionList[] {
+		let coords = this.searchNumberInBoard(board, tile)
+		let options: OptionList[] = []
+
+		if (coords.row - 1 >= 0) { // top
+			let newBoard = board.slice()
+			let tmpTile = newBoard[coords.row - 1][coords.cell]
+			newBoard[coords.row - 1][coords.cell] = 0
+			newBoard[coords.row][coords.cell] = tmpTile
+			options.push(new OptionList({ board: newBoard }))
+		}
+		if (coords.cell + 1 <= board[coords.row].length) { // right
+			let newBoard = board.slice()
+			let tmpTile = newBoard[coords.row][coords.cell + 1]
+			newBoard[coords.row][coords.cell + 1] = 0
+			newBoard[coords.row][coords.cell] = tmpTile
+			options.push(new OptionList({ board: newBoard }))
+		}
+		if (coords.row + 1 <= board.length) { // bottom
+			let newBoard = board.slice()
+			let tmpTile = newBoard[coords.row + 1][coords.cell]
+			newBoard[coords.row + 1][coords.cell] = 0
+			newBoard[coords.row][coords.cell] = tmpTile
+			options.push(new OptionList({ board: newBoard }))
+		}
+		if (coords.cell - 1 >= 0) { // left
+			let newBoard = board.slice()
+			let tmpTile = newBoard[coords.row][coords.cell - 1]
+			newBoard[coords.row][coords.cell - 1] = 0
+			newBoard[coords.row][coords.cell] = tmpTile
+			options.push(new OptionList({ board: newBoard }))
+		}
+
+		return options
+  }
+  
   /**
    * Check if the board is resolve
    * 
@@ -173,4 +220,25 @@ class FileChecker {
 export class TileCoords {
   row: number
   cell: number
+}
+
+class OptionList {
+	dist?: number
+	len?: number
+	fScore?: number
+	board?: number[][]
+
+	constructor(value?: OptionList) {
+		this.dist = value.dist
+		this.len = value.len
+		this.fScore = value.fScore
+		this.board = value.board
+	}
+}
+
+enum MoveDirection {
+	TOP = 'TOP',
+	RIGHT = 'RIGHT',
+	BOTTOM = 'BOTTOM',
+	LEFT = 'LEFT',
 }
