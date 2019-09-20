@@ -1,13 +1,13 @@
 import { NPuzzleService, TileCoords } from '../n-puzzle/n-puzzle.service'
 
 export class ManHattanDistance {
-	constructor( private readonly Npuzzle: NPuzzleService) { }
+	constructor( private readonly nPuzzleService: NPuzzleService) { }
 
 	CalcDist(Goal: any, Board: number[][]): number {
 		// Calc dist for a D1 array
 		const TmpDist = (x, indexX) => {
 			const SubDist = x.map((y, indexY) => {
-				const dest: any = this.Npuzzle.searchNumberInBoard(Goal, Goal[indexX][indexY])
+				const dest: any = this.nPuzzleService.searchNumberInBoard(Goal, Goal[indexX][indexY])
 				return (Math.abs((indexX - dest.row)) + Math.abs((indexY - dest.cell)))
 			})
 			// reduce the D1 array to return only total dist
@@ -22,7 +22,7 @@ export class ManHattanDistance {
 //  to be exported as solo class
 
 	lookPossibilities(board: number[][], tile: number = 0): OptionList[] {
-		let coords = this.Npuzzle.searchNumberInBoard(board, tile)
+		let coords = this.nPuzzleService.searchNumberInBoard(board, tile)
 		let options: OptionList[] = []
 
 		if (coords.row - 1 >= 0) { // top
@@ -58,7 +58,7 @@ export class ManHattanDistance {
 	}
 
 	getPossibilities(board: number[][], tile: number = 0) {
-		let coords = this.Npuzzle.searchNumberInBoard(board, tile)
+		let coords = this.nPuzzleService.searchNumberInBoard(board, tile)
 		let directions: MoveDirection[] = []
 
 		if (coords.row - 1 >= 0) {
@@ -80,8 +80,8 @@ export class ManHattanDistance {
 	DoStuff(open: OptionList[], closed: OptionList[]): OptionList[] {
 		const current: OptionList = open[0]
 		const NewPossible: OptionList[] = this.lookPossibilities(current.board)
-		const Indextmp: any = NewPossible.findIndex(() => {
-			return toto
+		const Indextmp: number = NewPossible.findIndex(() => {
+			return false
 		}) // find smallest x.dist and check if equivalent in closed
 		const tmp = NewPossible.splice(Indextmp, 1).shift()
 		NewPossible.forEach((x) => {
@@ -93,7 +93,7 @@ export class ManHattanDistance {
 		return open
 	}
 
-	LoopOver(Board: number[][], open: OptionList[], closed: OptionList[]): OptionList[] {
+	LoopOver(Board: number[][], open: OptionList[], closed: OptionList[]) {//: OptionList[] {
 		while (open.length > 0) {
 			open.sort() // sort by dist and len
 			this.DoStuff(open, closed) // eval the possible Board, then put current into closed and new possibility in open
