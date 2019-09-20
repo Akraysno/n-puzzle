@@ -1,13 +1,13 @@
 import { BadRequestException, Body, Controller, HttpCode, HttpStatus, Inject, Post, Req, ForbiddenException } from '@nestjs/common';
-import { CryptoProvider } from '../crypto/crypto.provider';
 import { UserService } from '../user/user.service';
+import { CryptoService } from 'modules/crypto/crypto.service';
 
 @Controller('auth')
 export class AuthController {
 
     constructor(
         private usersService: UserService,
-        @Inject('CryptoProvider') private cryptoService: CryptoProvider
+        @Inject('CryptoService') private cryptoService: CryptoService
     ) {}
 
     @Post()

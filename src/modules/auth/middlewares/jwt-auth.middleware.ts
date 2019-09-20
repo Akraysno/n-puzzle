@@ -1,14 +1,14 @@
 import { MiddlewareFunction, Middleware, NestMiddleware, UnauthorizedException, Inject, Logger } from '@nestjs/common';
 import * as jwt from 'jsonwebtoken';
 import { UserService } from '../../user/user.service';
-import { CryptoProvider } from '../../crypto/crypto.provider';
+import { CryptoService } from 'modules/crypto/crypto.service';
 
 @Middleware()
 export class JWTAuthMiddleware implements NestMiddleware {
   private logger = new Logger("JWT Middleware", false);
   constructor(
     private usersService: UserService,
-    @Inject('CryptoProvider') private cryptoService: CryptoProvider
+    @Inject('CryptoService') private cryptoService: CryptoService
   ){
   }
 

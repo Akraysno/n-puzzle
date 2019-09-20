@@ -2,17 +2,17 @@ import { Component, Inject } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { MongoRepository } from 'typeorm';
 import { BaseService } from '../../shared/classes/base-service.service';
-import { CryptoProvider } from '../crypto/crypto.provider';
 import { CreateUserDto } from './dto/create-user.dto';
 import { User } from 'n-puzzle-entity/dist/server/user/user.entity';
 import { UpdateUserDto } from './dto/update-user.dto';
 import moment = require('moment');
+import { CryptoService } from 'modules/crypto/crypto.service';
 
 @Component()
 export class UserService extends BaseService<User> {
   constructor(
     @InjectRepository(User) private readonly userRepository: MongoRepository<User>,
-    @Inject('CryptoProvider') private readonly cryptoService: CryptoProvider,
+    @Inject('CryptoService') private readonly cryptoService: CryptoService,
   ) {
       super(userRepository);
   }

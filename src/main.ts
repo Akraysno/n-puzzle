@@ -7,7 +7,6 @@ import { ValidationPipe } from './shared/pipes/validation.pipe';
 import * as contextService from 'request-context';
 import { readFileSync } from 'fs';
 import * as https from 'https';
-import { CronService } from 'modules/cron/cron.service';
 import { CustomExceptionFilter } from 'shared/filters/custom-exception.filter';
 import * as rateLimit from 'express-rate-limit';
 import * as bodyParser from 'body-parser'
@@ -53,7 +52,5 @@ async function bootstrap() {
   } else {
     await app.listen(3000);
   }
-
-  app.get(CronService).voidCron();
 }
 bootstrap().catch((err) => process.stderr.write(err + '\n'));

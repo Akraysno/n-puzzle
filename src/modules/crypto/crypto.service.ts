@@ -3,7 +3,7 @@ import { createHash } from 'crypto';
 import * as jwt from 'jsonwebtoken';
 
 @Component()
-export class CryptoProvider {
+export class CryptoService {
     constructor(@Inject('CRYPTO_CONFIG')private readonly cryptoConfig) {}
 
     genSalt(len: number) {

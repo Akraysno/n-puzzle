@@ -11,8 +11,6 @@ import { AuthOptions } from './modules/auth/auth-options.interface';
 import { CryptoModule } from './modules/crypto/crypto.module';
 import { CryptoOptions } from './modules/crypto/crypto-options.interface';
 import { BindRolesFuncsMiddleware } from './modules/user/middlewares/bind-roles-funcs.middleware';
-import * as i18n from 'i18n';
-import { CronModule } from 'modules/cron/cron.module';
 import { NPuzzleModule } from 'modules/n-puzzle/n-puzzle.module';
 import { TestModule } from './modules/test/test.module'
 
@@ -49,7 +47,6 @@ const CRYPTO_CONFIG: CryptoOptions = {
     CryptoModule.forRoot(CRYPTO_CONFIG),
     AuthModule.forRoot(AUTH_CONFIG),
     UserModule,
-    CronModule,
     NPuzzleModule,
     TestModule,
   ],
