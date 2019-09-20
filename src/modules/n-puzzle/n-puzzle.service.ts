@@ -2,21 +2,34 @@ import { Component, BadRequestException } from '@nestjs/common';
 import { ResolvePuzzleDto } from './dto/resolve-puzzle.dto';
 import * as _ from 'lodash'
 import { NPuzzle } from 'n-puzzle-entity/dist/server/n-puzzle/n-puzzle.entity'
+import { NPuzzleAlgo } from 'n-puzzle-entity/dist/server/n-puzzle/enums/n-puzzle-algo.enum';
 
 @Component()
 export class NPuzzleService {
   constructor( ) { }
 
-  async resolvePuzzle(dto: ResolvePuzzleDto): Promise<NPuzzle> {
-    let fileChecker: FileChecker = this.checkFile(dto.puzzle)
+  /**
+   * Resolve a puzzle
+   * 
+   * @param dto 
+   */
+  async resolvePuzzle(puzzle: string, type: NPuzzleAlgo): Promise<NPuzzle> {
+    let fileChecker: FileChecker = this.checkFile(puzzle)
     let finalBoard: number[][] = this.generateFinalBoard(fileChecker.size);
     let nPuzzle = new NPuzzle()
     nPuzzle.final = finalBoard
     nPuzzle.origin = fileChecker.board
-    nPuzzle.type = dto.type
+    nPuzzle.type = type
+    console.log(nPuzzle.final)
     return nPuzzle
   }
   // check if fichier est valide
+
+  /**
+   * Check if file is a valid board
+   * 
+   * @param fileString 
+   */
   checkFile(fileString: string): FileChecker {
     let fileLines: string[] = _.compact(fileString.split('\n').map(line => {
       line = line.trim()
@@ -61,7 +74,11 @@ export class NPuzzleService {
     return new FileChecker(size, board)
   }
 
-  // genere un Board
+  /**
+   * Generate final board for a specified size
+   * 
+   * @param size 
+   */
   generateFinalBoard(size: number): number[][] {
     let final = Array(size).fill(null, 0, size).map(row => {
       return Array(size).fill(-1, 0, size)
@@ -110,8 +127,14 @@ export class NPuzzleService {
     return final
   }
 
-  // done la pos of la row et la column
-  searchNumberInBoard(board: number[][], search: number) {
+  /**
+   * Search a tile in the board passed in params
+   * Returns the coordinates of the found tile
+   * 
+   * @param board 
+   * @param search 
+   */
+  searchNumberInBoard(board: number[][], search: number): TileCoords {
     let coords = new TileCoords()
     try {
       board.forEach((row: number[], index: number) => {
@@ -124,6 +147,16 @@ export class NPuzzleService {
       })
     } catch (e) { }
     return coords
+  }
+
+  /**
+   * Check if the board is resolve
+   * 
+   * @param board 
+   * @param final 
+   */
+  goalReached(board: number[][], final: number[][]): boolean {
+    return board.toString() === final.toString()
   }
 }
 
