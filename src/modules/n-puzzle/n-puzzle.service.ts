@@ -20,7 +20,7 @@ export class NPuzzleService {
     nPuzzle.final = finalBoard
     nPuzzle.origin = fileChecker.board
     nPuzzle.type = type
-    console.log(nPuzzle.final)
+    console.log('Goal is : \n', this.boardToString(nPuzzle.final))
     nPuzzle = this.solve(nPuzzle)
     return nPuzzle
   }
@@ -130,12 +130,8 @@ export class NPuzzleService {
   solve(nPuzzle: NPuzzle) {
     let currentBoard = _.cloneDeep(nPuzzle.origin)
     console.log('Current board :\n', this.boardToString(currentBoard))
-    let possibilities = this.searchPossibilities(currentBoard)
-    for (let p of possibilities) {
-      console.log(`\nnew Possibility \n`, this.boardToString(p.board))
+    let possibilities = this.searchPossibilities(nPuzzle, currentBoard, null)
 
-    }
-    //console.log(JSON.stringify(possibilities, null, 4))
     return nPuzzle
   }
 
@@ -161,57 +157,60 @@ export class NPuzzleService {
     return coords
   }
 
-  calcDist(tile: number, board: number[][], final: number[][]) {
-
-
+  calcDist(tile: number, board: number[][], final: number[][]): number {
+    let origin = this.searchNumberInBoard(board, tile)
+    let dest = this.searchNumberInBoard(final, tile)
+    let diffRow = Math.abs(origin.row - dest.row)
+    let diffCell = Math.abs(origin.cell - origin.cell)
+    return diffRow + diffCell
   }
 
-	searchPossibilities(board: number[][], tile: number = 0): OptionList[] {
+	searchPossibilities(nPuzzle: NPuzzle, board: number[][], parent: number[][], tile: number = 0): OptionList[] {
 		let coords = this.searchNumberInBoard(board, tile)
 		let possibilities: OptionList[] = []
 
-		if (coords.row - 1 >= 0) { // top
-			let newBoard = _.cloneDeep(board)
-			let tmpTile = newBoard[coords.row - 1][coords.cell]
-			newBoard[coords.row - 1][coords.cell] = 0
-			newBoard[coords.row][coords.cell] = tmpTile
-			possibilities.push(new OptionList({ 
-        board: newBoard, 
-        parent: _.cloneDeep(board)
-      }))
+		if (coords.row - 1 >= 0) {
+      let p = this.getPossibility(MoveDirection.TOP, coords, board, nPuzzle.final)
+      if (!parent || p.board.toString() !== parent.toString()) {
+        possibilities.push(p)
+      }
 		}
-		if (coords.cell + 1 <= board[coords.row].length) { // right
-			let newBoard = _.cloneDeep(board)
-			let tmpTile = newBoard[coords.row][coords.cell + 1]
-			newBoard[coords.row][coords.cell + 1] = 0
-			newBoard[coords.row][coords.cell] = tmpTile
-			possibilities.push(new OptionList({ 
-        board: newBoard, 
-        parent: _.cloneDeep(board)
-      }))
+		if (coords.cell + 1 <= board[coords.row].length) {
+      let p = this.getPossibility(MoveDirection.RIGHT, coords, board, nPuzzle.final)
+      if (!parent || p.board.toString() !== parent.toString()) {
+        possibilities.push(p)
+      }
 		}
-		if (coords.row + 1 <= board.length) { // bottom
-			let newBoard = _.cloneDeep(board)
-			let tmpTile = newBoard[coords.row + 1][coords.cell]
-			newBoard[coords.row + 1][coords.cell] = 0
-			newBoard[coords.row][coords.cell] = tmpTile
-			possibilities.push(new OptionList({ 
-        board: newBoard, 
-        parent: _.cloneDeep(board)
-      }))
+		if (coords.row + 1 <= board.length) {
+      let p = this.getPossibility(MoveDirection.BOTTOM, coords, board, nPuzzle.final)
+      if (!parent || p.board.toString() !== parent.toString()) {
+        possibilities.push(p)
+      }
 		}
-		if (coords.cell - 1 >= 0) { // left
-			let newBoard = _.cloneDeep(board)
-			let tmpTile = newBoard[coords.row][coords.cell - 1]
-			newBoard[coords.row][coords.cell - 1] = 0
-			newBoard[coords.row][coords.cell] = tmpTile
-			possibilities.push(new OptionList({ 
-        board: newBoard, 
-        parent: _.cloneDeep(board)
-      }))
+		if (coords.cell - 1 >= 0) {
+      let p = this.getPossibility(MoveDirection.LEFT, coords, board, nPuzzle.final)
+      if (!parent || p.board.toString() !== parent.toString()) {
+        possibilities.push(p)
+      }
 		}
 
 		return possibilities
+  }
+
+  getPossibility(direction: MoveDirection, coordsRef: TileCoords, board: number[][], final: number[][]): OptionList {
+    let newBoard = _.cloneDeep(board)
+    let newRow: number = coordsRef.row + (direction === MoveDirection.TOP ? -1 : 0) + (direction === MoveDirection.BOTTOM ? 1 : 0)
+    let newCell: number = coordsRef.cell + (direction === MoveDirection.RIGHT ? 1 : 0) + (direction === MoveDirection.LEFT ? -1 : 0)
+    let tmpTile = newBoard[newRow][newCell]
+    newBoard[newRow][newCell] = 0
+    newBoard[coordsRef.row][coordsRef.cell] = tmpTile
+    let p = new OptionList({ 
+      board: newBoard, 
+      parent: _.cloneDeep(board),
+      dist: this.calcDist(tmpTile, newBoard, final) || 0
+    })
+    console.log(`\nPossibility {${tmpTile}}[${p.dist}]\n`, this.boardToString(p.board))
+    return p
   }
   
   /**
@@ -270,11 +269,11 @@ class OptionList {
   parent?: number[][]
 
 	constructor(value?: OptionList) {
-		this.dist = value.dist || null
-		this.len = value.len || null
-		this.fScore = value.fScore || null
-    this.board = value.board || null
-    this.parent = value.parent || null
+		this.dist = value.dist
+		this.len = value.len
+		this.fScore = value.fScore
+    this.board = value.board
+    this.parent = value.parent
 	}
 }
 
