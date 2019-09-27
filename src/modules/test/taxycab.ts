@@ -1,22 +1,24 @@
 import { NPuzzleService, TileCoords } from '../n-puzzle/n-puzzle.service'
 
 export class ManHattanDistance {
-	constructor( private readonly nPuzzleService: NPuzzleService) { }
+	constructor(
+		private readonly nPuzzleService: NPuzzleService
+	) { }
 
-	CalcDist(Goal: any, Board: number[][]): number {
+	calcDist(goal: number[][], board: number[][]): number {
 		// Calc dist for a D1 array
-		const TmpDist = (x, indexX) => {
-			const SubDist = x.map((y, indexY) => {
-				const dest: any = this.nPuzzleService.searchNumberInBoard(Goal, Goal[indexX][indexY])
+		const tmpDist = (x, indexX) => {
+			const subDist = x.map((y, indexY) => {
+				const dest: any = this.nPuzzleService.searchNumberInBoard(goal, goal[indexX][indexY])
 				return (Math.abs((indexX - dest.row)) + Math.abs((indexY - dest.cell)))
 			})
 			// reduce the D1 array to return only total dist
-			SubDist.reduce((accumulator, currentValue) => accumulator + currentValue)
-			return SubDist[0]
+			subDist.reduce((accumulator, currentValue) => accumulator + currentValue)
+			return subDist[0]
 		}
 		// Apply the previous on all the board(D2 array)
-		const TmpList = Board.map((x, indexX) => TmpDist(x, indexX))
-		return TmpList.reduce((accumulator, currentValue) => accumulator + currentValue)[0]
+		const tmpList = board.map((x, indexX) => tmpDist(x, indexX))
+		return tmpList.reduce((accumulator, currentValue) => accumulator + currentValue)[0]
 	}
 
 //  to be exported as solo class

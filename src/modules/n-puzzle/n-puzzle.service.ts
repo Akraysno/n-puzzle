@@ -129,8 +129,13 @@ export class NPuzzleService {
 
   solve(nPuzzle: NPuzzle) {
     let currentBoard = _.cloneDeep(nPuzzle.origin)
+    console.log('Current board :\n', this.boardToString(currentBoard))
     let possibilities = this.searchPossibilities(currentBoard)
-    console.log(possibilities)
+    for (let p of possibilities) {
+      console.log(`\nnew Possibility \n`, this.boardToString(p.board))
+
+    }
+    //console.log(JSON.stringify(possibilities, null, 4))
     return nPuzzle
   }
 
@@ -158,42 +163,55 @@ export class NPuzzleService {
 
   calcDist(tile: number, board: number[][], final: number[][]) {
 
+
   }
 
 	searchPossibilities(board: number[][], tile: number = 0): OptionList[] {
 		let coords = this.searchNumberInBoard(board, tile)
-		let options: OptionList[] = []
+		let possibilities: OptionList[] = []
 
 		if (coords.row - 1 >= 0) { // top
-			let newBoard = board.slice()
+			let newBoard = _.cloneDeep(board)
 			let tmpTile = newBoard[coords.row - 1][coords.cell]
 			newBoard[coords.row - 1][coords.cell] = 0
 			newBoard[coords.row][coords.cell] = tmpTile
-			options.push(new OptionList({ board: newBoard }))
+			possibilities.push(new OptionList({ 
+        board: newBoard, 
+        parent: _.cloneDeep(board)
+      }))
 		}
 		if (coords.cell + 1 <= board[coords.row].length) { // right
-			let newBoard = board.slice()
+			let newBoard = _.cloneDeep(board)
 			let tmpTile = newBoard[coords.row][coords.cell + 1]
 			newBoard[coords.row][coords.cell + 1] = 0
 			newBoard[coords.row][coords.cell] = tmpTile
-			options.push(new OptionList({ board: newBoard }))
+			possibilities.push(new OptionList({ 
+        board: newBoard, 
+        parent: _.cloneDeep(board)
+      }))
 		}
 		if (coords.row + 1 <= board.length) { // bottom
-			let newBoard = board.slice()
+			let newBoard = _.cloneDeep(board)
 			let tmpTile = newBoard[coords.row + 1][coords.cell]
 			newBoard[coords.row + 1][coords.cell] = 0
 			newBoard[coords.row][coords.cell] = tmpTile
-			options.push(new OptionList({ board: newBoard }))
+			possibilities.push(new OptionList({ 
+        board: newBoard, 
+        parent: _.cloneDeep(board)
+      }))
 		}
 		if (coords.cell - 1 >= 0) { // left
-			let newBoard = board.slice()
+			let newBoard = _.cloneDeep(board)
 			let tmpTile = newBoard[coords.row][coords.cell - 1]
 			newBoard[coords.row][coords.cell - 1] = 0
 			newBoard[coords.row][coords.cell] = tmpTile
-			options.push(new OptionList({ board: newBoard }))
+			possibilities.push(new OptionList({ 
+        board: newBoard, 
+        parent: _.cloneDeep(board)
+      }))
 		}
 
-		return options
+		return possibilities
   }
   
   /**
@@ -204,6 +222,28 @@ export class NPuzzleService {
    */
   goalReached(board: number[][], final: number[][]): boolean {
     return board.toString() === final.toString()
+  }
+
+  /**
+   * Transform board to string ready to print
+   * 
+   * @param board 
+   */
+  boardToString(board: number[][]): string {
+    let numLen = Math.pow(board.length, 2).toString().length
+    let b: string = ''
+    for (let r of board) {
+      let s: string = (b.length ? '\n' : '')+'\t'
+      for (let n of r) {
+        let ns = n.toString()
+        while (ns.length < numLen) {
+          ns = ' '+ns
+        }
+        s += ns+' '
+      }
+      b += s
+    }
+    return b
   }
 }
 
@@ -226,13 +266,15 @@ class OptionList {
 	dist?: number
 	len?: number
 	fScore?: number
-	board?: number[][]
+  board?: number[][]
+  parent?: number[][]
 
 	constructor(value?: OptionList) {
-		this.dist = value.dist
-		this.len = value.len
-		this.fScore = value.fScore
-		this.board = value.board
+		this.dist = value.dist || null
+		this.len = value.len || null
+		this.fScore = value.fScore || null
+    this.board = value.board || null
+    this.parent = value.parent || null
 	}
 }
 
