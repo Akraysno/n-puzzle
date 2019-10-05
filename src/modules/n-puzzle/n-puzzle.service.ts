@@ -25,7 +25,7 @@ export class NPuzzleService {
     console.log('Goal is : \n', this.boardToString(nPuzzle.final))
     //nPuzzle = this.solve(nPuzzle)
     //return nPuzzle
-    let search = new SearchUsingAStar(new State(_.flatten(nPuzzle.origin)), new State(_.flatten(nPuzzle.final)))
+    let search = new SearchUsingAStar(new State(_.flatten(nPuzzle.origin), _.flatten(nPuzzle.final)), new State(_.flatten(nPuzzle.final), _.flatten(nPuzzle.final)))
     return await search.search() 
   }
 
@@ -84,9 +84,14 @@ export class NPuzzleService {
    * @param size 
    */
   generateFinalBoard(size: number): number[][] {
+    let len = Math.pow(size, 2)
+    let final: number[] = Array(len).fill(0, 0, len).map((v, i) => (i + 1) === len ? 0 : (i + 1))
+    return _.chunk(final, Math.sqrt(size))
+    /*
     let final = Array(size).fill(null, 0, size).map(row => {
       return Array(size).fill(-1, 0, size)
     })
+
     let nbCase: number = size * size
     let dirIsHoriz: boolean = true
     let x: number = 0
@@ -129,6 +134,7 @@ export class NPuzzleService {
       nbCaseFilled++
     }
     return final
+    */
   }
 
   solve(nPuzzle: NPuzzle) {
@@ -294,11 +300,13 @@ export class State {
   private _numRowsOrCols: number
   private _neighbours: Map<number, number[]>  = new Map<number, number[]>();
   private _swip: number
+  private _goal: number[]
 
   public set arr(arr: number[]) { this._arr = arr }
   public get arr(): number[] { return this._arr }
 
   public get swip(): number { return this._swip }
+  public get goal(): number[] { return this._goal }
 
   public set numRowsOrCols(numRowsOrCols: number) { this._numRowsOrCols = numRowsOrCols }
   public get numRowsOrCols(): number { return this._numRowsOrCols }
@@ -306,7 +314,7 @@ export class State {
   public set emptyTileIndex(emptyTileIndex: number) { this._emptyTileIndex = emptyTileIndex }
   public get emptyTileIndex(): number { return this._emptyTileIndex }
   
-  constructor(args: any) {
+  constructor(args: any, goal: number[]) {
     if (typeof(args) === 'number') {
       this.numRowsOrCols = args
       this.arr = new Array(this.numRowsOrCols * this.numRowsOrCols)
@@ -340,6 +348,7 @@ export class State {
                             return args.arr[index]
                           })
     }
+    this._goal = goal
     this.createGraphForNPuzzle()
   }
 
@@ -370,15 +379,41 @@ export class State {
     this.arr[index] = this.arr[this.emptyTileIndex];
     this.arr[this.emptyTileIndex] = tmp;
     this.emptyTileIndex = index;
-    this._swip = index
+    this._swip = number
   }
 
   // TODO: Fix calc cost
   public getManhattanCost(): number {
+    let goal = this._goal
     let cost: number = 0
-    for (let i: number = 0 ; i < this.arr.length ; ++i) {
+
+    for (let [index, num] of this.arr.entries()) {
+      if (num === 0) {
+        continue
+      }
+
+      let goalIndex = goal.indexOf(num)
+      if (goalIndex === index) {
+        continue
+      }
+
+      let gx: number = index % this.numRowsOrCols
+      let gy: number = index / this.numRowsOrCols
+
+      let x: number = goalIndex % this.numRowsOrCols;
+      let y: number = goalIndex / this.numRowsOrCols;
+
+      let mancost: number = Math.abs(x - gx) +  Math.abs(y - gy);
+      cost += mancost;
+
+    }
+    console.log('cost', cost)
+    
+    /*for (let i: number = 0 ; i < this.arr.length ; ++i) {
       let v: number = this.arr[i]
-      if (v == 0) continue
+      if (v == 0) {
+        continue
+      }
 
       // actual index of v should be v-1
       v = v - 1;
@@ -390,7 +425,7 @@ export class State {
 
       let mancost: number = Math.abs(x - gx) +  Math.abs(y - gy);
       cost += mancost;
-    }
+    }*/
     return cost;
   }
 
@@ -618,9 +653,8 @@ export class SearchUsingAStar {
     console.log('OPEN LIST RESTANTE : ', openlist.count())
     while (openlist.count() > 0 && !solved) {
       let current: Node = openlist.getAndRemoveTop();
-      //console.log('PARENT : \n', current.parent ? current.parent.state.createGridToPrint() :'\n')
+      console.log('PARENT : \n', current.parent ? current.parent.state.createGridToPrint() :'\n')
       console.log('CURRENT ['+current.state.swip+'] : \n', current.state.createGridToPrint())
-      //
       console.log('GOAL :\n',this.goal.createGridToPrint())
       console.log('DEPTH : '+current.depth)
       console.log('COST : ', current.cost, '[', openlist.minCost() ,' -> ', openlist.maxCost(),']')
@@ -643,7 +677,7 @@ export class SearchUsingAStar {
       console.log('Voisins: ', neighbours)
   
       for (let next of neighbours) {
-          let state: State = new State(current.state);
+          let state: State = new State(current.state, current.state.goal);
           //console.log(`Swip tile ${next}`)
           state.swapWithEmpty(next);
           //SwapTiles(next, state, false);
@@ -662,7 +696,7 @@ export class SearchUsingAStar {
             (resolve, reject) => {
             setTimeout(() => {
               resolve()
-            }, 0)
+            }, 1)
           })
       }
     }
