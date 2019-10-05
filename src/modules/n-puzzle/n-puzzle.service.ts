@@ -361,8 +361,11 @@ export class State {
     this.arr = randomizedArray
   }
 
-  // TODO: Fix swap
-  public swapWithEmpty(index: number): void {
+  public swapWithEmpty(number: number): void {
+    let index = this.arr.indexOf(number)
+    if (index === -1) {
+      return
+    }
     let tmp: number = this.arr[index];
     this.arr[index] = this.arr[this.emptyTileIndex];
     this.arr[this.emptyTileIndex] = tmp;
@@ -370,6 +373,7 @@ export class State {
     this._swip = index
   }
 
+  // TODO: Fix calc cost
   public getManhattanCost(): number {
     let cost: number = 0
     for (let i: number = 0 ; i < this.arr.length ; ++i) {
@@ -554,9 +558,18 @@ export class PriorityQueue {
     return this._nodes.length;
   }
 
+  public maxCost(): number {
+    return Math.max(...this._nodes.map(v => v.cost))
+  }
+
+  public minCost(): number {
+    return Math.min(...this._nodes.map(v => v.cost))
+  }
+
   // Add an item to the queue.
   public add(n: Node): void {
-    this._nodes.push(n);
+    this._nodes.push(n)
+    this._nodes = this._nodes.sort((a, b) => a.cost < b.cost ? 1 : -1)
   }
 
   // Get the item with the highest priority (in our case the lowest cost)
@@ -605,8 +618,12 @@ export class SearchUsingAStar {
     console.log('OPEN LIST RESTANTE : ', openlist.count())
     while (openlist.count() > 0 && !solved) {
       let current: Node = openlist.getAndRemoveTop();
-      console.log('PARENT : \n', current.parent ? current.parent.state.createGridToPrint() :'\n' ,'\nCURRENT ['+current.state.swip+'] : \n', current.state.createGridToPrint(),'\nGOAL :\n',this.goal.createGridToPrint())
-  
+      //console.log('PARENT : \n', current.parent ? current.parent.state.createGridToPrint() :'\n')
+      console.log('CURRENT ['+current.state.swip+'] : \n', current.state.createGridToPrint())
+      //
+      console.log('GOAL :\n',this.goal.createGridToPrint())
+      console.log('DEPTH : '+current.depth)
+      console.log('COST : ', current.cost, '[', openlist.minCost() ,' -> ', openlist.maxCost(),']')
       if (this.goal.equals(current.state, this.goal)) {
         // fil the solution.
         let s: Node = current;
@@ -627,25 +644,25 @@ export class SearchUsingAStar {
   
       for (let next of neighbours) {
           let state: State = new State(current.state);
-          console.log(`Swip tile ${next}`)
+          //console.log(`Swip tile ${next}`)
           state.swapWithEmpty(next);
           //SwapTiles(next, state, false);
           console.log('Liste fermees: ', closedlist.length)
           if (!this.isClosed(state, closedlist)) {
-            console.log('Add to openList')
-              let n: Node = new Node(state, current.depth + 1);
-              n.parent = current;
-              openlist.add(n);
-              closedlist.push(n);
-              //n.Print(++s_lineNum);
+            //console.log('Add to openList')
+            let n: Node = new Node(state, current.depth + 1);
+            n.parent = current;
+            openlist.add(n);
+            closedlist.push(n);
+            //n.Print(++s_lineNum);
           } else {
-            console.log('Already explore')
+            //console.log('Already explore')
           }
           await new Promise(
             (resolve, reject) => {
             setTimeout(() => {
               resolve()
-            }, 1000)
+            }, 0)
           })
       }
     }
