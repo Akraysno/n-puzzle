@@ -3,8 +3,6 @@ import { ResolvePuzzleDto } from './dto/resolve-puzzle.dto';
 import * as _ from 'lodash'
 import { NPuzzle } from 'n-puzzle-entity/dist/server/n-puzzle/n-puzzle.entity'
 import { NPuzzleAlgo } from 'n-puzzle-entity/dist/server/n-puzzle/enums/n-puzzle-algo.enum';
-import { getCustomRepository } from 'typeorm';
-import { assertExpressionStatement, TSExpressionWithTypeArguments } from 'babel-types';
 
 @Component()
 export class NPuzzleService {
