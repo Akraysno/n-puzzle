@@ -6,7 +6,7 @@ import {
 	Param,
 	Req,
 	UseGuards,
-} from '@nestjs/common';
+} from '@nestjs/common'; 
 import { TestService } from './test.service';
 
 @Controller('test')
