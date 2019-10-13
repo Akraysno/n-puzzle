@@ -2,8 +2,9 @@ import { Component, BadRequestException, flatten } from '@nestjs/common';
 import { ResolvePuzzleDto } from './dto/resolve-puzzle.dto';
 import * as _ from 'lodash'
 import * as moment from 'moment'
-import { NPuzzle } from 'n-puzzle-entity/dist/server/n-puzzle/n-puzzle.entity'
-import { NPuzzleAlgo } from 'n-puzzle-entity/dist/server/n-puzzle/enums/n-puzzle-algo.enum';
+import { NPuzzle, TileMove } from '../_entities/n-puzzle/n-puzzle.entity'
+import { NPuzzleAlgo } from '../_entities/n-puzzle/enums/n-puzzle-algo.enum';
+import { TileMoveDirection } from 'modules/_entities/n-puzzle/enums/tile-move-direction.enum';
 
 @Component()
 export class NPuzzleService {
@@ -12,14 +13,9 @@ export class NPuzzleService {
     }
 
     async defaultRun() {
-        let timeStart = moment()
         let puzzle = '3\n2 3 7\n8 0 4\n6 5 1'
         let solution = await this.resolvePuzzle(puzzle, NPuzzleAlgo.MANHATTAN)
-        let p = solution.map(s => `${s.state.createGridToPrint()}\tMove : ${s.state.swip} [${s.state.moveDirection}]\n`)
-        for (let s of p) {
-            console.log(s)
-        }
-        console.log(`Finish in ${moment().diff(timeStart)} millisecondes`)
+        console.log(`Finish in ${solution.duration} millisecondes`)
     }
 
     /**
@@ -31,15 +27,21 @@ export class NPuzzleService {
         let fileChecker: FileChecker = this.checkFile(puzzle)
         let finalBoard: number[][] = this.generateFinalBoard(fileChecker.size);
         let nPuzzle = new NPuzzle()
-        nPuzzle.final = finalBoard
-        nPuzzle.origin = fileChecker.board
+        let startTime = moment()
+        nPuzzle.final = _.flatten(finalBoard)
+        nPuzzle.origin = _.flatten(fileChecker.board)
         nPuzzle.type = type
-        console.log('Start is : \n', this.boardToString(nPuzzle.origin))
-        console.log('Goal is  : \n', this.boardToString(nPuzzle.final))
+        nPuzzle.size = fileChecker.size
+        console.log('Start is : \n', this.boardToString(fileChecker.board))
+        console.log('Goal is  : \n', this.boardToString(finalBoard))
         //nPuzzle = this.solve(nPuzzle)
         //return nPuzzle
         let search = new SearchUsingAStar(new State(_.flatten(nPuzzle.origin), _.flatten(nPuzzle.final)), new State(_.flatten(nPuzzle.final), _.flatten(nPuzzle.final)))
-        return await search.search()
+        let solution = await search.search()
+        nPuzzle.nbMoves = solution.length - 1 // do not count start state
+        nPuzzle.operations = solution.map(s => new TileMove(s.state.swip, s.state.moveDirection))
+        nPuzzle.duration = moment().diff(startTime)
+        return nPuzzle
     }
 
     /**
@@ -102,7 +104,7 @@ export class NPuzzleService {
         if (defaultBoard === true) {
             let len = Math.pow(size, 2)
             let finalBoard: number[] = Array(len).fill(0, 0, len).map((v, i) => (i + 1) === len ? 0 : (i + 1))
-            final = _.chunk(finalBoard, Math.sqrt(size))
+            final = _.chunk(finalBoard, size)
         } else {
             final = Array(size).fill(null, 0, size).map(row => {
                 return Array(size).fill(-1, 0, size)
@@ -152,102 +154,6 @@ export class NPuzzleService {
             final
         }
         return final
-    }
-
-    solve(nPuzzle: NPuzzle) {
-        let currentBoard = _.cloneDeep(nPuzzle.origin)
-        console.log('Current board :\n', this.boardToString(currentBoard))
-        let possibilities = this.searchPossibilities(nPuzzle, currentBoard, null)
-
-        return nPuzzle
-    }
-
-    /**
-     * Search a tile in the board passed in params
-     * Return the coordinates of the found tile
-     * 
-     * @param board 
-     * @param search 
-     */
-    searchNumberInBoard(board: number[][], search: number): TileCoords {
-        let coords = new TileCoords()
-        try {
-            board.forEach((row: number[], index: number) => {
-                let searchIndex: number = row.indexOf(search)
-                if (searchIndex !== -1) {
-                    coords.row = index
-                    coords.cell = searchIndex
-                    throw 'found';
-                }
-            })
-        } catch (e) { }
-        return coords
-    }
-
-    calcDist(tile: number, board: number[][], final: number[][]): number {
-        let origin = this.searchNumberInBoard(board, tile)
-        let dest = this.searchNumberInBoard(final, tile)
-        let diffRow = Math.abs(origin.row - dest.row)
-        let diffCell = Math.abs(origin.cell - origin.cell)
-        return diffRow + diffCell
-    }
-
-    searchPossibilities(nPuzzle: NPuzzle, board: number[][], parent: number[][], tile: number = 0): OptionList[] {
-        let coords = this.searchNumberInBoard(board, tile)
-        let possibilities: OptionList[] = []
-
-        if (coords.row - 1 >= 0) {
-            let p = this.getPossibility(MoveDirection.TOP, coords, board, nPuzzle.final)
-            if (!parent || p.board.toString() !== parent.toString()) {
-                possibilities.push(p)
-            }
-        }
-        if (coords.cell + 1 <= board[coords.row].length) {
-            let p = this.getPossibility(MoveDirection.RIGHT, coords, board, nPuzzle.final)
-            if (!parent || p.board.toString() !== parent.toString()) {
-                possibilities.push(p)
-            }
-        }
-        if (coords.row + 1 <= board.length) {
-            let p = this.getPossibility(MoveDirection.BOTTOM, coords, board, nPuzzle.final)
-            if (!parent || p.board.toString() !== parent.toString()) {
-                possibilities.push(p)
-            }
-        }
-        if (coords.cell - 1 >= 0) {
-            let p = this.getPossibility(MoveDirection.LEFT, coords, board, nPuzzle.final)
-            if (!parent || p.board.toString() !== parent.toString()) {
-                possibilities.push(p)
-            }
-        }
-
-        return possibilities
-    }
-
-    getPossibility(direction: MoveDirection, coordsRef: TileCoords, board: number[][], final: number[][]): OptionList {
-        let newBoard = _.cloneDeep(board)
-        let newRow: number = coordsRef.row + (direction === MoveDirection.TOP ? -1 : 0) + (direction === MoveDirection.BOTTOM ? 1 : 0)
-        let newCell: number = coordsRef.cell + (direction === MoveDirection.RIGHT ? 1 : 0) + (direction === MoveDirection.LEFT ? -1 : 0)
-        let tmpTile = newBoard[newRow][newCell]
-        newBoard[newRow][newCell] = 0
-        newBoard[coordsRef.row][coordsRef.cell] = tmpTile
-        let p = new OptionList({
-            board: newBoard,
-            parent: _.cloneDeep(board),
-            dist: this.calcDist(tmpTile, newBoard, final) || 0
-        })
-        console.log(`\nPossibility {${tmpTile}}[${p.dist}]\n`, this.boardToString(p.board))
-        return p
-    }
-
-    /**
-     * Check if the board is resolve
-     * 
-     * @param board 
-     * @param final 
-     */
-    goalReached(board: number[][], final: number[][]): boolean {
-        return board.toString() === final.toString()
     }
 
     /**
@@ -304,27 +210,20 @@ class OptionList {
     }
 }
 
-enum MoveDirection {
-    TOP = 'TOP',
-    RIGHT = 'RIGHT',
-    BOTTOM = 'BOTTOM',
-    LEFT = 'LEFT',
-}
-
 export class State {
     private _emptyTileIndex: number
     private _arr: number[]
     private _numRowsOrCols: number
     private _neighbours: Map<number, number[]> = new Map<number, number[]>();
     private _swip: number
-    private _moveDirection: MoveDirection
+    private _moveDirection: TileMoveDirection
     private _goal: number[]
 
     public set arr(arr: number[]) { this._arr = arr }
     public get arr(): number[] { return this._arr }
 
     public get swip(): number { return this._swip }
-    public get moveDirection(): MoveDirection { return this._moveDirection }
+    public get moveDirection(): TileMoveDirection { return this._moveDirection }
     public get goal(): number[] { return this._goal }
 
     public set numRowsOrCols(numRowsOrCols: number) { this._numRowsOrCols = numRowsOrCols }
@@ -397,13 +296,13 @@ export class State {
 
         let diff = this.emptyTileIndex - index
         if (diff === -1) {
-            this._moveDirection = MoveDirection.RIGHT
+            this._moveDirection = TileMoveDirection.RIGHT
         } else if (diff === 1) {
-            this._moveDirection = MoveDirection.LEFT
+            this._moveDirection = TileMoveDirection.LEFT
         } else if (diff === this.numRowsOrCols) {
-            this._moveDirection = MoveDirection.TOP
+            this._moveDirection = TileMoveDirection.TOP
         } else {
-            this._moveDirection = MoveDirection.BOTTOM
+            this._moveDirection = TileMoveDirection.BOTTOM
         }
         let tmp: number = this.arr[index];
         this.arr[index] = this.arr[this.emptyTileIndex];
