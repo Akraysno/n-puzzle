@@ -48,9 +48,9 @@ async function bootstrap() {
 
     app.init();
 
-    httpsServer.listen(3000);
+    httpsServer.listen(4242);
   } else {
-    await app.listen(3000);
+    await app.listen(4242);
   }
 }
 bootstrap().catch((err) => process.stderr.write(err + '\n'));
