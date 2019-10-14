@@ -26,6 +26,12 @@ export class NPuzzleService {
     async resolvePuzzle(puzzle: string, type: NPuzzleAlgo) { //: Promise<NPuzzle> {
         let fileChecker: FileChecker = this.checkFile(puzzle)
         let finalBoard: number[][] = this.generateFinalBoard(fileChecker.size);
+        console.log('Start is : \n', this.boardToString(fileChecker.board))
+        console.log('Goal is  : \n', this.boardToString(finalBoard))
+        let isSolvable: boolean = await this.getSolvability(fileChecker.size, _.flatten(fileChecker.board), _.flatten(finalBoard))
+        if (!isSolvable) {
+            throw new BadRequestException('Le puzzle ne peut être résolu')
+        }
         let nPuzzle = new NPuzzle()
         let startTime = moment()
         nPuzzle.final = _.flatten(finalBoard)
@@ -43,6 +49,28 @@ export class NPuzzleService {
         nPuzzle.duration = moment().diff(startTime)
         return nPuzzle
     }
+
+    
+    async getSolvability (boardSize: number, board: number[], final: number[]): Promise<boolean> { 
+        let isSolvable: boolean = false
+        if (boardSize % 2 !== 0) {
+            let count: number = 0; 
+            for (let i = 0; i < board.length - 1; i++) {
+                for (let j = i+1; j < board.length; j++) {
+                    let index = final.indexOf(j) 
+                    if (board[i] !== 0 && final[index] !== 0 && board[i] > final[index]) {
+                        console.log(board[i] , final[index] , board[j])
+                        count++; 
+                    }
+                }
+            }
+            console.log(count, count % 2)
+            isSolvable = count % 2 === 0
+        } else {
+
+        }
+        return isSolvable
+    } 
 
     /**
      * Check if file is a valid board
