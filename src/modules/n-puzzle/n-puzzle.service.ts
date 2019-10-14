@@ -185,6 +185,26 @@ export class NPuzzleService {
     }
 
     /**
+     * Search a tile in the board passed in params
+     * Returns the coordinates of the found tile
+     * 
+     * @param board 
+     * @param search 
+     */
+    searchNumberInBoard(board: number[][], search: number): TileCoords {
+        let coords = new TileCoords()
+        for (let [index, row] of board.entries()) {
+            let searchIndex: number = row.indexOf(search)
+            if (searchIndex !== -1) {
+                coords.row = index
+                coords.cell = searchIndex
+                break ;
+            }
+        }
+        return coords
+    }
+
+    /**
      * Transform board to string ready to print
      * 
      * @param board 
@@ -525,40 +545,53 @@ export class Node {
 // it does not cater for performance or efficiency.
 export class PriorityQueue {
     // The items and priorities.
-    private _nodes: Node[] = []
+    private _nodes: Map<number, Node[]> = new Map()
 
     // Return the number of items in the queue.
     public count(): number {
-        return this._nodes.length;
+        let count = 0
+        this._nodes.forEach(nodes => count += nodes.length );
+        return count
     }
 
     public maxCost(): number {
-        return Math.max(...this._nodes.map(v => v.cost))
+        return Array.from(this._nodes.keys()).pop()
     }
 
     public minCost(): number {
-        return Math.min(...this._nodes.map(v => v.cost))
+        return Array.from(this._nodes.keys()).shift()
     }
 
     // Add an item to the queue.
     public add(n: Node): void {
-        this._nodes.push(n)
-        this._nodes = this._nodes.sort((a, b) => a.cost < b.cost ? 1 : -1)
+        let key = n.cost
+        let pack = this._nodes.get(key)
+        if (!pack) {
+            pack = []
+        }
+        pack.push(n)
+        this._nodes.set(key, pack)
     }
 
     // Get the item with the highest priority (in our case the lowest cost)
     public getAndRemoveTop(): Node {
+        let key = this.minCost()
+        let pack = this._nodes.get(key)
+        let node = pack.shift()
+        if (!pack.length) {
+            this._nodes.delete(key)
+        }
         // Find the hightest priority.
-        let bestIndex: number = 0;
+        /*let bestIndex: number = 0;
         let bestPriority: number = this._nodes[0].cost;
         for (let i = 1; i < this.count(); i++) {
             if (bestPriority > this._nodes[i].cost) {
                 bestPriority = this._nodes[i].cost;
                 bestIndex = i;
             }
-        }
+        }*/
 
-        return this._nodes.splice(bestIndex, 1).shift()
+        return node
     }
 }
 
