@@ -13,7 +13,7 @@ export class NPuzzleService {
     }
 
     async defaultRun() {
-        let puzzle = await this.generateRandomBoard(3)
+        let puzzle = '3\n7 8 2\n0 4 6\n3 5 1'//await this.generateRandomBoard(3)
         console.log(puzzle)
         let solution = await this.resolvePuzzle(puzzle, NPuzzleAlgo.MANHATTAN)
         console.log(`Finish in ${solution.duration} millisecondes`)
@@ -29,10 +29,12 @@ export class NPuzzleService {
         let finalBoard: number[][] = this.generateFinalBoard(fileChecker.size);
         console.log('Start is : \n', this.boardToString(fileChecker.board))
         console.log('Goal is  : \n', this.boardToString(finalBoard))
-        let isSolvable: boolean = await this.getSolvability(fileChecker.size, _.flatten(fileChecker.board), _.flatten(finalBoard))
+        let isSolvable: boolean = await this.validateInversions(fileChecker.size, _.flatten(fileChecker.board), _.flatten(finalBoard))
         if (!isSolvable) {
             throw new BadRequestException('Le puzzle ne peut être résolu')
         }
+        console.log(isSolvable, await this.getSolvability(fileChecker.size, _.flatten(fileChecker.board), _.flatten(finalBoard)))
+        //throw new BadRequestException()
         let nPuzzle = new NPuzzle()
         let startTime = moment()
         nPuzzle.final = _.flatten(finalBoard)
@@ -92,6 +94,60 @@ export class NPuzzleService {
         }
         return isSolvable
     } 
+
+    async validateInversions(boardSize: number, board: number[], final: number[]) {
+        let CountNumberOfRegularInversions = (toCheck: number[][]) => {
+            let num: number = 0;
+
+            let inputList: number[] = []
+            for (let item of toCheck) {
+                inputList = _.concat(inputList, item);
+            }
+
+            for (let i = 0; i < boardSize; i++) {
+                for (let j = i + 1; j < boardSize + 1; j++) {
+                    if (inputList[j] !== 0 && inputList[i] !== 0 && inputList[i] > inputList[j]) {
+                        num++;
+                    }
+                }
+            }
+            return num;
+        }
+
+        let chunkedBoard: number[][] = _.chunk(board, boardSize)
+        let chunkedFinal: number[][] = _.chunk(final, boardSize)
+
+        let numberOfInversions: number = CountNumberOfRegularInversions(chunkedBoard)
+        let numberOfInversionsSolution: number = CountNumberOfRegularInversions(chunkedFinal)
+
+        let start0Index: number = -1;
+        let goal0Index: number = -1;
+
+        for (let i = 0; i < chunkedBoard.length; i++) {
+            start0Index = chunkedBoard[i].findIndex(c => c === 0);
+            if (start0Index > -1) {
+                start0Index = i * chunkedBoard.length + start0Index;
+                break;
+            }
+        }
+        for (let i = 0; i < chunkedFinal.length; i++) {
+            goal0Index = chunkedFinal[i].findIndex(c => c == 0);
+            if (goal0Index > -1) {
+                goal0Index = i * chunkedFinal.length + goal0Index;
+                break;
+            }
+        }
+        if (chunkedBoard.length % 2 == 0) { // In this case, the row of the '0' tile matters
+            numberOfInversions += start0Index / chunkedBoard.length;
+            numberOfInversionsSolution += goal0Index / chunkedFinal.length;
+        }
+
+
+        if (numberOfInversions % 2 != numberOfInversionsSolution % 2) {
+            return false//throw new BadRequestException("Unsolvable puzzle");
+        }
+        return true
+    }
 
     /**
      * Check if file is a valid board
