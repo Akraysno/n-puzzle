@@ -14,7 +14,7 @@ export class NPuzzleService {
 
     async defaultRun() {
         let puzzle = '3\n7 8 2\n0 4 6\n3 5 1'//await this.generateRandomBoard(3)
-        console.log(puzzle)
+        process.env.DEBUG === 'true' ? console.log(puzzle) : 0
         let solution = await this.resolvePuzzle(puzzle, NPuzzleAlgo.MANHATTAN)
         console.log(`Finish in ${solution.duration} millisecondes`)
     }
@@ -33,7 +33,7 @@ export class NPuzzleService {
         if (!isSolvable) {
             throw new BadRequestException('Le puzzle ne peut être résolu')
         }
-        console.log(isSolvable, await this.getSolvability(fileChecker.size, _.flatten(fileChecker.board), _.flatten(finalBoard)))
+        process.env.DEBUG === 'true' ? console.log(isSolvable, await this.getSolvability(fileChecker.size, _.flatten(fileChecker.board), _.flatten(finalBoard))) : 0
         //throw new BadRequestException()
         let nPuzzle = new NPuzzle()
         let startTime = moment()
@@ -41,8 +41,8 @@ export class NPuzzleService {
         nPuzzle.origin = _.flatten(fileChecker.board)
         nPuzzle.type = type
         nPuzzle.size = fileChecker.size
-        console.log('Start is : \n', this.boardToString(fileChecker.board))
-        console.log('Goal is  : \n', this.boardToString(finalBoard))
+        process.env.DEBUG === 'true' ? console.log('Start is : \n', this.boardToString(fileChecker.board)) : 0
+        process.env.DEBUG === 'true' ? console.log('Goal is  : \n', this.boardToString(finalBoard)) : 0
         //nPuzzle = this.solve(nPuzzle)
         //return nPuzzle
         let search = new SearchUsingAStar(new State(_.flatten(nPuzzle.origin), _.flatten(nPuzzle.final)), new State(_.flatten(nPuzzle.final), _.flatten(nPuzzle.final)))
@@ -82,12 +82,12 @@ export class NPuzzleService {
                 for (let j = i+1; j < board.length; j++) {
                     let index = final.indexOf(j) 
                     if (board[i] !== 0 && final[index] !== 0 && board[i] > final[index]) {
-                        console.log(board[i] , final[index] , board[j])
+                        process.env.DEBUG === 'true' ? console.log(board[i] , final[index] , board[j]) : 0
                         count++; 
                     }
                 }
             }
-            console.log(count, count % 2)
+            process.env.DEBUG === 'true' ? console.log(count, count % 2) : 0
             isSolvable = count % 2 === 0
         } else {
 
@@ -369,7 +369,7 @@ export class State {
                     return index
                 })
         } else if (Array.isArray(args)) {
-            console.log('Construct from array')
+            process.env.DEBUG === 'true' ? console.log('Construct from array') : 0
             this.numRowsOrCols = Math.sqrt(args.length);
             this.arr = new Array(this.numRowsOrCols * this.numRowsOrCols)
                 .fill(0)
@@ -461,7 +461,7 @@ export class State {
             cost += mancost;
 
         }
-        console.log('cost', cost)
+        process.env.DEBUG === 'true' ? console.log('cost', cost) : 0
         return cost;
     }
 
@@ -474,12 +474,12 @@ export class State {
         let arr: number[] = this.arr
 
 
-        //console.log(this.createGridToPrint())
+        //process.env.DEBUG === 'true' ? console.log(this.createGridToPrint()) : 0
 
         for (let i = 0; i < numRowsOrCols; i++) {
             for (let j = 0; j < numRowsOrCols; j++) {
                 let index: number = i * numRowsOrCols + j
-                //console.log(`current index : ${index}, value ${arr[index]}`)
+                //process.env.DEBUG === 'true' ? console.log(`current index : ${index}, value ${arr[index]}`) : 0
                 let li: number[] = []
                 if (i - 1 >= 0) {
                     li.push(arr[(i - 1) * numRowsOrCols + j])
@@ -493,7 +493,7 @@ export class State {
                 if (j + 1 < numRowsOrCols) {
                     li.push(arr[i * numRowsOrCols + (j + 1)]);
                 }
-                //console.log(`current index : ${index}, value ${arr[index]}, li: [${li.join(', ')}]`)
+                //process.env.DEBUG === 'true' ? console.log(`current index : ${index}, value ${arr[index]}, li: [${li.join(', ')}]`) : 0
                 this._neighbours.set(index, li)
             }
         }
@@ -553,9 +553,9 @@ export class Neighbours {
                 if (j + 1 < rowsOrCols) {
                     li.push(i * rowsOrCols + j + 1);
                 }
-                console.log(index, li)
+                process.env.DEBUG === 'true' ? console.log(index, li) : 0
                 this._edges.set(index, li)
-                console.log(this._edges.keys())
+                process.env.DEBUG === 'true' ? console.log(this._edges.keys()) : 0
             }
         }
     }
@@ -613,7 +613,7 @@ export class Node {
             str += `${elem}`
         }
         str += ` | D: ${this.depth}, MD: ${this.cost} }`
-        console.log(str)
+        process.env.DEBUG === 'true' ? console.log(str) : 0
         //Debug.Log(str.ToString());
     }
 }
@@ -699,14 +699,14 @@ export class SearchUsingAStar {
         let solved: boolean = false
         let solution: Node[] = []
 
-        console.log('OPEN LIST RESTANTE : ', openlist.count())
+        process.env.DEBUG === 'true' ? console.log('OPEN LIST RESTANTE : ', openlist.count()) : 0
         while (openlist.count() > 0 && !solved) {
             let current: Node = openlist.getAndRemoveTop();
-            console.log('PARENT : \n', current.parent ? current.parent.state.createGridToPrint() : '\n')
-            console.log('CURRENT [' + current.state.swip + '] : \n', current.state.createGridToPrint())
-            console.log('GOAL :\n', this.goal.createGridToPrint())
-            console.log('DEPTH : ' + current.depth)
-            console.log('COST : ', current.cost, '[', openlist.minCost(), ' -> ', openlist.maxCost(), ']')
+            process.env.DEBUG === 'true' ? console.log('PARENT : \n', current.parent ? current.parent.state.createGridToPrint() : '\n') : 0
+            process.env.DEBUG === 'true' ? console.log('CURRENT [' + current.state.swip + '] : \n', current.state.createGridToPrint()) : 0
+            process.env.DEBUG === 'true' ? console.log('GOAL :\n', this.goal.createGridToPrint()) : 0
+            process.env.DEBUG === 'true' ? console.log('DEPTH : ' + current.depth) : 0
+            process.env.DEBUG === 'true' ? console.log('COST : ', current.cost, '[', openlist.minCost(), ' -> ', openlist.maxCost(), ']') : 0
             if (this.goal.equals(current.state, this.goal)) {
                 // fil the solution.
                 let s: Node = current;
@@ -716,7 +716,7 @@ export class SearchUsingAStar {
                 } while (s != null);
 
                 let nbMove = solution.length - 1 // don't count start state
-                console.log(`Solution found..\nTotal moves needed : ${nbMove}`);
+                console.log(`Solution found..\nTotal moves needed : ${nbMove}`)
 
                 solved = true;
                 break;
@@ -724,14 +724,14 @@ export class SearchUsingAStar {
 
             let zero: number = current.state.findEmptyTileIndex();
             let neighbours: number[] = current.state.getNeighbours(zero);
-            console.log('Voisins: ', neighbours)
+            process.env.DEBUG === 'true' ? console.log('Voisins: ', neighbours) : 0
 
             for (let next of neighbours) {
                 let state: State = new State(current.state, current.state.goal);
                 //console.log(`Swip tile ${next}`)
                 state.swapWithEmpty(next);
                 //SwapTiles(next, state, false);
-                console.log('Liste fermees: ', closedlist.length)
+                process.env.DEBUG === 'true' ? console.log('Liste fermees: ', closedlist.length) : 0
                 if (!this.isClosed(state, closedlist)) {
                     //console.log('Add to openList')
                     let n: Node = new Node(state, current.depth + 1);
