@@ -13,7 +13,8 @@ export class NPuzzleService {
     }
 
     async defaultRun() {
-        let puzzle = '3\n2 3 7\n8 0 4\n6 5 1'
+        let puzzle = await this.generateRandomBoard(3)
+        console.log(puzzle)
         let solution = await this.resolvePuzzle(puzzle, NPuzzleAlgo.MANHATTAN)
         console.log(`Finish in ${solution.duration} millisecondes`)
     }
@@ -48,6 +49,26 @@ export class NPuzzleService {
         nPuzzle.operations = solution.map(s => new TileMove(s.state.swip, s.state.moveDirection))
         nPuzzle.duration = moment().diff(startTime)
         return nPuzzle
+    }
+
+    /**
+     * Generate random board for the given size
+     * 
+     * @param size
+     */
+    async generateRandomBoard(size?: number): Promise<string> {
+        if (!size || size <= 0) {
+            size = 3
+        }
+        let tmpArray: number[] = Array(Math.pow(size, 2)).fill(-1).map((v, i) => i)
+        let shuffleArray: number[] = [] 
+        while (tmpArray.length > 0) {
+            let r = Math.floor(Math.random() * tmpArray.length);
+            shuffleArray.push(tmpArray.splice(r, 1)[0])
+        }
+        let chunkedArray: string[] = _.chunk(shuffleArray, size).map((chunk: number[])=> chunk.join(' '))
+        let board: string = `${size}\n${chunkedArray.join('\n')}`
+        return board
     }
 
     
