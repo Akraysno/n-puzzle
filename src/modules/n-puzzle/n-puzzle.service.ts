@@ -9,11 +9,25 @@ import { TileMoveDirection } from 'modules/_entities/n-puzzle/enums/tile-move-di
 @Component()
 export class NPuzzleService {
     constructor() { 
-        this.defaultRun()
+        this.loopRun(1, 10)
+    }
+
+    async loopRun(counter: number, limit: number) {
+        try {
+            await this.defaultRun()
+        } catch (e) {
+            console.log(` ===> ${e.toString()}`,)
+        }
+
+        if(counter < limit) {
+            console.log(`\n---------------[${counter}]  --  ${moment().format('LLL')}\n`)
+            counter++
+            await this.loopRun(counter, limit)
+        }
     }
 
     async defaultRun() {
-        let puzzle = '3\n7 8 2\n0 4 6\n3 5 1'//await this.generateRandomBoard(3)
+        let puzzle = await this.generateRandomBoard(3)//'3\n7 8 2\n0 4 6\n3 5 1'//
         process.env.DEBUG === 'true' ? console.log(puzzle) : 0
         let solution = await this.resolvePuzzle(puzzle, NPuzzleAlgo.MANHATTAN)
         console.log(`Finish in ${solution.duration} millisecondes`)
