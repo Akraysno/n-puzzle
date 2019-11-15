@@ -8,7 +8,7 @@ import { TileMoveDirection } from 'modules/_entities/n-puzzle/enums/tile-move-di
 
 @Component()
 export class NPuzzleService {
-    constructor() { 
+    constructor() {
         this.loopRun(1, 10)
     }
 
@@ -87,7 +87,6 @@ export class NPuzzleService {
         return board
     }
 
-    
     async getSolvability (boardSize: number, board: number[], final: number[]): Promise<boolean> { 
         let isSolvable: boolean = false
         if (boardSize % 2 !== 0) {
@@ -110,29 +109,27 @@ export class NPuzzleService {
     } 
 
     async validateInversions(boardSize: number, board: number[], final: number[]) {
-        let CountNumberOfRegularInversions = (toCheck: number[][]) => {
+        let size = boardSize * boardSize - 1
+        let CountNumberOfRegularInversions = (toCheck: number[]) => {
             let num: number = 0;
-
-            let inputList: number[] = []
-            for (let item of toCheck) {
-                inputList = _.concat(inputList, item);
-            }
-
-            for (let i = 0; i < boardSize; i++) {
-                for (let j = i + 1; j < boardSize + 1; j++) {
-                    if (inputList[j] !== 0 && inputList[i] !== 0 && inputList[i] > inputList[j]) {
-                        num++;
+            for (let i = 0; i < size; i++) {
+                if (toCheck[i] !== 0) {
+                    for (let j = i + 1; j < size + 1; j++) {
+                        if (toCheck[j] !== 0 && toCheck[i] > toCheck[j]) {
+                            num++;
+                        }
                     }
                 }
             }
             return num;
         }
 
+        let numberOfInversions: number = CountNumberOfRegularInversions(board)
+        let numberOfInversionsSolution: number = CountNumberOfRegularInversions(final)
         let chunkedBoard: number[][] = _.chunk(board, boardSize)
         let chunkedFinal: number[][] = _.chunk(final, boardSize)
-
-        let numberOfInversions: number = CountNumberOfRegularInversions(chunkedBoard)
-        let numberOfInversionsSolution: number = CountNumberOfRegularInversions(chunkedFinal)
+        console.log('numberOfInversions', numberOfInversions)
+        console.log('numberOfInversionsSolution', numberOfInversionsSolution)
 
         let start0Index: number = -1;
         let goal0Index: number = -1;
@@ -155,7 +152,6 @@ export class NPuzzleService {
             numberOfInversions += start0Index / chunkedBoard.length;
             numberOfInversionsSolution += goal0Index / chunkedFinal.length;
         }
-
 
         if (numberOfInversions % 2 != numberOfInversionsSolution % 2) {
             return false//throw new BadRequestException("Unsolvable puzzle");
@@ -218,9 +214,9 @@ export class NPuzzleService {
      * @param size 
      */
     generateFinalBoard(size: number): number[][] {
-        let defaultBoard = true
+        let defaultBoard = false
         let final: number[][] = []
-        if (defaultBoard === true) {
+        if (defaultBoard) {
             let len = Math.pow(size, 2)
             let finalBoard: number[] = Array(len).fill(0, 0, len).map((v, i) => (i + 1) === len ? 0 : (i + 1))
             final = _.chunk(finalBoard, size)
