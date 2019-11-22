@@ -2,27 +2,39 @@ import { Component, BadRequestException, flatten } from '@nestjs/common';
 import { ResolvePuzzleDto } from './dto/resolve-puzzle.dto';
 import * as _ from 'lodash'
 import * as moment from 'moment'
+import * as fs from 'fs'
 import { NPuzzle, TileMove } from '../_entities/n-puzzle/n-puzzle.entity'
 import { NPuzzleAlgo } from '../_entities/n-puzzle/enums/n-puzzle-algo.enum';
 import { TileMoveDirection } from 'modules/_entities/n-puzzle/enums/tile-move-direction.enum';
+import { spawn } from 'child_process'
 
 @Component()
 export class NPuzzleService {
     constructor() {
-        this.loopRun(1, 10)
+        let process = spawn('python3', ['./scripts/puzzle-resolver.py', 'Blo', 'BLu'])
+        process.stdout.on('data', (data) => { 
+            console.log(data.toString())
+            throw new BadRequestException()
+        })
+        //this.loopRun(1, 1, 0, -1)
     }
 
-    async loopRun(counter: number, limit: number) {
+    async loopRun(counter: number, limit: number, finished: number, maxDuration:number) {
+        let duration = -1
         try {
-            await this.defaultRun()
+            duration = await this.defaultRun()
         } catch (e) {
             console.log(` ===> ${e.toString()}`,)
+            counter--
         }
-
+        finished++
+        maxDuration = duration > maxDuration ? duration : maxDuration
         if(counter < limit) {
-            console.log(`\n---------------[${counter}]  --  ${moment().format('LLL')}\n`)
+            console.log(`\n---------------[${finished}]  --  ${moment().format('LLL')}\n`)
             counter++
-            await this.loopRun(counter, limit)
+            await this.loopRun(counter, limit, finished, maxDuration)
+        } else {
+            console.log(`\n ===>  FINISH : Duration max is ${maxDuration}ms for ${finished} puzzles`)
         }
     }
 
@@ -31,6 +43,7 @@ export class NPuzzleService {
         process.env.DEBUG === 'true' ? console.log(puzzle) : 0
         let solution = await this.resolvePuzzle(puzzle, NPuzzleAlgo.MANHATTAN)
         console.log(`Finish in ${solution.duration} millisecondes`)
+        return solution.duration
     }
 
     /**
@@ -42,7 +55,7 @@ export class NPuzzleService {
         let fileChecker: FileChecker = this.checkFile(puzzle)
         let finalBoard: number[][] = this.generateFinalBoard(fileChecker.size);
         console.log('Start is : \n', this.boardToString(fileChecker.board))
-        console.log('Goal is  : \n', this.boardToString(finalBoard))
+        //console.log('Goal is  : \n', this.boardToString(finalBoard))
         let isSolvable: boolean = await this.validateInversions(fileChecker.size, _.flatten(fileChecker.board), _.flatten(finalBoard))
         if (!isSolvable) {
             throw new BadRequestException('Le puzzle ne peut être résolu')
@@ -50,7 +63,6 @@ export class NPuzzleService {
         process.env.DEBUG === 'true' ? console.log(isSolvable, await this.getSolvability(fileChecker.size, _.flatten(fileChecker.board), _.flatten(finalBoard))) : 0
         //throw new BadRequestException()
         let nPuzzle = new NPuzzle()
-        let startTime = moment()
         nPuzzle.final = _.flatten(finalBoard)
         nPuzzle.origin = _.flatten(fileChecker.board)
         nPuzzle.type = type
@@ -59,6 +71,7 @@ export class NPuzzleService {
         process.env.DEBUG === 'true' ? console.log('Goal is  : \n', this.boardToString(finalBoard)) : 0
         //nPuzzle = this.solve(nPuzzle)
         //return nPuzzle
+        let startTime = moment()
         let search = new SearchUsingAStar(new State(_.flatten(nPuzzle.origin), _.flatten(nPuzzle.final)), new State(_.flatten(nPuzzle.final), _.flatten(nPuzzle.final)))
         let solution = await search.search()
         nPuzzle.nbMoves = solution.length - 1 // do not count start state
@@ -697,7 +710,7 @@ export class SearchUsingAStar {
     }
 
     isClosed(state: State, closedlist: Node[]) {
-        return closedlist.map(n => n.state.arr.toString()).indexOf(state.arr.toString()) !== -1
+        return !!closedlist.find(n => n.state.arr.toString() === state.arr.toString())
     }
 
     async search() {
@@ -709,6 +722,86 @@ export class SearchUsingAStar {
         let solved: boolean = false
         let solution: Node[] = []
 
+        let solutionRunning: number = 0
+
+        const testSolution = async (): Promise<Node[]> => {
+            let current: Node = openlist.getAndRemoveTop();
+            process.env.DEBUG === 'true' ? console.log('PARENT : \n', current.parent ? current.parent.state.createGridToPrint() : '\n') : 0
+            process.env.DEBUG === 'true' ? console.log('CURRENT [' + current.state.swip + '] : \n', current.state.createGridToPrint()) : 0
+            process.env.DEBUG === 'true' ? console.log('GOAL :\n', this.goal.createGridToPrint()) : 0
+            process.env.DEBUG === 'true' ? console.log('DEPTH : ' + current.depth) : 0
+            process.env.DEBUG === 'true' ? console.log('COST : ', current.cost, '[', openlist.minCost(), ' -> ', openlist.maxCost(), ']') : 0
+            if (this.goal.equals(current.state, this.goal)) {
+                // fill the solution.
+                let s: Node = current;
+                do {
+                    solution.unshift(s);
+                    s = s.parent;
+                } while (s != null);
+
+                let nbMove = solution.length - 1 // don't count start state
+                console.log(`Solution found.. [${closedlist.length}]\nTotal moves needed : ${nbMove}`)
+
+                return solution
+            }
+
+            let zero: number = current.state.findEmptyTileIndex();
+            let neighbours: number[] = current.state.getNeighbours(zero);
+            process.env.DEBUG === 'true' ? console.log('Voisins: ', neighbours) : 0
+
+            for (let next of neighbours) {
+                let state: State = new State(current.state, current.state.goal);
+                //console.log(`Swip tile ${next}`)
+                state.swapWithEmpty(next);
+                //SwapTiles(next, state, false);
+                process.env.DEBUG === 'true' ? console.log('Liste fermees: ', closedlist.length) : 0
+                if (!this.isClosed(state, closedlist)) {
+                    //console.log('Add to openList')
+                    let n: Node = new Node(state, current.depth + 1);
+                    n.parent = current;
+                    openlist.add(n);
+                    closedlist.push(n);
+                    //n.Print(++s_lineNum);
+                } else {
+                    //console.log('Already explored')
+                }
+                /*
+                await new Promise((resolve, reject) => {
+                    setTimeout(() => {
+                        resolve()
+                    }, 1)
+                })
+                */
+            }
+        }
+
+        const stackRun = async () => {
+                process.env.DEBUG === 'true' ? console.log('OPEN LIST RESTANTE : ', openlist.count()) : 0
+                if (solutionRunning < 8 && openlist.count() > 0 && !solution.length) {
+                    let s = await testSolution()
+                    if (!s || !s.length) {
+                        return await stackRun()
+                    }
+                    //console.log((solution || []).length)
+                    return s
+                    /*
+                    .then(solution => {
+                        if (!solution || !solution.length) {
+                            console.log('Search solution')
+                            stackRun().then(solution =>{
+                                console.log('search ended')
+                                return (solution)
+                            })
+                        }
+                        console.log((solution || []).length)
+                        return (solution)
+                    })
+                    */
+                }
+        }
+
+        solution = await stackRun()
+        /*
         process.env.DEBUG === 'true' ? console.log('OPEN LIST RESTANTE : ', openlist.count()) : 0
         while (openlist.count() > 0 && !solved) {
             let current: Node = openlist.getAndRemoveTop();
@@ -752,15 +845,14 @@ export class SearchUsingAStar {
                 } else {
                     //console.log('Already explore')
                 }
-                await new Promise(
-                    (resolve, reject) => {
-                        setTimeout(() => {
-                            resolve()
-                        }, 1)
-                    })
+                await new Promise((resolve, reject) => {
+                    setTimeout(() => {
+                        resolve()
+                    }, 1)
+                })
             }
         }
-
+        */
         return solution
     }
 
