@@ -1,4 +1,6 @@
 import sys, time, math, copy, random
+from enum import Enum     # for enum34, or the stdlib version
+
 # Takes first name and last name via command  
 # line arguments and then display them 
 debug: bool = False
@@ -17,12 +19,12 @@ class TileMoveDirection(Enum):
 
 class State:
     __emptyTileIndex: int
-    __arr: List#<int>
+    __arr: list#<int>
     __numRowsOrCols: int
-    __neighbours: Dict = dict()#Dict<int, list<int>>
+    __neighbours: dict = dict()#Dict<int, list<int>>
     __swip: int
     __moveDirection: str
-    __goal: List#<int>
+    __goal: list#<int>
 
     #def set_arr(self, arr: list<int>):
     def set_arr(self, arr: list):
@@ -56,24 +58,25 @@ class State:
 
     #def __init__(self, args, goal: list<int>):
     def __init__(self, args, goal: list):
-        if isinistance(args, int) == True:
+        if isinistance(args, int) is True:
             self.__numRowsOrCols = args
-            self.__arr = list(range(0, math.pow(self.__numRowsOrCols, 2))
+            self.__arr = list(range(0, math.pow(self.__numRowsOrCols, 2)))
             self.__emptyTileIndex = self.__arr.index(0)
-        elif isinistance(args, list) == True:
+        elif isinistance(args, list) is True:
             #debug == True ? console.log('Construct from array') : 0
             self.__numRowsOrCols = math.sqrt(len(args))
-            self.__arr = list(range(0, math.pow(self.__numRowsOrCols, 2))
+            self.__arr = list(range(0, math.pow(self.__numRowsOrCols, 2)))
             self.__emptyTileIndex = self.__arr.index(0)
         else:
             self.__numRowsOrCols = args.get_numRowsOrCols
             self.__emptyTileIndex = args.get_emptyTileIndex
-            self.__arr = list(range(0, math.pow(self.__numRowsOrCols, 2))
+            self.__arr = list(range(0, math.pow(self.__numRowsOrCols, 2)))
         self.__goal = goal
         self.createGraphForNPuzzle()
 
-    def equals(self, tileA: State, tileB: State) -> bool:
-        return listToString(tileA.get_arr()) === listToString(tileB.get_arr())
+    #def equals(self, tileA: State, tileB: State) -> bool:
+    def equals(self, tileA, tileB) -> bool:
+        return listToString(tileA.get_arr()) is listToString(tileB.get_arr())
 
     def findEmptyTileIndex(self) -> int:
         return self.__arr.index(0)
@@ -106,7 +109,8 @@ class State:
         self.__swip = num
 
     def getManhattanCost(self) -> int:
-        goal: list<int> = self.__goal
+        #goal: list<int> = self.__goal
+        goal: list = self.__goal
         cost: int = 0
 
         for index in range(0, len(self.__arr)):
@@ -134,18 +138,21 @@ class State:
         #print('cost: '+str(cost)) if debug == True else None
         return cost
 
-    def getNeighbours(id: int) -> list<int>:
+    #def getNeighbours(id: int) -> list<int>:
+    def getNeighbours(id: int) -> list:
         return self.__neighbours.get(id)
 
     def createGraphForNPuzzle(self) -> None:
         numRowsOrCols: int = self.__numRowsOrCols
-        arr: list<int> = self.__arr
+        #arr: list<int> = self.__arr
+        arr: list = self.__arr
         #print(self.createGridToPrint()) if debug == True else None
         for i in range(0, numRowsOrCols):
             for j in range(0, numRowsOrCols):
                 index: int = i * numRowsOrCols + j
                 #debug == True ? print('current index : '+str(index)+', value : '+str(arr[index])) : 0
-                li: list<int> = []
+                #li: list<int> = []
+                li: list = []
                 if i - 1 >= 0:
                     li.insert(arr[(i - 1) * numRowsOrCols + j])
                 if i + 1 < numRowsOrCols:
@@ -157,12 +164,13 @@ class State:
                 #print('current index : '+str(index)+', value '+str(arr[index])+', li: ['listToString(li)+']') if debug == True ? else None
                 self.__neighbours[index] = li
 
-    def createGridToPrint(self) {
-        arr: list<list<int>> = chunkList(self.__arr, self.__numRowsOrCols)
+    def createGridToPrint(self) -> str:
+        #arr: list<list<int>> = chunkList(self.__arr, self.__numRowsOrCols)
+        arr: list = chunkList(self.__arr, self.__numRowsOrCols)
         numLen = len(str(self.__numRowsOrCols))
         b: str = ''
         for r in arr:
-            s: str = (len(b) > 0 ? '\n' : '') + '\t'
+            s: str = ('\n' if len(b) > 0 else '') + '\t'
             for n in r:
                 ns = str(n)
                 while len(ns) < numLen:
@@ -172,23 +180,32 @@ class State:
         return b
 
 class Neighbours:
-    __edges: Dict<int, list<int>> = dict()
-    __instance: Neighbours = None;
+    #__edges: dict<int, list<int>> = dict()
+    __edges: dict = dict()
+    #__instance: Neighbours = None;
+    __instance = None;
 
-    def set_instance(self, instance: Neighbours):
+    #def set_instance(self, instance: Neighbours):
+    def set_instance(self, instance):
         self.__instance = instance
 
-    def get_instance(self) -> Neighbours:
-        return self.__instance || new Neighbours()
+    #def get_instance(self) -> Neighbours:
+    def get_instance(self):
+        neighbours = self.__instance
+        if neighbours is None:
+            neighbours = self.__class__()
+        return neighbours
 
-    def getNeighbours(self, id: int) -> list<int>:
+    #def getNeighbours(self, id: int) -> list<int>:
+    def getNeighbours(self, id: int) -> list:
         return self.__edges.get(id)
 
     def createGraphForNPuzzle(self, rowsOrCols: int) -> None:
-        for i int range(0, rowsOrCols):
+        for i in range(0, rowsOrCols):
             for j in range(0, rowsOrCols):
                 index: int = i * rowsOrCols + j
-                li: list<int> = []
+                #li: list<int> = []
+                li: list = []
                 if i - 1 >= 0:
                     li.insert((i - 1) * rowsOrCols + j)
                 if i + 1 < rowsOrCols:
@@ -203,7 +220,7 @@ class Neighbours:
 
 class Node:
     __state: State
-    __parent: Node
+    #__parent: Node
     __cost: int
     __depth: int
 
@@ -213,13 +230,15 @@ class Node:
     def get_state(self) -> State:
         return self.__state
 
-    def set_parent(self, parent: Node):
+    #def set_parent(self, parent: Node):
+    def set_parent(self, parent):
         self.__parent = parent
 
-    def get_parent(self) -> Node:
+    #def get_parent(self) -> Node:
+    def get_parent(self):
         return self.__parent
 
-    def set_cost(self, cost: number):
+    def set_cost(self, cost: int):
         self.__cost = cost
 
     def get_cost(self) -> int:
@@ -231,16 +250,19 @@ class Node:
     def get_depth(self) -> int:
         return self.__depth
 
-    def __init__(self, state: State, depth: int = 0, parent: Node = None):
+    #def __init__(self, state: State, depth: int = 0, parent: Node = None):
+    def __init__(self, state: State, depth: int = 0, parent = None):
         self.__state = state
         self.__cost = self.__state.getManhattanCost() + depth
         self.__parent = parent
         self.__depth = depth
 
-    def isSuperior(self, n1: Node, n2: Node) -> bool:
+    #def isSuperior(self, n1: Node, n2: Node) -> bool:
+    def isSuperior(self, n1, n2) -> bool:
         return n1.get_cost() > n2.get_cost()
 
-    def isInferior(self, n1: Node, n2: Node) -> bool:
+    #def isInferior(self, n1: Node, n2: Node) -> bool:
+    def isInferior(self, n1, n2) -> bool:
         return n1.get_cost() < n2.get_cost()
 
     def print(self, lineNum: int) -> None:
@@ -253,7 +275,8 @@ class Node:
         print(string) if debug == True else None
 
 class PriorityQueue:
-    __nodes: Dict<list, Node[]> = dict()
+    #__nodes: dict<list, Node[]> = dict()
+    __nodes: dict = dict()
 
     def count(self) -> int:
         count: int = 0
@@ -308,21 +331,25 @@ class SearchUsingAStar:
     def __init__(start: State, goal: State):
         self.start = start
         self.goal = goal
-        self.root = new Node(start, 0, null)
+        self.root = Node(start, 0, null)
 
-    def isClosed(self, state: State, closedlist: list<Node>):
+    #def isClosed(self, state: State, closedlist: list<Node>):
+    def isClosed(self, state: State, closedlist: list):
         stateList = listToString(state.arr)
         return next(filter(lambda v: listToString(v.state.arr) == stateList, closedList), None) is not None
 
     #async
     def search(self):
-        openlist: PriorityQueue = new PriorityQueue()
-        closedlist: list<Node> = []
+        openlist: PriorityQueue = PriorityQueue()
+        #closedlist: list = []
+        #closedlist: list<Node> = []
+        closedlist: list = []
         openlist.add(self.root)
         closedlist.push(self.root)
 
         solved: bool = False
-        solution: list<Node> = []
+        #solution: list<Node> = []
+        solution: list = []
         
         #debug === True ? console.log('OPEN LIST RESTANTE : ', openlist.count()) : 0
         while (openlist.count() > 0) and (solved is not True):
@@ -345,19 +372,20 @@ class SearchUsingAStar:
                 break
 
             zero: int = current.state.findEmptyTileIndex()
-            neighbours: list<int> = current.state.getNeighbours(zero)
+            #neighbours: list<int> = current.state.getNeighbours(zero)
+            neighbours: list = current.state.getNeighbours(zero)
             #print('Voisins: '+listToString(neighbours)) if debug === True ? else None
 
             for i in range(0, len(neighbours)) :
                 next = neighbours[i]
-                state: State = new State(current.state, current.state.goal)
+                state: State = State(current.state, current.state.goal)
                 # print('Swip tile '+str(next))
                 state.swapWithEmpty(next)
                 #SwapTiles(next, state, false);
-                print('Liste fermees: '+str(len(closedlist))) if debug === True else None
+                print('Liste fermees: '+str(len(closedlist))) if debug is True else None
                 if self.isClosed(state, closedlist) is False:
                     #print('Add to openList')
-                    n: Node = new Node(state, current.depth + 1)
+                    n: Node = neNode(state, current.depth + 1)
                     n.parent = current
                     openlist.add(n)
                     closedlist.append(n)
