@@ -11,12 +11,7 @@ import { spawn } from 'child_process'
 @Component()
 export class NPuzzleService {
     constructor() {
-        let process = spawn('python3', ['./scripts/puzzle-resolver.py', 'Blo', 'BLu'])
-        process.stdout.on('data', (data) => { 
-            console.log(data.toString())
-            throw new BadRequestException()
-        })
-        //this.loopRun(1, 1, 0, -1)
+        this.loopRun(1, 1, 0, -1)
     }
 
     async loopRun(counter: number, limit: number, finished: number, maxDuration:number) {
@@ -39,7 +34,7 @@ export class NPuzzleService {
     }
 
     async defaultRun() {
-        let puzzle = await this.generateRandomBoard(3)//'3\n7 8 2\n0 4 6\n3 5 1'//
+        let puzzle = '3\n2, 5, 7\n 0, 3, 4\n 6, 1, 8'//await this.generateRandomBoard(3)//'3\n7 8 2\n0 4 6\n3 5 1'//
         process.env.DEBUG === 'true' ? console.log(puzzle) : 0
         let solution = await this.resolvePuzzle(puzzle, NPuzzleAlgo.MANHATTAN)
         console.log(`Finish in ${solution.duration} millisecondes`)
@@ -72,6 +67,13 @@ export class NPuzzleService {
         //nPuzzle = this.solve(nPuzzle)
         //return nPuzzle
         let startTime = moment()
+        /*
+        let py = spawn('python3', ['./scripts/puzzle-resolver.py', _.flatten(nPuzzle.origin), _.flatten(nPuzzle.final)])
+        py.stdout.on('data', (data) => { 
+            console.log(data.toString())
+            throw new BadRequestException()
+        })
+        */
         let search = new SearchUsingAStar(new State(_.flatten(nPuzzle.origin), _.flatten(nPuzzle.final)), new State(_.flatten(nPuzzle.final), _.flatten(nPuzzle.final)))
         let solution = await search.search()
         nPuzzle.nbMoves = solution.length - 1 // do not count start state
@@ -496,7 +498,6 @@ export class State {
         let numRowsOrCols: number = this.numRowsOrCols
         let arr: number[] = this.arr
 
-
         //process.env.DEBUG === 'true' ? console.log(this.createGridToPrint()) : 0
 
         for (let i = 0; i < numRowsOrCols; i++) {
@@ -738,7 +739,14 @@ export class SearchUsingAStar {
                     solution.unshift(s);
                     s = s.parent;
                 } while (s != null);
-
+                let us = solution.map(uss => {
+                    return {
+                        cost: uss.cost,
+                        depth: uss.depth,
+                        board: uss.state.arr
+                    }
+                })
+                console.log(JSON.stringify(us))
                 let nbMove = solution.length - 1 // don't count start state
                 console.log(`Solution found.. [${closedlist.length}]\nTotal moves needed : ${nbMove}`)
 
