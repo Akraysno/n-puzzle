@@ -26,6 +26,24 @@ class State:
     __moveDirection: str
     __goal: list#<int>
 
+    #def __init__(self, args, goal: list<int>):
+    def __init__(self, args, goal: list):
+        if isinstance(args, int) is True:
+            self.__numRowsOrCols = args
+            self.__arr = list(range(0, math.pow(self.__numRowsOrCols, 2)))
+            self.__emptyTileIndex = self.__arr.index(0)
+        elif isinstance(args, list) is True:
+            #debug == True ? console.log('Construct from array') : 0
+            self.__numRowsOrCols = int(math.sqrt(len(args)))
+            self.__arr = list(range(0, int(math.pow(self.__numRowsOrCols, 2))))
+            self.__emptyTileIndex = self.__arr.index(0)
+        else:
+            self.__numRowsOrCols = args.get_numRowsOrCols
+            self.__emptyTileIndex = args.get_emptyTileIndex
+            self.__arr = list(range(0, math.pow(self.__numRowsOrCols, 2)))
+        self.__goal = goal
+        self.createGraphForNPuzzle()
+
     #def set_arr(self, arr: list<int>):
     def set_arr(self, arr: list):
         self.__arr = arr
@@ -55,24 +73,6 @@ class State:
 
     def get_emptyTileIndex(self) -> int:
         return self.__emptyTileIndex
-
-    #def __init__(self, args, goal: list<int>):
-    def __init__(self, args, goal: list):
-        if isinistance(args, int) is True:
-            self.__numRowsOrCols = args
-            self.__arr = list(range(0, math.pow(self.__numRowsOrCols, 2)))
-            self.__emptyTileIndex = self.__arr.index(0)
-        elif isinistance(args, list) is True:
-            #debug == True ? console.log('Construct from array') : 0
-            self.__numRowsOrCols = math.sqrt(len(args))
-            self.__arr = list(range(0, math.pow(self.__numRowsOrCols, 2)))
-            self.__emptyTileIndex = self.__arr.index(0)
-        else:
-            self.__numRowsOrCols = args.get_numRowsOrCols
-            self.__emptyTileIndex = args.get_emptyTileIndex
-            self.__arr = list(range(0, math.pow(self.__numRowsOrCols, 2)))
-        self.__goal = goal
-        self.createGraphForNPuzzle()
 
     #def equals(self, tileA: State, tileB: State) -> bool:
     def equals(self, tileA, tileB) -> bool:
@@ -120,7 +120,7 @@ class State:
             
             goalIndex: int = -1
             try:
-                goalIndex = goal.indexOf(num)
+                goalIndex = goal.index(num)
             except ValueError:
                 continue
 
@@ -154,13 +154,13 @@ class State:
                 #li: list<int> = []
                 li: list = []
                 if i - 1 >= 0:
-                    li.insert(arr[(i - 1) * numRowsOrCols + j])
+                    li.append(arr[(i - 1) * numRowsOrCols + j])
                 if i + 1 < numRowsOrCols:
-                    li.insert(arr[(i + 1) * numRowsOrCols + j])
+                    li.append(arr[(i + 1) * numRowsOrCols + j])
                 if j - 1 >= 0:
-                    li.insert(arr[i * numRowsOrCols + (j - 1)])
+                    li.append(arr[i * numRowsOrCols + (j - 1)])
                 if j + 1 < numRowsOrCols:
-                    li.insert(arr[i * numRowsOrCols + (j + 1)])
+                    li.append(arr[i * numRowsOrCols + (j + 1)])
                 #print('current index : '+str(index)+', value '+str(arr[index])+', li: ['listToString(li)+']') if debug == True ? else None
                 self.__neighbours[index] = li
 
@@ -328,10 +328,10 @@ class SearchUsingAStar:
     start: State
     goal: State
 
-    def __init__(start: State, goal: State):
+    def __init__(self, start: State, goal: State):
         self.start = start
         self.goal = goal
-        self.root = Node(start, 0, null)
+        self.root = Node(start, 0, None)
 
     #def isClosed(self, state: State, closedlist: list<Node>):
     def isClosed(self, state: State, closedlist: list):
@@ -402,5 +402,10 @@ class SearchUsingAStar:
 
 if __name__ == "__main__":
     print("Output from Python") 
-    print("First name: " + sys.argv[1]) 
-    print("Last name: " + sys.argv[2]) 
+    origin = ['2', '5', '7', '0', '3', '4', '6', '1', '8']#sys.argv[1].split(',')
+    final = ['1', '2', '3', '8', '0', '4', '7', '6', '5']#sys.argv[2].split(',')
+    print("Oirgin : ") 
+    print(origin)
+    print("Final : ") 
+    print(final)
+    res = SearchUsingAStar( State(origin, final) , State(final, final) )
