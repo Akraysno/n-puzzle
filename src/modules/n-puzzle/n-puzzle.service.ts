@@ -11,7 +11,7 @@ import { spawn } from 'child_process'
 @Component()
 export class NPuzzleService {
     constructor() {
-        this.loopRun(1, 1, 0, -1)
+        setTimeout(() => this.loopRun(1, 10, 0, -1), 5000)
     }
 
     async loopRun(counter: number, limit: number, finished: number, maxDuration:number) {
@@ -19,13 +19,13 @@ export class NPuzzleService {
         try {
             duration = await this.defaultRun()
         } catch (e) {
-            console.log(` ===> ${e.toString()}`,)
+            console.log(` ===> ${e.message ? e.message.message || e.toString() : e.toString()}`,)
             counter--
         }
         finished++
         maxDuration = duration > maxDuration ? duration : maxDuration
         if(counter < limit) {
-            console.log(`\n---------------[${finished}]  --  ${moment().format('LLL')}\n`)
+            console.log(`\n${counter}---------------[${finished}]  --  ${moment().format('LLL')}\n`)
             counter++
             await this.loopRun(counter, limit, finished, maxDuration)
         } else {
@@ -34,9 +34,10 @@ export class NPuzzleService {
     }
 
     async defaultRun() {
-        let puzzle = '3\n2, 5, 7\n 0, 3, 4\n 6, 1, 8'//await this.generateRandomBoard(3)//'3\n7 8 2\n0 4 6\n3 5 1'//
+        let puzzle = await this.generateRandomBoard(3)//'3\n7 8 2\n0 4 6\n3 5 1'//'3\n2, 5, 7\n 0, 3, 4\n 6, 1, 8'//
         process.env.DEBUG === 'true' ? console.log(puzzle) : 0
         let solution = await this.resolvePuzzle(puzzle, NPuzzleAlgo.MANHATTAN)
+        return 0
         console.log(`Finish in ${solution.duration} millisecondes`)
         return solution.duration
     }
@@ -67,19 +68,22 @@ export class NPuzzleService {
         //nPuzzle = this.solve(nPuzzle)
         //return nPuzzle
         let startTime = moment()
-        /*
-        let py = spawn('python3', ['./scripts/puzzle-resolver.py', _.flatten(nPuzzle.origin), _.flatten(nPuzzle.final)])
-        py.stdout.on('data', (data) => { 
-            console.log(data.toString())
-            throw new BadRequestException()
-        })
-        */
-        let search = new SearchUsingAStar(new State(_.flatten(nPuzzle.origin), _.flatten(nPuzzle.final)), new State(_.flatten(nPuzzle.final), _.flatten(nPuzzle.final)))
-        let solution = await search.search()
-        nPuzzle.nbMoves = solution.length - 1 // do not count start state
-        nPuzzle.operations = solution.map(s => new TileMove(s.state.swip, s.state.moveDirection))
-        nPuzzle.duration = moment().diff(startTime)
-        return nPuzzle
+        let python = true
+        if (python) {
+            let py = spawn('python3', ['./scripts/puzzle-resolver.py', _.flatten(nPuzzle.origin), _.flatten(nPuzzle.final)])
+            py.stdout.on('data', (data) => { 
+                console.log('DATAAAAAAAAAA--------------------------------------------------------', _.flatten(nPuzzle.origin))
+                console.log(data.toString())
+                return 
+            })
+        } else {
+            let search = new SearchUsingAStar(new State(_.flatten(nPuzzle.origin), _.flatten(nPuzzle.final)), new State(_.flatten(nPuzzle.final), _.flatten(nPuzzle.final)))
+            let solution = await search.search()
+            nPuzzle.nbMoves = solution.length - 1 // do not count start state
+            nPuzzle.operations = solution.map(s => new TileMove(s.state.swip, s.state.moveDirection))
+            nPuzzle.duration = moment().diff(startTime)
+            return nPuzzle
+        }
     }
 
     /**

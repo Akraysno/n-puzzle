@@ -1,9 +1,11 @@
-import sys, time, math, copy, random
+import sys, time, math, copy, random, json
 from enum import Enum     # for enum34, or the stdlib version
+from threading import Thread
+from queue import PriorityQueue
 
 # Takes first name and last name via command  
 # line arguments and then display them 
-debug: bool = True
+debug: bool = False
 
 def listToString(arr: list):
     return ','.join([str(val) for val in arr])
@@ -12,10 +14,10 @@ def chunkList(arr: list, size: int):
     return [arr[i:i + size] for i in range(0, len(arr), size)]
   
 class TileMoveDirection(Enum):
-    TOP = 'TOP',
-    RIGHT = 'RIGHT',
-    BOTTOM = 'BOTTOM',
-    LEFT = 'LEFT',
+    TOP = 'TOP'
+    RIGHT = 'RIGHT'
+    BOTTOM = 'BOTTOM'
+    LEFT = 'LEFT'
 
 class State:
     __emptyTileIndex: int
@@ -23,7 +25,7 @@ class State:
     __numRowsOrCols: int
     __neighbours: dict = dict()#Dict<int, list<int>>
     __swip: int = None
-    __moveDirection: str
+    __moveDirection: str = None
     __goal: list#<int>
 
     #def __init__(self, args, goal: list<int>):
@@ -43,6 +45,18 @@ class State:
             self.__arr = [val for val in args.get_arr()]#list(range(0, int(math.pow(self.__numRowsOrCols, 2))))
         self.__goal = goal
         #self.createGraphForNPuzzle()
+
+    def __repr__(self):
+        return self.toJSON()
+
+    def toJSON(self):
+        string = '{'
+        string += '"moveDirection":"'+ (self.__moveDirection if self.__moveDirection is not None else '')+'"'
+        if (self.__swip) and (self.__swip >= 0):
+            string += ',"swip":'+ str(self.__swip)
+        string += ',"arr":'+str(self.get_arr())
+        string += '}'
+        return string
 
     #def set_arr(self, arr: list<int>):
     def set_arr(self, arr: list):
@@ -154,7 +168,7 @@ class State:
         if j + 1 < self.__numRowsOrCols:
             li.append(self.__arr[i * self.__numRowsOrCols + (j + 1)])
         #print('current index : '+str(index)+', value '+str(self.__arr[index])+', li: ['listToString(li)+']') if debug == True ? else None
-        print('\n'+str(index)+'  --  '+str(li))
+        print('\n'+str(index)+'  --  '+str(li)) if debug is True else None
         return li
 
     def createGraphForNPuzzle(self) -> None:
@@ -246,13 +260,22 @@ class Node:
     __depth: int
 
     def __repr__(self):
+        return self.toJSON()
         repr = ''
-        repr += '{'
-        repr += '\tcost: '+str(self.__cost)+','
-        repr += '\tdepth: '+str(self.__depth)+','
-        repr += '\tboard: '+str(self.__state.get_arr())
+        repr += '{\n'
+        repr += '\tcost: '+str(self.__cost)+',\n'
+        repr += '\tdepth: '+str(self.__depth)+',\n'
+        repr += '\tboard: '+str(self.__state.get_arr())+'\n'
         repr += '}'
         return repr
+
+    def toJSON(self):
+        string = '{'
+        string += '"state":'+self.__state.toJSON()
+        string += ',"cost":'+str(self.__cost)
+        string += ',"depth":'+str(self.__depth)
+        string += '}'
+        return string
 
     def set_state(self, state: State):
         self.__state = state
@@ -304,60 +327,60 @@ class Node:
         string += ' | D: '+self.depth+', MD: '+self.cost+' }'
         print(string) if debug == True else None
 
+class QueueItem(object):
+    def __init__(self, priority, item):
+        self.priority = priority
+        self.item = item
+
+    def __cmp__(self, other):
+        return cmp(self.priority, other.priority)
+
+    def __lt__(self, other):
+        return self.priority < other.priority
+
+    def __le__(self, other):
+        return self.priority <= other.priority
+
+    def __eq__(self, other):
+        return self.priority is other.priority
+
+    def __ne__(self, other):
+        return self.priority is not other.priority
+
+    def __ge__(self, other):
+        return self.priority > other.priority
+
+    def __gt__(self, other):
+        return self.priority >= other.priority
+
 class PriorityQueue:
-    #__nodes: dict<list, Node[]> = dict()
-    __nodes: dict = dict()
+    queue: PriorityQueue = PriorityQueue()
 
     def count(self) -> int:
-        count: int = 0
-        for key, nodes in self.__nodes.items():
-            count += len(nodes)
-        return count
+        return self.queue.qsize()
 
     def maxCost(self) -> int:
-        max: int = -1
-        for key, nodes in self.__nodes.items():
-            max = key if (key > max) or (max is -1) else max
-        return max
+        return -1
 
     def minCost(self) -> int:
-        min: int = -1
-        for key, nodes in self.__nodes.items():
-            min = key if (key < min) or (min is -1) else min
-        return min
+        return -1
 
     def add(self, n: Node) -> None:
-        key = n.get_cost()
-        pack = self.__nodes.get(key)
-        if pack is None:
-            pack = []
-        pack.append(n)
-        self.__nodes[key] = pack
+        self.queue.put(QueueItem(n.get_cost(), n))
 
     def getAndRemoveTop(self) -> Node:
-        key = self.minCost()
-        pack = self.__nodes.get(key)
-        self.count()
-        node = pack.pop(0)
-        self.__nodes[key] = pack
-        if len(pack) is 0:
-            del self.__nodes[key]
-
-        """
-        bestIndex: int = 0
-        bestPriority: int = self._nodes[0].get_cost()
-        for i in range(0, self.count()):
-            if bestPriority > self.__nodes[i].get_cost():
-                bestPriority = self.__nodes[i].get_cost()
-                bestIndex = i
-        """
-
-        return node
+        item = self.queue.get()
+        return item.item
 
 class SearchUsingAStar:
     root: Node
     start: State
     goal: State
+    solution: list = []
+    solved: bool = False
+    openlist: PriorityQueue = PriorityQueue()
+    closedlist: list = []
+    threadCount = 0
 
     def __init__(self, start: State, goal: State):
         self.start = start
@@ -371,135 +394,90 @@ class SearchUsingAStar:
         stateList = listToString(state.get_arr())
         return next(filter(lambda v: listToString(v.get_state().get_arr()) == stateList, closedlist), None) is not None
 
+    def searchThread(self):
+        print('OPEN LIST RESTANTE : '+str(self.openlist.count())) if debug is True else None
+        while (self.openlist.count() > 0) and (self.solved is not True):
+            current: Node = self.openlist.getAndRemoveTop()
+            #print(current)
+            print('PARENT : \n'+ (current.get_parent().get_state().createGridToPrint() if current.get_parent() is not None else '\n')) if debug is True else None
+            print('CURRENT ['+str(current.get_state().get_swip())+'] : \n'+current.get_state().createGridToPrint()) if debug is True else None
+            print('GOAL :\n'+self.goal.createGridToPrint()) if debug is True else None
+            print('DEPTH : '+str(current.get_depth())) if debug is True else None
+            print('COST : '+str(current.get_cost())+' ['+str(self.openlist.minCost())+' -> '+str(self.openlist.maxCost())+']') if debug is True else None
+
+            if self.goal.equals(current.get_state(), self.goal) is True:
+                s: Node = current
+                solution: list = []
+                while s is not None:
+                    print('Deeper...') if debug is True else None
+                    solution.insert(0, s)
+                    s = s.get_parent()
+                nbMove = len(solution) - 1 # don't count start state
+
+                print('Solution found.. ['+str(len(self.closedlist))+']\nTotal moves needed : '+str(nbMove)) if debug is True else None
+                self.solution = solution
+                self.solved = True
+                break
+
+            zero: int = current.get_state().findEmptyTileIndex()
+            neighbours: list = current.get_state().getNeighboursForIndex(zero)
+            print(neighbours) if debug is True else None
+            print('Voisins: '+listToString(neighbours)) if debug is True else None
+
+            for i in range(0, len(neighbours)) :
+                next = neighbours[i]
+                state: State = State(current.get_state(), current.get_state().get_goal())
+                state.swapWithEmpty(next)
+                print('Liste fermees: '+str(len(self.closedlist))) if debug is True else None
+                print('Liste Ouvertes: '+str(self.openlist.count())) if debug is True else None
+                if self.isClosed(state, self.closedlist) is False:
+                    n: Node = Node(state, current.get_depth() + 1)
+                    n.set_parent(current)
+                    self.openlist.add(n)
+                    self.closedlist.append(n)
+                #else:
+                    #print('Already explored')
+        self.openlist.queue.task_done()
+
     #async
     def search(self):
         global debug
-        openlist: PriorityQueue = PriorityQueue()
         #closedlist: list = []
         #closedlist: list<Node> = []
-        closedlist: list = []
-        openlist.add(self.root)
-        closedlist.append(self.root)
+        self.openlist.add(self.root)
+        self.closedlist.append(self.root)
+        # number of worker threads to complete the processing
+        num_worker_threads = 8
 
         solved: bool = False
         #solution: list<Node> = []
         solution: list = []
 
-        print('OPEN LIST RESTANTE : '+str(openlist.count())) if debug is True else None
-        while (openlist.count() > 0) and (solved is not True):
-            current: Node = openlist.getAndRemoveTop()
-            print('PARENT : \n'+ (current.get_parent().get_state().createGridToPrint() if current.get_parent() is not None else '\n')) if debug is True else None
-            print('CURRENT ['+str(current.get_state().get_swip())+'] : \n'+current.get_state().createGridToPrint()) if debug is True else None
-            print('GOAL :\n'+self.goal.createGridToPrint()) if debug is True else None
-            print('DEPTH : '+str(current.get_depth())) if debug is True else None
-            print('COST : '+str(current.get_cost())+' ['+str(openlist.minCost())+' -> '+str(openlist.maxCost())+']') if debug is True else None
-
-            if self.goal.equals(current.get_state(), self.goal) is True:
-                # fill the solution.
-                solved = True
-                s: Node = current
-                while s is not None:
-                    print('Deeper...')
-                    solution.insert(0, s)
-                    s = s.get_parent()
-                nbMove = len(solution) - 1 # don't count start state
-                print('Solution found.. ['+str(len(closedlist))+']\nTotal moves needed : '+str(nbMove))
-                break
-
-            zero: int = current.get_state().findEmptyTileIndex()
-            #neighbours: list<int> = current.get_state().getNeighbours(zero)
-            print('Zero ' + str(zero))
-            neighbours: list = current.get_state().getNeighboursForIndex(zero)
-            print(neighbours)
-            #print('Voisins: '+listToString(neighbours)) if debug === True ? else None
-
-            for i in range(0, len(neighbours)) :
-                next = neighbours[i]
-                state: State = State(current.get_state(), current.get_state().get_goal())
-                # print('Swip tile '+str(next))
-                state.swapWithEmpty(next)
-                #SwapTiles(next, state, false);
-                print('Liste fermees: '+str(len(closedlist))) if debug is True else None
-                print('Liste Ouvertes: '+str(openlist.count())) if debug is True else None
-                if self.isClosed(state, closedlist) is False:
-                    #print('Add to openList')
-                    n: Node = Node(state, current.get_depth() + 1)
-                    n.set_parent(current)
-                    openlist.add(n)
-                    closedlist.append(n)
-                #else:
-                    #print('Already explored')
-                #time.sleep(1)
-        return solution
+        threds = []
+        for i in range(num_worker_threads):
+            t = Thread(target=self.searchThread)
+            t.daemon = True
+            t.start()
+            threds.append(t)
+        threds[0].join()
+        #for i in range(len(threds)):
+        #    threds[i].join()
+        #self.openlist.queue.join()
 
 if __name__ == "__main__":
     start = int(round(time.time() * 1000))
-    print("Output from Python") 
-    origin = [2, 5, 7, 0, 3, 4, 6, 1, 8]#[int(val) for val in sys.argv[1].split(',')]
-    final = [1, 2, 3, 8, 0, 4, 7, 6, 5]#[int(val) for val in sys.argv[2].split(',')]
-    print("Oirgin : ") 
-    print(origin)
-    print("Final : ") 
-    print(final)
+    print("Output from Python")  if debug is True else None
+    origin = [int(val) for val in sys.argv[1].split(',')]#[2, 5, 7, 0, 3, 4, 6, 1, 8]#
+    final = [int(val) for val in sys.argv[2].split(',')]#[1, 2, 3, 8, 0, 4, 7, 6, 5]#
+    print("Oirgin : ")  if debug is True else None
+    print(origin) if debug is True else None
+    print("Final : ")  if debug is True else None
+    print(final) if debug is True else None
     search = SearchUsingAStar( State(origin, final) , State(final, final) )
-    res = search.search()
+    #res = search.search()
+    search.search()
+    print('--------------------') if debug is True else None
+    res = search.solution
     print(res)
     end = int(round(time.time() * 1000))
-    print('Finish in '+str(end - start)+' millisecondes')
-
-
-[
-    {   cost: 17,   depth: 0,   board: [2, 5, 7, 0, 3, 4, 6, 1, 8]}, 
-    {   cost: 19,   depth: 1,   board: [2, 5, 7, 3, 0, 4, 6, 1, 8]}, 
-    {   cost: 19,   depth: 2,   board: [2, 0, 7, 3, 5, 4, 6, 1, 8]}, 
-    {   cost: 19,   depth: 3,   board: [2, 7, 0, 3, 5, 4, 6, 1, 8]}, 
-    {   cost: 21,   depth: 4,   board: [2, 7, 4, 3, 5, 0, 6, 1, 8]}, 
-    {   cost: 21,   depth: 5,   board: [2, 7, 4, 3, 0, 5, 6, 1, 8]}, 
-    {   cost: 21,   depth: 6,   board: [2, 7, 4, 0, 3, 5, 6, 1, 8]}, 
-    {   cost: 23,   depth: 7,   board: [0, 7, 4, 2, 3, 5, 6, 1, 8]}, 
-    {   cost: 23,   depth: 8,   board: [7, 0, 4, 2, 3, 5, 6, 1, 8]}, 
-    {   cost: 23,   depth: 9,   board: [7, 3, 4, 2, 0, 5, 6, 1, 8]}, 
-    {   cost: 23,   depth: 10,  board: [7, 3, 4, 2, 1, 5, 6, 0, 8]}, 
-    {   cost: 23,   depth: 11,  board: [7, 3, 4, 2, 1, 5, 6, 8, 0]}, 
-    {   cost: 23,   depth: 12,  board: [7, 3, 4, 2, 1, 0, 6, 8, 5]}, 
-    {   cost: 23,   depth: 13,  board: [7, 3, 0, 2, 1, 4, 6, 8, 5]}, 
-    {   cost: 23,   depth: 14,  board: [7, 0, 3, 2, 1, 4, 6, 8, 5]}, 
-    {   cost: 23,   depth: 15,  board: [7, 1, 3, 2, 0, 4, 6, 8, 5]}, 
-    {   cost: 23,   depth: 16,  board: [7, 1, 3, 0, 2, 4, 6, 8, 5]}, 
-    {   cost: 23,   depth: 17,  board: [0, 1, 3, 7, 2, 4, 6, 8, 5]}, 
-    {   cost: 23,   depth: 18,  board: [1, 0, 3, 7, 2, 4, 6, 8, 5]}, 
-    {   cost: 23,   depth: 19,  board: [1, 2, 3, 7, 0, 4, 6, 8, 5]}, 
-    {   cost: 23,   depth: 20,  board: [1, 2, 3, 7, 8, 4, 6, 0, 5]}, 
-    {   cost: 23,   depth: 21,  board: [1, 2, 3, 7, 8, 4, 0, 6, 5]}, 
-    {   cost: 23,   depth: 22,  board: [1, 2, 3, 0, 8, 4, 7, 6, 5]},
-    {   cost: 23,   depth: 23,  board: [1, 2, 3, 8, 0, 4, 7, 6, 5]}
-]
-
-[
-    {"cost":17,"depth":0,"board":[2,5,7,0,3,4,6,1,8]},
-    {"cost":19,"depth":1,"board":[2,5,7,6,3,4,0,1,8]},
-    {"cost":19,"depth":2,"board":[2,5,7,6,3,4,1,0,8]},
-    {"cost":19,"depth":3,"board":[2,5,7,6,3,4,1,8,0]},
-    {"cost":21,"depth":4,"board":[2,5,7,6,3,0,1,8,4]},
-    {"cost":21,"depth":5,"board":[2,5,0,6,3,7,1,8,4]},
-    {"cost":21,"depth":6,"board":[2,0,5,6,3,7,1,8,4]},
-    {"cost":21,"depth":7,"board":[2,3,5,6,0,7,1,8,4]},
-    {"cost":21,"depth":8,"board":[2,3,5,0,6,7,1,8,4]},
-    {"cost":21,"depth":9,"board":[2,3,5,1,6,7,0,8,4]},
-    {"cost":21,"depth":10,"board":[2,3,5,1,6,7,8,0,4]},
-    {"cost":23,"depth":11,"board":[2,3,5,1,6,7,8,4,0]},
-    {"cost":23,"depth":12,"board":[2,3,5,1,6,0,8,4,7]},
-    {"cost":23,"depth":13,"board":[2,3,0,1,6,5,8,4,7]},
-    {"cost":23,"depth":14,"board":[2,0,3,1,6,5,8,4,7]},
-    {"cost":23,"depth":15,"board":[0,2,3,1,6,5,8,4,7]},
-    {"cost":23,"depth":16,"board":[1,2,3,0,6,5,8,4,7]},
-    {"cost":25,"depth":17,"board":[1,2,3,6,0,5,8,4,7]},
-    {"cost":25,"depth":18,"board":[1,2,3,6,4,5,8,0,7]},
-    {"cost":25,"depth":19,"board":[1,2,3,6,4,5,8,7,0]},
-    {"cost":25,"depth":20,"board":[1,2,3,6,4,0,8,7,5]},
-    {"cost":25,"depth":21,"board":[1,2,3,6,0,4,8,7,5]},
-    {"cost":25,"depth":22,"board":[1,2,3,0,6,4,8,7,5]},
-    {"cost":25,"depth":23,"board":[1,2,3,8,6,4,0,7,5]},
-    {"cost":25,"depth":24,"board":[1,2,3,8,6,4,7,0,5]},
-    {"cost":25,"depth":25,"board":[1,2,3,8,0,4,7,6,5]}
-]
+    print('Finish in '+str(end - start)+' millisecondes') if debug is True else None
