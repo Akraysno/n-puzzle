@@ -3,9 +3,9 @@ import { ResolvePuzzleDto } from './dto/resolve-puzzle.dto';
 import * as _ from 'lodash'
 import * as moment from 'moment'
 import * as fs from 'fs'
-import { NPuzzle, TileMove } from '../_entities/n-puzzle/n-puzzle.entity'
-import { NPuzzleAlgo } from '../_entities/n-puzzle/enums/n-puzzle-algo.enum';
-import { TileMoveDirection } from 'modules/_entities/n-puzzle/enums/tile-move-direction.enum';
+import { NPuzzle, TileMove } from '../../../../entities/n-puzzle/n-puzzle.entity'
+import { NPuzzleAlgo } from '../../../../entities/n-puzzle/enums/n-puzzle-algo.enum';
+import { TileMoveDirection } from '../../../../entities/n-puzzle/enums/tile-move-direction.enum';
 import { spawn } from 'child_process'
 
 const USE_PYTHON = false
