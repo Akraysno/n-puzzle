@@ -12,6 +12,7 @@ export class NPuzzle {
     operations: TileMove[];
     nbMoves: number;
     duration: number;
+    solvable: boolean;
 }
 
 export class TileMove {

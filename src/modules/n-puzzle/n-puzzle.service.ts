@@ -1,4 +1,4 @@
-import { Component, BadRequestException, flatten } from '@nestjs/common';
+import { Injectable, BadRequestException, flatten } from '@nestjs/common';
 import { ResolvePuzzleDto } from './dto/resolve-puzzle.dto';
 import * as _ from 'lodash'
 import * as moment from 'moment'
@@ -8,28 +8,68 @@ import { NPuzzleAlgo } from '../_entities/n-puzzle/enums/n-puzzle-algo.enum';
 import { TileMoveDirection } from 'modules/_entities/n-puzzle/enums/tile-move-direction.enum';
 import { spawn } from 'child_process'
 
-@Component()
+const USE_PYTHON = false
+
+class ResolveStats {
+    unsolvable: number = 0
+    solved: number = 0
+    tooManyTime: NPuzzle[] = []
+    lessThanOne: number = 0
+    rightTime: number = 0
+    finished: number = 0
+    totalDuration: number = 0
+    maxDuration: number = 0
+}
+
+@Injectable()
 export class NPuzzleService {
     constructor() {
-        setTimeout(() => this.loopRun(1, 10, 0, -1), 5000)
+        moment().locale('fr')
+        setTimeout(() => this.loopRun(1, 100000, new ResolveStats()), 5000)
     }
 
-    async loopRun(counter: number, limit: number, finished: number, maxDuration:number) {
+    async loopRun(counter: number, limit: number, stats: ResolveStats) {
+        if (!stats) stats = new ResolveStats()
         let duration = -1
+        console.log('counter Start', counter)
         try {
-            duration = await this.defaultRun()
+            let solution = await this.defaultRun()
+            duration = solution.duration
+            if (!solution.solvable) {
+                stats.unsolvable += 1
+                counter--
+            } else {
+                if (duration >= 10000) {
+                    stats.tooManyTime.push(solution)
+                } else {
+                    stats.rightTime += 1
+                    if (duration <= 1000) {
+                        stats.lessThanOne += 1
+                    }
+                }
+                stats.totalDuration += duration
+                stats.solved += 1
+            }
         } catch (e) {
             console.log(` ===> ${e.message ? e.message.message || e.toString() : e.toString()}`,)
             counter--
         }
-        finished++
-        maxDuration = duration > maxDuration ? duration : maxDuration
+        stats.finished++
+        stats.maxDuration = duration > stats.maxDuration ? duration : stats.maxDuration
         if(counter < limit) {
-            console.log(`\n${counter}---------------[${finished}]  --  ${moment().format('LLL')}\n`)
+            console.log(`\n${counter}---------------[${stats.finished}]  --  ${moment().format('LLL')}\n`)
             counter++
-            await this.loopRun(counter, limit, finished, maxDuration)
+            await this.loopRun(counter, limit, stats)
         } else {
-            console.log(`\n ===>  FINISH : Duration max is ${maxDuration}ms for ${finished} puzzles`)
+            console.log(`\n ===>  FINISH :   Duration max is ${stats.maxDuration}ms for ${stats.finished} puzzles`)
+            console.log(`\n              ->  ${stats.solved} solved in ${stats.totalDuration}ms`)
+            console.log(`\n              ->  ${stats.unsolvable} puzzle can't be solved`)
+            console.log(`\n              ->  ${stats.rightTime} solved in less than 10 secondes with ${stats.lessThanOne} in less than 1 seconde`)
+            console.log(`\n              ->  ${stats.tooManyTime.length} solved in more than 10 secondes`)
+            console.log(`\n              ->  ${stats.tooManyTime.length} solved in more than 10 secondes`)
+            for (let p of stats.tooManyTime) {
+                console.log(`\n                        -> [${p.origin.join(', ')}] solved in ${p.duration}ms`)
+            }
         }
     }
 
@@ -37,9 +77,8 @@ export class NPuzzleService {
         let puzzle = await this.generateRandomBoard(3)//'3\n7 8 2\n0 4 6\n3 5 1'//'3\n2, 5, 7\n 0, 3, 4\n 6, 1, 8'//
         process.env.DEBUG === 'true' ? console.log(puzzle) : 0
         let solution = await this.resolvePuzzle(puzzle, NPuzzleAlgo.MANHATTAN)
-        return 0
         console.log(`Finish in ${solution.duration} millisecondes`)
-        return solution.duration
+        return solution
     }
 
     /**
@@ -47,43 +86,55 @@ export class NPuzzleService {
      * 
      * @param dto 
      */
-    async resolvePuzzle(puzzle: string, type: NPuzzleAlgo) { //: Promise<NPuzzle> {
+    async resolvePuzzle(puzzle: string, type: NPuzzleAlgo): Promise<NPuzzle> {
+        const resolveCurrent = async (python: boolean, nPuzzle: NPuzzle) => {
+            return new Promise(async (resolve, reject) => {
+                if (python || USE_PYTHON) {
+                    let py = spawn('python3', ['./scripts/puzzle-resolver.py', _.flatten(nPuzzle.origin), _.flatten(nPuzzle.final)])
+                    py.stdout.on('data', (data) => { 
+                        //console.log('DATAAAAAAAAAA--------------------------------------------------------', _.flatten(nPuzzle.origin))
+                        //console.log(data.toString())
+                        let solution = JSON.parse(data.toString())
+                        //console.log(solution)
+                        resolve(solution)
+                    })
+                } else {
+                    let search = new SearchUsingAStar(new State(_.flatten(nPuzzle.origin), _.flatten(nPuzzle.final)), new State(_.flatten(nPuzzle.final), _.flatten(nPuzzle.final)))
+                    let solution = await search.search()
+                    let operations = solution.map(s => new TileMove(s.state.swip, s.state.moveDirection))
+                    resolve(operations)
+                }
+            })
+        }
+
         let fileChecker: FileChecker = this.checkFile(puzzle)
         let finalBoard: number[][] = this.generateFinalBoard(fileChecker.size);
         console.log('Start is : \n', this.boardToString(fileChecker.board))
         //console.log('Goal is  : \n', this.boardToString(finalBoard))
-        let isSolvable: boolean = await this.validateInversions(fileChecker.size, _.flatten(fileChecker.board), _.flatten(finalBoard))
-        if (!isSolvable) {
-            throw new BadRequestException('Le puzzle ne peut être résolu')
-        }
-        process.env.DEBUG === 'true' ? console.log(isSolvable, await this.getSolvability(fileChecker.size, _.flatten(fileChecker.board), _.flatten(finalBoard))) : 0
         //throw new BadRequestException()
         let nPuzzle = new NPuzzle()
         nPuzzle.final = _.flatten(finalBoard)
         nPuzzle.origin = _.flatten(fileChecker.board)
         nPuzzle.type = type
         nPuzzle.size = fileChecker.size
+        nPuzzle.solvable = await this.validateInversions(fileChecker.size, _.flatten(fileChecker.board), _.flatten(finalBoard))
+        process.env.DEBUG === 'true' ? console.log(nPuzzle.solvable, await this.getSolvability(fileChecker.size, _.flatten(fileChecker.board), _.flatten(finalBoard))) : 0
         process.env.DEBUG === 'true' ? console.log('Start is : \n', this.boardToString(fileChecker.board)) : 0
         process.env.DEBUG === 'true' ? console.log('Goal is  : \n', this.boardToString(finalBoard)) : 0
         //nPuzzle = this.solve(nPuzzle)
         //return nPuzzle
-        let startTime = moment()
-        let python = true
-        if (python) {
-            let py = spawn('python3', ['./scripts/puzzle-resolver.py', _.flatten(nPuzzle.origin), _.flatten(nPuzzle.final)])
-            py.stdout.on('data', (data) => { 
-                console.log('DATAAAAAAAAAA--------------------------------------------------------', _.flatten(nPuzzle.origin))
-                console.log(data.toString())
-                return 
-            })
-        } else {
-            let search = new SearchUsingAStar(new State(_.flatten(nPuzzle.origin), _.flatten(nPuzzle.final)), new State(_.flatten(nPuzzle.final), _.flatten(nPuzzle.final)))
-            let solution = await search.search()
-            nPuzzle.nbMoves = solution.length - 1 // do not count start state
-            nPuzzle.operations = solution.map(s => new TileMove(s.state.swip, s.state.moveDirection))
+        if (nPuzzle.solvable) {
+            let startTime = moment()
+            let solution: TileMove[] = (await resolveCurrent(false, nPuzzle)) as TileMove[]
+            nPuzzle.nbMoves = solution.length
+            nPuzzle.operations = solution
             nPuzzle.duration = moment().diff(startTime)
-            return nPuzzle
+        } else {
+            nPuzzle.operations = []
+            nPuzzle.nbMoves = 0
+            nPuzzle.duration = 0
         }
+        return nPuzzle
     }
 
     /**
@@ -410,18 +461,13 @@ export class State {
                 })
         } else {
             this.numRowsOrCols = args.numRowsOrCols;
-            this.emptyTileIndex = args._emptyTileIndex;
+            this.emptyTileIndex = args.emptyTileIndex;
             this.arr = new Array(this.numRowsOrCols * this.numRowsOrCols)
                 .fill(0)
-                .map((value: number, index: number) => {
-                    if (args.arr[index] === 0) {
-                        this.emptyTileIndex = index
-                    }
-                    return args.arr[index]
-                })
+                .map((value: number, index: number) => args.arr[index])
         }
         this._goal = goal
-        this.createGraphForNPuzzle()
+        //this.createGraphForNPuzzle()
     }
 
     public equals(tileA: State, tileB: State): boolean {
@@ -429,7 +475,7 @@ export class State {
     }
 
     public findEmptyTileIndex(): number {
-        return this.arr.findIndex(value => value === 0)
+        return this.arr.indexOf(0)
     }
 
     public randomize(): void {
@@ -498,6 +544,30 @@ export class State {
         return this._neighbours.get(id);
     }
 
+    public getNeighboursForIndex(index: number): number[] {
+        let i = Math.floor(index / this.numRowsOrCols)
+        let j = Math.floor(index % this.numRowsOrCols)
+        let li: number[] = []
+        if ((i - 1) >= 0) {
+            li.push(this.arr[((i - 1) * this.numRowsOrCols) + j])
+            //li.push(this.arr[index - this.numRowsOrCols])
+        }
+        if ((i + 1) < this.numRowsOrCols) {
+            li.push(this.arr[((i + 1) * this.numRowsOrCols) + j])
+            //li.push(this.arr[index + this.numRowsOrCols])
+        }
+        if ((j - 1) >= 0) {
+            li.push(this.arr[(i * this.numRowsOrCols) + (j - 1)])
+            //li.push(index - 1)
+        }
+        if ((j + 1) < this.numRowsOrCols) {
+            li.push(this.arr[(i * this.numRowsOrCols) + (j + 1)])
+            //li.push(this.arr[index + 1])
+        }
+        process.env.DEBUG === 'true' ? console.log(`${index} -- ${li.toString()}`) : 0
+        return li
+    }
+
     public createGraphForNPuzzle(): void {
         let numRowsOrCols: number = this.numRowsOrCols
         let arr: number[] = this.arr
@@ -552,7 +622,7 @@ export class State {
 /// this is the class that creates and holds the graph relationship for the 8 puzzle and the empty slot.
 /// note that for this simple configuration the 8 puzzle graph is hardcoded.
 export class Neighbours {
-    private _edges: Map<number, number[]> = new Map<number, number[]>();
+    private _edges: Map<number, number[]> = new Map();
     private _instance: Neighbours = null;
 
     constructor() { }
@@ -634,7 +704,6 @@ export class Node {
     // print the node into the Debug log.
     public print(lineNum: number): void {
         let str: string = ''
-
         str += `${lineNum} -`
         str += `Node { `
         for (let elem of this.state.arr) {
@@ -642,7 +711,6 @@ export class Node {
         }
         str += ` | D: ${this.depth}, MD: ${this.cost} }`
         process.env.DEBUG === 'true' ? console.log(str) : 0
-        //Debug.Log(str.ToString());
     }
 }
 
@@ -707,6 +775,10 @@ export class SearchUsingAStar {
     root: Node
     start: State
     goal: State
+    solution: Node[] = []
+    solved: boolean = false
+    openList: PriorityQueue = new PriorityQueue()
+    closedList: Map<String, Node> = new Map()
 
     constructor(start: State, goal: State) {
         this.start = start
@@ -714,15 +786,19 @@ export class SearchUsingAStar {
         this.root = new Node(start, 0, null);
     }
 
-    isClosed(state: State, closedlist: Node[]) {
-        return !!closedlist.find(n => n.state.arr.toString() === state.arr.toString())
+    isClosed(state: State) {
+        return !!this.closedList.get(state.arr.toString())
+    }
+
+    addToCloseList(node: Node) {
+        let key = node.state.arr.toString()
+        this.closedList.set(key, node)
     }
 
     async search() {
         let openlist: PriorityQueue = new PriorityQueue();
-        let closedlist: Node[] = []
         openlist.add(this.root);
-        closedlist.push(this.root);
+        this.addToCloseList(this.root);
 
         let solved: boolean = false
         let solution: Node[] = []
@@ -752,13 +828,14 @@ export class SearchUsingAStar {
                 })
                 console.log(JSON.stringify(us))
                 let nbMove = solution.length - 1 // don't count start state
-                console.log(`Solution found.. [${closedlist.length}]\nTotal moves needed : ${nbMove}`)
-
+                console.log(`Solution found.. [${this.closedList.size}]\nTotal moves needed : ${nbMove}`)
+                this.solution = solution
+                this.solved = true
                 return solution
             }
 
             let zero: number = current.state.findEmptyTileIndex();
-            let neighbours: number[] = current.state.getNeighbours(zero);
+            let neighbours: number[] = current.state.getNeighboursForIndex(zero)
             process.env.DEBUG === 'true' ? console.log('Voisins: ', neighbours) : 0
 
             for (let next of neighbours) {
@@ -766,13 +843,13 @@ export class SearchUsingAStar {
                 //console.log(`Swip tile ${next}`)
                 state.swapWithEmpty(next);
                 //SwapTiles(next, state, false);
-                process.env.DEBUG === 'true' ? console.log('Liste fermees: ', closedlist.length) : 0
-                if (!this.isClosed(state, closedlist)) {
+                process.env.DEBUG === 'true' ? console.log('Liste fermees: ', this.closedList.size) : 0
+                if (!this.isClosed(state)) {
                     //console.log('Add to openList')
                     let n: Node = new Node(state, current.depth + 1);
                     n.parent = current;
                     openlist.add(n);
-                    closedlist.push(n);
+                    this.addToCloseList(n)
                     //n.Print(++s_lineNum);
                 } else {
                     //console.log('Already explored')

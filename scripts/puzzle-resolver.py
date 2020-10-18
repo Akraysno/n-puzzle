@@ -353,7 +353,7 @@ class QueueItem(object):
     def __gt__(self, other):
         return self.priority >= other.priority
 
-class PriorityQueue:
+class CustomPriorityQueue:
     queue: PriorityQueue = PriorityQueue()
 
     def count(self) -> int:
@@ -378,8 +378,9 @@ class SearchUsingAStar:
     goal: State
     solution: list = []
     solved: bool = False
-    openlist: PriorityQueue = PriorityQueue()
+    openlist: CustomPriorityQueue = CustomPriorityQueue()
     closedlist: list = []
+    closedState: list = []
     threadCount = 0
 
     def __init__(self, start: State, goal: State):
@@ -391,8 +392,8 @@ class SearchUsingAStar:
 
     #def isClosed(self, state: State, closedlist: list<Node>):
     def isClosed(self, state: State, closedlist: list) -> bool:
-        stateList = listToString(state.get_arr())
-        return next(filter(lambda v: listToString(v.get_state().get_arr()) == stateList, closedlist), None) is not None
+        arr = listToString(state.get_arr())
+        return True if (arr in closedState) else False
 
     def searchThread(self):
         print('OPEN LIST RESTANTE : '+str(self.openlist.count())) if debug is True else None
@@ -435,6 +436,7 @@ class SearchUsingAStar:
                     n.set_parent(current)
                     self.openlist.add(n)
                     self.closedlist.append(n)
+                    self.closedState.append(listToString(n.state.get_arr()))
                 #else:
                     #print('Already explored')
         self.openlist.queue.task_done()
@@ -453,15 +455,15 @@ class SearchUsingAStar:
         #solution: list<Node> = []
         solution: list = []
 
-        threds = []
+        threads = []
         for i in range(num_worker_threads):
             t = Thread(target=self.searchThread)
             t.daemon = True
             t.start()
-            threds.append(t)
-        threds[0].join()
-        #for i in range(len(threds)):
-        #    threds[i].join()
+            threads.append(t)
+        threads[0].join()
+        #for i in range(len(threads)):
+        #    threads[i].join()
         #self.openlist.queue.join()
 
 if __name__ == "__main__":
