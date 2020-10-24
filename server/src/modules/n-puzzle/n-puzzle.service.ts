@@ -14,6 +14,7 @@ class ResolveStats {
     unsolvable: number = 0
     solved: number = 0
     tooManyTime: NPuzzle[] = []
+    tooManyTimeCount: number = 0
     lessThanOne: number = 0
     rightTime: number = 0
     finished: number = 0
@@ -41,6 +42,7 @@ export class NPuzzleService {
             } else {
                 if (duration >= 10000) {
                     stats.tooManyTime.push(solution)
+                    stats.tooManyTimeCount += 1
                 } else {
                     stats.rightTime += 1
                     if (duration <= 1000) {
@@ -65,8 +67,7 @@ export class NPuzzleService {
             console.log(`\n              ->  ${stats.solved} solved in ${stats.totalDuration}ms`)
             console.log(`\n              ->  ${stats.unsolvable} puzzle can't be solved`)
             console.log(`\n              ->  ${stats.rightTime} solved in less than 10 secondes with ${stats.lessThanOne} in less than 1 seconde`)
-            console.log(`\n              ->  ${stats.tooManyTime.length} solved in more than 10 secondes`)
-            console.log(`\n              ->  ${stats.tooManyTime.length} solved in more than 10 secondes`)
+            console.log(`\n              ->  ${stats.tooManyTimeCount} solved in more than 10 secondes`)
             for (let p of stats.tooManyTime) {
                 console.log(`\n                        -> [${p.origin.join(', ')}] solved in ${p.duration}ms`)
             }
@@ -779,6 +780,7 @@ export class SearchUsingAStar {
     solved: boolean = false
     openList: PriorityQueue = new PriorityQueue()
     closedList: Map<String, Node> = new Map()
+    closedListSet: Set<String> = new Set()
 
     constructor(start: State, goal: State) {
         this.start = start
@@ -787,22 +789,21 @@ export class SearchUsingAStar {
     }
 
     isClosed(state: State) {
-        return !!this.closedList.get(state.arr.toString())
+        //return !!this.closedList.get(state.arr.toString())
+        return !!this.closedListSet.has(state.arr.toString())
     }
 
     addToCloseList(node: Node) {
         let key = node.state.arr.toString()
-        this.closedList.set(key, node)
+        //this.closedList.set(key, node)
+        this.closedListSet.add(key)
     }
 
     async search() {
         let openlist: PriorityQueue = new PriorityQueue();
         openlist.add(this.root);
         this.addToCloseList(this.root);
-
-        let solved: boolean = false
         let solution: Node[] = []
-
         let solutionRunning: number = 0
 
         const testSolution = async (): Promise<Node[]> => {
