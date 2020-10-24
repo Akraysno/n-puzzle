@@ -1,9 +1,6 @@
-import { Type } from 'class-transformer';
-import { Column, Entity, ObjectID, ObjectIdColumn } from 'typeorm';
 import { NPuzzleAlgo } from './enums/n-puzzle-algo.enum';
 import { TileMoveDirection } from './enums/tile-move-direction.enum';
 
-@Entity()
 export class NPuzzle {
     type: NPuzzleAlgo;
     size: number;

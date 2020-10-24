@@ -1,5 +1,3 @@
-
-  
 export enum TileMoveDirection {
     TOP = 'TOP',
     RIGHT = 'RIGHT',
