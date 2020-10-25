@@ -4,7 +4,11 @@ import { NPuzzleComponent } from './n-puzzle/n-puzzle.component';
 
 const routes: Routes = [{
   path: '',
-  component: NPuzzleComponent
+  component: NPuzzleComponent,
+  pathMatch: 'full'
+},{
+  path: '**',
+  redirectTo: ''
 }];
 
 @NgModule({
