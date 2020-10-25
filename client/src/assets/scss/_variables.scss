@@ -1,0 +1,48 @@
+$primary-color: #3fc0e8;
+$primary-back-color: #3fc0e8;
+$secondary-color : #eb4d6d;
+$primary-lighter-color: #aeb3d2;
+$primary-font-color: #2e3353;
+$accent-color: #eb4d6d;
+$grey: #a9a9a9;
+$danger-color: #dc3545;
+$warning-color: #ffc107;
+$success-color: #28a745;
+$light-grey : #fafafa;
+
+$font-path: "/assets/fonts";
+$font-family : "Comfortaa_Regular";
+$font-family-awesome: "FontAwesome";
+$font-family-bold : "Comfortaa_Bold";
+
+$box-shadow: 0 3px 1px -2px rgba(0,0,0,.2), 0 2px 2px 0 rgba(0,0,0,.14), 0 1px 5px 0 rgba(0,0,0,.12);
+
+$default-color-status: black;
+$red-color-status: #f82424;
+$yellow-color-status: #ffef5b;
+$orange-color-status: #d47201;
+$green-color-status: #92d050;
+$grey-color-status: #868686;
+$blue-color-status: #275A98;
+$pink-color-status: #BF2D6C;
+
+@font-face {
+    font-family: "Comfortaa_Bold";
+    font-style: normal;
+    font-weight: normal;
+    src: local("Comfortaa_Bold"), url("#{$font-path}/Comfortaa-Bold.ttf") format("opentype");
+}
+  
+@font-face {
+    font-family: "Comfortaa_Regular";
+    font-style: normal;
+    font-weight: normal;
+    src: local("Comfortaa_Regular"), url("#{$font-path}/Comfortaa-Regular.ttf") format("opentype");
+}
+  
+@font-face {
+    font-family: "Comfortaa_Light";
+    font-style: normal;
+    font-weight: normal;
+    src: local("Comfortaa_Light"), url("#{$font-path}/Comfortaa-Light.ttf") format("opentype");
+}

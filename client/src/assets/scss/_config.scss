@@ -1,0 +1,18 @@
+@import "variables.scss";
+@import "global";
+@import "common";
+
+@import '~@angular/material/theming';
+@import '~@angular/material/prebuilt-themes/deeppurple-amber.css';
+
+@import "./n-puzzle-theme.scss";
+$n-puzzle-app-primary: mat-palette($n-puzzle-primary);
+$n-puzzle-app-accent:  mat-palette($n-puzzle-accent);
+$n-puzzle-app-warn:    mat-palette($n-puzzle-warn);
+$n-puzzle-app-theme: mat-light-theme($n-puzzle-app-primary, $n-puzzle-app-accent, $n-puzzle-app-warn);
+@include angular-material-theme($n-puzzle-app-theme);
+
+$custom-typography: mat-typography-config(
+  $font-family: $font-family
+);
+@include angular-material-typography($custom-typography);
