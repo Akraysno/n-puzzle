@@ -10,6 +10,16 @@
       </div>
     </div>
 
+    <div class="algo-selector">
+      <div class="separator"></div>
+      <h3 class="sub-title">Methode de résolution : </h3>
+      <div class="algo-group">
+        <div class="algo-option custom-buttom" (click)="onAlgoChange(algorithms.ASTAR)" [ngClass]="{'selected': currentAlgo === algorithms.ASTAR}"> A* </div>
+        <div class="algo-option custom-buttom" (click)="onAlgoChange(algorithms.WEIGHTED_ASTAR)" [ngClass]="{'selected': currentAlgo === algorithms.WEIGHTED_ASTAR}"> Weighted A* </div>
+        <div class="algo-option custom-buttom" (click)="onAlgoChange(algorithms.UNIFORM)" [ngClass]="{'selected': currentAlgo === algorithms.UNIFORM}"> Uniform </div>
+      </div>
+    </div>
+
     <div class="start-state" *ngIf="currentSize === settings.size">
       <div class="separator"></div>
       <div class="sub-title-container">
@@ -37,7 +47,7 @@
       <div class="separator"></div>
       <div class="sub-title-container">
         <h3 class="sub-title">Etat final :</h3>
-        <div class="custom-button witdh-100" [ngClass]="{'selected': currentFinalStateType === finalStateType.SPIRAL}" (click)="onFinalStateTypeChange(finalStateType.SPIRAL)">Spiral</div>
+        <div class="custom-button witdh-100" [ngClass]="{'selected': currentFinalStateType === finalStateType.SPIRAL}" (click)="onFinalStateTypeChange(finalStateType.SPIRAL)">Spirale</div>
         <div class="custom-button witdh-100" [ngClass]="{'selected': currentFinalStateType === finalStateType.LINE}" (click)="onFinalStateTypeChange(finalStateType.LINE)">Ligne</div>
       </div>
       <div class="puzzle-container" [ngClass]="'puzzle-'+settings.size">

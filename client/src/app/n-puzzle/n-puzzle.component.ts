@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import * as _ from 'lodash'
 import { NPuzzleFinalState } from '../../../../entities/n-puzzle/enums/n-puzzle-final-state.enum'
+import { NPuzzleAlgo } from '../../../../entities/n-puzzle/enums/n-puzzle-algo.enum'
 
 @Component({
   selector: 'app-n-puzzle',
@@ -11,8 +12,10 @@ export class NPuzzleComponent implements OnInit {
   sizes = [3, 4, 5]
   currentSize: number = 3
   currentFinalStateType: NPuzzleFinalState = NPuzzleFinalState.SPIRAL
+  currentAlgo: NPuzzleAlgo = NPuzzleAlgo.ASTAR
   settings: Settings
   finalStateType = NPuzzleFinalState
+  algorithms = NPuzzleAlgo
 
   constructor() { }
 
@@ -55,6 +58,10 @@ export class NPuzzleComponent implements OnInit {
     this.settings.finalState = this.generateFinalBoard(this.settings.size, type)
     this.settings.isSolvable = this.validateInversions(this.settings.size, this.settings.startState, this.settings.finalState)
     this.currentFinalStateType = type
+  }
+
+  onAlgoChange(algo: NPuzzleAlgo) {
+    this.currentAlgo = algo
   }
 
   private generateValidRandomBoard(size?: number): Settings {

@@ -1,4 +1,6 @@
 export enum NPuzzleAlgo {
     ASTAR = 'ASTAR',
-    MANHATTAN = 'MANHATTAN'
+    WEIGHTED_ASTAR = 'WEIGHTED_ASTAR',
+    MANHATTAN = 'MANHATTAN',
+    UNIFORM = 'UNIFORM'
 }

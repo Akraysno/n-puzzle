@@ -8,6 +8,10 @@ import { NPuzzleAlgo } from '../../../../entities/n-puzzle/enums/n-puzzle-algo.e
 import { TileMoveDirection } from '../../../../entities/n-puzzle/enums/tile-move-direction.enum';
 import { spawn } from 'child_process'
 
+/**
+ * Weigthed A* => https://github.com/hjlkon/A-star-algorithm/blob/main/weighted_A_star_Algorithm.m
+ */
+
 const USE_PYTHON = false
 
 class ResolveStats {
