@@ -1,8 +1,60 @@
 <div class="main-container">
-  <div class="menu-container p-20">
-    <h3>Configuration</h3>
+  <div class="menu-container p-20" *ngIf="settings">
+    <h2 class="title">Configuration</h2>
+
+    <div class="size-selector">
+      <div class="separator"></div>
+      <h3 class="sub-title">Taille : </h3>
+      <div class="size-group">
+        <div class="size-option custom-buttom" *ngFor="let s of sizes" (click)="sizeChanged(s)" [ngClass]="{'selected': currentSize === s}"> {{s}} x {{s}} </div>
+      </div>
+    </div>
+
+    <div class="start-state" *ngIf="currentSize === settings.size">
+      <div class="separator"></div>
+      <div class="sub-title-container">
+        <h3 class="sub-title">Etat de départ :</h3>
+        <div class="custom-button witdh-100" (click)="onGenerateRandomBoard()">Mélanger</div>
+      </div>
+      <div class="puzzle-container modifiable" [ngClass]="'puzzle-'+settings.size">
+        <div 
+          class="tile"
+          (click)="selectTile(tile)"
+          [ngClass]="{
+            'border-left': i % settings.size !== 0, 
+            'border-top': i >= settings.size,
+            'selected': tile === settings.selectedTile
+          }" 
+          *ngFor="let tile of settings.startState; let i = index"
+        >
+          {{tile}}
+        </div>
+      </div>
+      <p class="error" *ngIf="!settings.isSolvable">Cette configuration ne peut pas être résolue.</p>
+    </div>
+
+    <div class="final-state" *ngIf="currentSize === settings.size">
+      <div class="separator"></div>
+      <div class="sub-title-container">
+        <h3 class="sub-title">Etat final :</h3>
+        <div class="custom-button witdh-100" [ngClass]="{'selected': currentFinalStateType === finalStateType.SPIRAL}" (click)="onFinalStateTypeChange(finalStateType.SPIRAL)">Spiral</div>
+        <div class="custom-button witdh-100" [ngClass]="{'selected': currentFinalStateType === finalStateType.LINE}" (click)="onFinalStateTypeChange(finalStateType.LINE)">Ligne</div>
+      </div>
+      <div class="puzzle-container" [ngClass]="'puzzle-'+settings.size">
+        <div 
+          class="tile"
+          [ngClass]="{
+            'border-left': i % settings.size !== 0, 
+            'border-top': i >= settings.size
+          }" 
+          *ngFor="let tile of settings.finalState; let i = index"
+        >
+          {{tile}}
+        </div>
+      </div>
+    </div>
   </div>
   <div class="puzzle-container p-20">
-    <h3>Puzzle</h3>
+    <h2 class="title">Puzzle</h2>
   </div>
 </div>
