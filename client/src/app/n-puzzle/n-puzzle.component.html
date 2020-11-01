@@ -6,7 +6,7 @@
       <div class="separator"></div>
       <h3 class="sub-title">Taille : </h3>
       <div class="size-group">
-        <div class="size-option custom-buttom" *ngFor="let s of sizes" (click)="sizeChanged(s)" [ngClass]="{'selected': currentSize === s}"> {{s}} x {{s}} </div>
+        <button class="size-option custom-button" *ngFor="let s of sizes" (click)="sizeChanged(s)" [ngClass]="{'selected': currentSize === s}"> {{s}} x {{s}} </button>
       </div>
     </div>
 
@@ -14,9 +14,9 @@
       <div class="separator"></div>
       <h3 class="sub-title">Methode de résolution : </h3>
       <div class="algo-group">
-        <div class="algo-option custom-buttom" (click)="onAlgoChange(algorithms.ASTAR)" [ngClass]="{'selected': currentAlgo === algorithms.ASTAR}"> A* </div>
-        <div class="algo-option custom-buttom" (click)="onAlgoChange(algorithms.WEIGHTED_ASTAR)" [ngClass]="{'selected': currentAlgo === algorithms.WEIGHTED_ASTAR}"> Weighted A* </div>
-        <div class="algo-option custom-buttom" (click)="onAlgoChange(algorithms.UNIFORM)" [ngClass]="{'selected': currentAlgo === algorithms.UNIFORM}"> Uniform </div>
+        <button class="algo-option custom-button" (click)="onAlgoChange(algorithms.ASTAR)" [ngClass]="{'selected': currentAlgo === algorithms.ASTAR}"> A* </button>
+        <button class="algo-option custom-button" (click)="onAlgoChange(algorithms.WEIGHTED_ASTAR)" [ngClass]="{'selected': currentAlgo === algorithms.WEIGHTED_ASTAR}"> Weighted A* </button>
+        <button class="algo-option custom-button" (click)="onAlgoChange(algorithms.UNIFORM)" [ngClass]="{'selected': currentAlgo === algorithms.UNIFORM}"> Uniform </button>
       </div>
     </div>
 
@@ -24,7 +24,7 @@
       <div class="separator"></div>
       <div class="sub-title-container">
         <h3 class="sub-title">Etat de départ :</h3>
-        <div class="custom-button witdh-100" (click)="onGenerateRandomBoard()">Mélanger</div>
+        <button class="custom-button witdh-100" (click)="onGenerateRandomBoard()">Mélanger</button>
       </div>
       <div class="puzzle-container modifiable" [ngClass]="'puzzle-'+settings.size">
         <div 
@@ -47,8 +47,8 @@
       <div class="separator"></div>
       <div class="sub-title-container">
         <h3 class="sub-title">Etat final :</h3>
-        <div class="custom-button witdh-100" [ngClass]="{'selected': currentFinalStateType === finalStateType.SPIRAL}" (click)="onFinalStateTypeChange(finalStateType.SPIRAL)">Spirale</div>
-        <div class="custom-button witdh-100" [ngClass]="{'selected': currentFinalStateType === finalStateType.LINE}" (click)="onFinalStateTypeChange(finalStateType.LINE)">Ligne</div>
+        <button class="custom-button witdh-100" [ngClass]="{'selected': currentFinalStateType === finalStateType.SPIRAL}" (click)="onFinalStateTypeChange(finalStateType.SPIRAL)">Spirale</button>
+        <button class="custom-button witdh-100" [ngClass]="{'selected': currentFinalStateType === finalStateType.LINE}" (click)="onFinalStateTypeChange(finalStateType.LINE)">Ligne</button>
       </div>
       <div class="puzzle-container" [ngClass]="'puzzle-'+settings.size">
         <div 
@@ -63,7 +63,13 @@
         </div>
       </div>
     </div>
+
+    <div class="valide-button-container">
+      <div class="separator"></div>
+      <button mat-flat-button color="primary" (click)="resolve()">Résoudre</button>
+    </div>
   </div>
+
   <div class="puzzle-container p-20">
     <h2 class="title">Puzzle</h2>
   </div>
