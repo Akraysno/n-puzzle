@@ -3,7 +3,9 @@
 // The list of file replacements can be found in `angular.json`.
 
 export const environment = {
-  production: false
+  production: false,
+  APP_URL: 'http://localhost:4242/',
+  APP_NPUZZLE_PATH: 'n-puzzle/'
 };
 
 /*

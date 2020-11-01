@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import * as _ from 'lodash'
 import { NPuzzleFinalState } from '../../../../entities/n-puzzle/enums/n-puzzle-final-state.enum'
 import { NPuzzleAlgo } from '../../../../entities/n-puzzle/enums/n-puzzle-algo.enum'
+import { NPuzzleService } from './n-puzzle.service'
 
 @Component({
   selector: 'app-n-puzzle',
@@ -16,8 +17,11 @@ export class NPuzzleComponent implements OnInit {
   settings: Settings
   finalStateType = NPuzzleFinalState
   algorithms = NPuzzleAlgo
+  loading: boolean = false
 
-  constructor() { }
+  constructor(
+    private nPuzzleService: NPuzzleService,
+  ) { }
 
   ngOnInit() {
     this.settings = this.generateValidRandomBoard(this.currentSize)
@@ -26,7 +30,7 @@ export class NPuzzleComponent implements OnInit {
   sizeChanged(size: number) {
     if (size !== this.currentSize) {
       this.currentSize = size
-      this.settings = this.generateValidRandomBoard(size)
+      this.settings = this.generateValidRandomBoard(size, this.currentFinalStateType)
     }
   }
 
@@ -51,7 +55,7 @@ export class NPuzzleComponent implements OnInit {
 
   onGenerateRandomBoard() {
     if (!this.settings || !this.settings.size) return
-    this.settings = this.generateValidRandomBoard(this.settings.size)
+    this.settings = this.generateValidRandomBoard(this.settings.size, this.currentFinalStateType)
   }
 
   onFinalStateTypeChange(type: NPuzzleFinalState) {
@@ -64,7 +68,7 @@ export class NPuzzleComponent implements OnInit {
     this.currentAlgo = algo
   }
 
-  private generateValidRandomBoard(size?: number): Settings {
+  private generateValidRandomBoard(size?: number, type: NPuzzleFinalState = NPuzzleFinalState.SPIRAL): Settings {
     if (!size || size <= 0) {
       size = 3
     }
@@ -73,7 +77,7 @@ export class NPuzzleComponent implements OnInit {
     settings.size = size
     while (!settings.isSolvable) {
       settings.startState = this.generateRandomBoard(size)
-      settings.finalState = this.generateFinalBoard(size)
+      settings.finalState = this.generateFinalBoard(size, type)
       settings.isSolvable = this.validateInversions(settings.size, settings.startState, settings.finalState)
     }
     return settings
@@ -195,6 +199,17 @@ export class NPuzzleComponent implements OnInit {
       final
     }
     return _.flatten(final)
+  }
+
+  resolve() {
+    this.loading = true
+    this.nPuzzleService.resolve(this.currentAlgo, this.settings.size, this.settings.startState, this.settings.finalState).subscribe((res) => {
+      console.log(res)
+      this.loading = false
+    }, err => {
+      console.error(err)
+      this.loading = false
+    })
   }
 
 }
