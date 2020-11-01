@@ -3,8 +3,14 @@ import { NPuzzleAlgo } from '../../../../../entities/n-puzzle/enums/n-puzzle-alg
 
 export class ResolvePuzzleDto {
     @IsNotEmpty({ message: 'Ne doit pas être vide' })
-    puzzle: string;
+    startState: number[];
+
+    @IsNotEmpty({ message: 'Ne doit pas être vide' })
+    finalState: number[];
 
     @IsNotEmpty({ message: 'Ne doit pas être vide' })
     type: NPuzzleAlgo;
+
+    @IsNotEmpty({ message: 'Ne doit pas être vide' })
+    size: number;
 }

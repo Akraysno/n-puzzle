@@ -30,7 +30,7 @@ class ResolveStats {
 export class NPuzzleService {
     constructor() {
         moment().locale('fr')
-        setTimeout(() => this.loopRun(1, 100000, new ResolveStats()), 5000)
+        //setTimeout(() => this.loopRun(1, 100000, new ResolveStats()), 5000)
     }
 
     async loopRun(counter: number, limit: number, stats: ResolveStats) {
@@ -62,7 +62,7 @@ export class NPuzzleService {
         }
         stats.finished++
         stats.maxDuration = duration > stats.maxDuration ? duration : stats.maxDuration
-        if(counter < limit) {
+        if (counter < limit) {
             console.log(`\n${counter}---------------[${stats.finished}]  --  ${moment().format('LLL')}\n`)
             counter++
             await this.loopRun(counter, limit, stats)
@@ -81,7 +81,7 @@ export class NPuzzleService {
     async defaultRun() {
         let puzzle = await this.generateRandomBoard(3)//'3\n7 8 2\n0 4 6\n3 5 1'//'3\n2, 5, 7\n 0, 3, 4\n 6, 1, 8'//
         process.env.DEBUG === 'true' ? console.log(puzzle) : 0
-        let solution = await this.resolvePuzzle(puzzle, NPuzzleAlgo.MANHATTAN)
+        let solution = await this.resolvePuzzleOld(puzzle, NPuzzleAlgo.MANHATTAN)
         console.log(`Finish in ${solution.duration} millisecondes`)
         return solution
     }
@@ -91,12 +91,12 @@ export class NPuzzleService {
      * 
      * @param dto 
      */
-    async resolvePuzzle(puzzle: string, type: NPuzzleAlgo): Promise<NPuzzle> {
+    async resolvePuzzleOld(puzzle: string, type: NPuzzleAlgo): Promise<NPuzzle> {
         const resolveCurrent = async (python: boolean, nPuzzle: NPuzzle) => {
             return new Promise(async (resolve, reject) => {
                 if (python || USE_PYTHON) {
                     let py = spawn('python3', ['./scripts/puzzle-resolver.py', _.flatten(nPuzzle.origin), _.flatten(nPuzzle.final)])
-                    py.stdout.on('data', (data) => { 
+                    py.stdout.on('data', (data) => {
                         //console.log('DATAAAAAAAAAA--------------------------------------------------------', _.flatten(nPuzzle.origin))
                         //console.log(data.toString())
                         let solution = JSON.parse(data.toString())
@@ -143,6 +143,41 @@ export class NPuzzleService {
     }
 
     /**
+     * Resolve a puzzle
+     * 
+     * @param dto 
+     */
+    async resolvePuzzle(type: NPuzzleAlgo, size: number, startState: number[], finalState: number[]): Promise<NPuzzle> {
+        const resolveCurrent = async (nPuzzle: NPuzzle) => {
+            return new Promise(async (resolve, reject) => {
+                let search = new SearchUsingAStar(new State(_.flatten(nPuzzle.origin), _.flatten(nPuzzle.final)), new State(_.flatten(nPuzzle.final), _.flatten(nPuzzle.final)))
+                let solution = await search.search()
+                let operations = solution.map(s => new TileMove(s.state.swip, s.state.moveDirection))
+                resolve(operations)
+            })
+        }
+        console.log(type, size, startState, finalState)
+        this.checkPuzzle(startState, size, false)
+        this.checkPuzzle(finalState, size, true)
+        let nPuzzle = new NPuzzle()
+        nPuzzle.final = finalState
+        nPuzzle.origin = startState
+        nPuzzle.type = type
+        nPuzzle.size = size
+        nPuzzle.solvable = await this.validateInversions(size, startState, finalState)
+        console.log(nPuzzle)
+        if (!nPuzzle.solvable) {
+            throw new BadRequestException(`Le puzzle ne peut pas être résolu`)
+        }
+        let startTime = moment()
+        let solution: TileMove[] = (await resolveCurrent(nPuzzle)) as TileMove[]
+        nPuzzle.nbMoves = solution.length
+        nPuzzle.operations = solution
+        nPuzzle.duration = moment().diff(startTime)
+        return nPuzzle
+    }
+
+    /**
      * Generate random board for the given size
      * 
      * @param size
@@ -152,26 +187,26 @@ export class NPuzzleService {
             size = 3
         }
         let tmpArray: number[] = Array(Math.pow(size, 2)).fill(-1).map((v, i) => i)
-        let shuffleArray: number[] = [] 
+        let shuffleArray: number[] = []
         while (tmpArray.length > 0) {
             let r = Math.floor(Math.random() * tmpArray.length);
             shuffleArray.push(tmpArray.splice(r, 1)[0])
         }
-        let chunkedArray: string[] = _.chunk(shuffleArray, size).map((chunk: number[])=> chunk.join(' '))
+        let chunkedArray: string[] = _.chunk(shuffleArray, size).map((chunk: number[]) => chunk.join(' '))
         let board: string = `${size}\n${chunkedArray.join('\n')}`
         return board
     }
 
-    async getSolvability (boardSize: number, board: number[], final: number[]): Promise<boolean> { 
+    async getSolvability(boardSize: number, board: number[], final: number[]): Promise<boolean> {
         let isSolvable: boolean = false
         if (boardSize % 2 !== 0) {
-            let count: number = 0; 
+            let count: number = 0;
             for (let i = 0; i < board.length - 1; i++) {
-                for (let j = i+1; j < board.length; j++) {
-                    let index = final.indexOf(j) 
-                    if (board[i] !== 0 && final[index] !== 0 && board[i] > final[index]) {
-                        process.env.DEBUG === 'true' ? console.log(board[i] , final[index] , board[j]) : 0
-                        count++; 
+                for (let j = i + 1; j < board.length; j++) {
+                    let index = final.indexOf(j)
+                    if (board[i] !== 0 && final[index] !== 0 && board[i] > final[index]) {
+                        process.env.DEBUG === 'true' ? console.log(board[i], final[index], board[j]) : 0
+                        count++;
                     }
                 }
             }
@@ -181,7 +216,7 @@ export class NPuzzleService {
 
         }
         return isSolvable
-    } 
+    }
 
     async validateInversions(boardSize: number, board: number[], final: number[]) {
         let size = boardSize * boardSize - 1
@@ -284,6 +319,30 @@ export class NPuzzleService {
     }
 
     /**
+     * Check if puzzle is a valid board
+     * 
+     * @param puzzle 
+     */
+    checkPuzzle(puzzle: number[], size: number, isFinalBoard: boolean = false): boolean {
+        if (
+            size < 1 || 
+            ((size * size) !== puzzle.length)
+        ) {
+            throw new BadRequestException(`La taille de l'état ${isFinalBoard ? 'final' : 'de départ'} ne correspond pas à la taille indiquée`)
+        }
+
+        // Verify numbers in board
+        let numbersList = puzzle.map(v => v).sort((a, b) => a > b ? 1 : -1)
+        numbersList.forEach((num: number, index: number) => {
+            if (num !== index) {
+                throw new BadRequestException(`Les nombres de l'état ${isFinalBoard ? 'final' : 'de départ'} sont incorrects`)
+            }
+        });
+
+        return true
+    }
+
+    /**
      * Generate final board for a specified size
      * 
      * @param size 
@@ -360,7 +419,7 @@ export class NPuzzleService {
             if (searchIndex !== -1) {
                 coords.row = index
                 coords.cell = searchIndex
-                break ;
+                break;
             }
         }
         return coords
@@ -728,7 +787,7 @@ export class PriorityQueue {
     // Return the number of items in the queue.
     public count(): number {
         let count = 0
-        this._nodes.forEach(nodes => count += nodes.length );
+        this._nodes.forEach(nodes => count += nodes.length);
         return count
     }
 
@@ -870,28 +929,28 @@ export class SearchUsingAStar {
         }
 
         const stackRun = async () => {
-                process.env.DEBUG === 'true' ? console.log('OPEN LIST RESTANTE : ', openlist.count()) : 0
-                if (solutionRunning < 8 && openlist.count() > 0 && !solution.length) {
-                    let s = await testSolution()
-                    if (!s || !s.length) {
-                        return await stackRun()
-                    }
-                    //console.log((solution || []).length)
-                    return s
-                    /*
-                    .then(solution => {
-                        if (!solution || !solution.length) {
-                            console.log('Search solution')
-                            stackRun().then(solution =>{
-                                console.log('search ended')
-                                return (solution)
-                            })
-                        }
-                        console.log((solution || []).length)
-                        return (solution)
-                    })
-                    */
+            process.env.DEBUG === 'true' ? console.log('OPEN LIST RESTANTE : ', openlist.count()) : 0
+            if (solutionRunning < 8 && openlist.count() > 0 && !solution.length) {
+                let s = await testSolution()
+                if (!s || !s.length) {
+                    return await stackRun()
                 }
+                //console.log((solution || []).length)
+                return s
+                /*
+                .then(solution => {
+                    if (!solution || !solution.length) {
+                        console.log('Search solution')
+                        stackRun().then(solution =>{
+                            console.log('search ended')
+                            return (solution)
+                        })
+                    }
+                    console.log((solution || []).length)
+                    return (solution)
+                })
+                */
+            }
         }
 
         solution = await stackRun()

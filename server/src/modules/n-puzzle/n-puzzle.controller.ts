@@ -20,7 +20,7 @@ export class NPuzzleController {
 	@Post()
 	@HttpCode(HttpStatus.OK)
 	async resolve(@Req() req, @Body() dto: ResolvePuzzleDto) {
-		return await this.nPuzzleService.resolvePuzzle(dto.puzzle, dto.type)
+		return await this.nPuzzleService.resolvePuzzle(dto.type, dto.size, dto.startState, dto.finalState)
 	}
 
 }
