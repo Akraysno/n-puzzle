@@ -1,0 +1,11 @@
+<button mat-flat-button [color]="color" [disabled]="loading || disabled" class="app-button {{cssClass || ''}}" [ngClass]="{'full-width': fullWidth, 'cancel-button': color === 'red', 'success-button': color === 'green'}" (click)="click()">
+    <i class="prefix-icon material-icons" *ngIf="!loading && prefixIcon">{{prefixIcon}}</i>
+    <mat-progress-spinner
+        class="prefix-icon" 
+        color="accent" diameter="20" 
+        *ngIf="loading" 
+        mode="indeterminate"
+    >
+    </mat-progress-spinner>
+    <div class="label">{{label}}</div>
+  </button>

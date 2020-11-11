@@ -6,12 +6,13 @@ import { NPuzzleComponent } from './n-puzzle/n-puzzle.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MaterialModule } from './material.module';
 import { HttpClientModule } from '@angular/common/http';
-import { NPuzzleService } from './n-puzzle/n-puzzle.service';
+import { ButtonComponent } from './_components/button/button.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     NPuzzleComponent,
+    ButtonComponent,
   ],
   imports: [
     BrowserModule,
