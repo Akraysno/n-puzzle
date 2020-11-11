@@ -2,7 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import * as _ from 'lodash'
 import { NPuzzleFinalState } from '../../../../entities/n-puzzle/enums/n-puzzle-final-state.enum'
 import { NPuzzleAlgo } from '../../../../entities/n-puzzle/enums/n-puzzle-algo.enum'
-import { NPuzzleService } from './n-puzzle.service'
+import { NPuzzleService } from '../_services/n-puzzle.service'
+import { ErrorsService } from '../_services/errors.service';
 
 @Component({
   selector: 'app-n-puzzle',
@@ -21,6 +22,7 @@ export class NPuzzleComponent implements OnInit {
 
   constructor(
     private nPuzzleService: NPuzzleService,
+    private errorsService: ErrorsService,
   ) { }
 
   ngOnInit() {
@@ -96,52 +98,58 @@ export class NPuzzleComponent implements OnInit {
     return shuffleArray
   }
 
-  private validateInversions(boardSize: number, board: number[], final: number[]) {
-    let size = boardSize * boardSize - 1
-    let CountNumberOfRegularInversions = (toCheck: number[]) => {
-      let num: number = 0;
-      for (let i = 0; i < size; i++) {
-        if (toCheck[i] !== 0) {
-          for (let j = i + 1; j < size + 1; j++) {
-            if (toCheck[j] !== 0 && toCheck[i] > toCheck[j]) {
-              num++;
-            }
+  private validateInversions(boardSize: number, board: number[], finalBoard: number[]) {
+    let start: number[][] = _.chunk(board, boardSize)
+    let final: number[][] = _.chunk(finalBoard, boardSize)
+    const findD = () => {
+      let xi: number
+      let yi: number
+      let xf: number
+      let yf: number
+      for (let i = 0; i < boardSize; i++) {
+        for (let j = 0; j < boardSize; j++) {
+          if (start[i][j] === 0) {
+            xi = j
+            yi = i
+            break
           }
         }
       }
-      return num;
-    }
-
-    let numberOfInversions: number = CountNumberOfRegularInversions(board)
-    let numberOfInversionsSolution: number = CountNumberOfRegularInversions(final)
-    let chunkedBoard: number[][] = _.chunk(board, boardSize)
-    let chunkedFinal: number[][] = _.chunk(final, boardSize)
-    let start0Index: number = -1;
-    let goal0Index: number = -1;
-
-    for (let i = 0; i < chunkedBoard.length; i++) {
-      start0Index = chunkedBoard[i].findIndex(c => c === 0);
-      if (start0Index > -1) {
-        start0Index = i * chunkedBoard.length + start0Index;
-        break;
+      if (boardSize % 2 !== 0) {
+        xf = Math.ceil(boardSize / 2)
+        yf = Math.ceil(boardSize / 2)
+      } else {
+        xf = boardSize / 2 - 1
+        yf = boardSize / 2
       }
+      let d = Math.abs(xf - xi) + Math.abs(yf - yi)
+      return d
     }
-    for (let i = 0; i < chunkedFinal.length; i++) {
-      goal0Index = chunkedFinal[i].findIndex(c => c === 0);
-      if (goal0Index > -1) {
-        goal0Index = i * chunkedFinal.length + goal0Index;
-        break;
+    const findP = () => {
+      let tab: number[] = []
+      let p: number = 0
+      for (let line of start) {
+        tab = tab.concat(line)
       }
-    }
-    if (chunkedBoard.length % 2 === 0) { // In this case, the row of the '0' tile matters
-      numberOfInversions += start0Index / chunkedBoard.length;
-      numberOfInversionsSolution += goal0Index / chunkedFinal.length;
+      let finalTab: number[] = []
+      for (let line of final) {
+        finalTab = finalTab.concat(line)
+      }
+
+      for (let i = 0; i < tab.length; i++) {
+        for (let j = 0; j < tab.length; j++) {
+          if (finalTab.indexOf(tab[i]) > finalTab.indexOf(tab[j])) {
+            let tmp = tab[j]
+            tab[j] = tab[i]
+            tab[i] = tmp
+            p++
+          }
+        }
+      }
+      return p
     }
 
-    if (numberOfInversions % 2 !== numberOfInversionsSolution % 2) {
-      return false
-    }
-    return true
+    return (findD() % 2) === (findP() % 2)
   }
 
   private generateFinalBoard(size: number, type: NPuzzleFinalState = NPuzzleFinalState.SPIRAL): number[] {
@@ -207,7 +215,7 @@ export class NPuzzleComponent implements OnInit {
       console.log(res)
       this.loading = false
     }, err => {
-      console.error(err)
+      this.errorsService.displayError(err)
       this.loading = false
     })
   }

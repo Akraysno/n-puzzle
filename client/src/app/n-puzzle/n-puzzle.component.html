@@ -66,7 +66,9 @@
 
     <div class="valide-button-container">
       <div class="separator"></div>
-      <button mat-flat-button color="primary" (click)="resolve()">Résoudre</button>
+      <div class="button-container">
+        <app-button label="Résoudre" cssClass="width-100p" [disabled]="!settings.isSolvable || loading" [loading]="loading" color="primary" (onClick)="resolve()"></app-button>
+      </div>
     </div>
   </div>
 

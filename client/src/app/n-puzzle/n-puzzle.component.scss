@@ -125,8 +125,8 @@ $border: 1px solid rgba(0, 0, 0, 0.12);
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            button {
-                width: 80%;
+            .button-container {
+                width: 90%;
             }
         }
     }

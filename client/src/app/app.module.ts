@@ -6,6 +6,7 @@ import { NPuzzleComponent } from './n-puzzle/n-puzzle.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MaterialModule } from './material.module';
 import { HttpClientModule } from '@angular/common/http';
+import { NPuzzleService } from './_services/n-puzzle.service';
 import { SnackbarComponent } from './_components/snackbar/snackbar.component';
 import { ButtonComponent } from './_components/button/button.component';
 import { ErrorsService } from './_services/errors.service';
