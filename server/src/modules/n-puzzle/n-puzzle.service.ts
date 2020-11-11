@@ -218,7 +218,7 @@ export class NPuzzleService {
         return isSolvable
     }
 
-    async validateInversions(boardSize: number, board: number[], final: number[]) {
+    async validateInversionsV1(boardSize: number, board: number[], final: number[]) {
         let size = boardSize * boardSize - 1
         let CountNumberOfRegularInversions = (toCheck: number[]) => {
             let num: number = 0;
@@ -267,6 +267,60 @@ export class NPuzzleService {
             return false//throw new BadRequestException("Unsolvable puzzle");
         }
         return true
+    }
+
+    async validateInversions(boardSize: number, board: number[], finalBoard: number[]) {
+        let start: number[][] = _.chunk(board, boardSize)
+        let final: number[][] = _.chunk(finalBoard, boardSize)
+        const findD = () => {
+            let xi: number
+            let yi: number
+            let xf: number
+            let yf: number
+            for (let i = 0; i < boardSize; i++) {
+                for (let j = 0; j < boardSize; j++) {
+                    if (start[i][j] === 0) {
+                        xi = j
+                        yi = i
+                        break
+                    }
+                }
+            }
+            if (boardSize % 2 !== 0) {
+                xf = Math.ceil(boardSize / 2)
+                yf = Math.ceil(boardSize / 2)
+            } else {
+                xf = boardSize / 2 - 1
+                yf = boardSize / 2
+            }
+            let d = Math.abs(xf - xi) + Math.abs(yf - yi)
+            return d
+        }
+        const findP = () => {
+            let tab: number[] = []
+            let p: number = 0
+            for (let line of start) {
+                tab = tab.concat(line)
+            }
+            let finalTab: number[] = []
+            for (let line of final) {
+                finalTab = finalTab.concat(line)
+            }
+
+            for (let i = 0; i < tab.length; i++) {
+                for (let j = 0; j < tab.length; j++) {
+                    if (finalTab.indexOf(tab[i]) > finalTab.indexOf(tab[j])) {
+                        let tmp = tab[j]
+                        tab[j] = tab[i]
+                        tab[i] = tmp
+                        p++
+                    }
+                }
+            }
+            return p
+        }
+
+        return (findD() % 2) === (findP() % 2)
     }
 
     /**
@@ -325,7 +379,7 @@ export class NPuzzleService {
      */
     checkPuzzle(puzzle: number[], size: number, isFinalBoard: boolean = false): boolean {
         if (
-            size < 1 || 
+            size < 1 ||
             ((size * size) !== puzzle.length)
         ) {
             throw new BadRequestException(`La taille de l'état ${isFinalBoard ? 'final' : 'de départ'} ne correspond pas à la taille indiquée`)
