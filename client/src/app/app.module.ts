@@ -6,12 +6,16 @@ import { NPuzzleComponent } from './n-puzzle/n-puzzle.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MaterialModule } from './material.module';
 import { HttpClientModule } from '@angular/common/http';
+import { SnackbarComponent } from './_components/snackbar/snackbar.component';
 import { ButtonComponent } from './_components/button/button.component';
+import { ErrorsService } from './_services/errors.service';
+import { SnackbarService } from './_services/snackbar.service';
 
 @NgModule({
   declarations: [
     AppComponent,
     NPuzzleComponent,
+    SnackbarComponent,
     ButtonComponent,
   ],
   imports: [
@@ -23,6 +27,8 @@ import { ButtonComponent } from './_components/button/button.component';
   ],
   providers: [
     NPuzzleService,
+    ErrorsService,
+    SnackbarService,
   ],
   bootstrap: [AppComponent]
 })
