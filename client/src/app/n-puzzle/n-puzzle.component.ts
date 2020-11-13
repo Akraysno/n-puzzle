@@ -2,14 +2,56 @@ import { Component, OnInit } from '@angular/core';
 import * as _ from 'lodash'
 import { NPuzzleFinalState } from '../../../../entities/n-puzzle/enums/n-puzzle-final-state.enum'
 import { NPuzzleAlgo } from '../../../../entities/n-puzzle/enums/n-puzzle-algo.enum'
+import { NPuzzle, TileMove } from '../../../../entities/n-puzzle/n-puzzle.entity'
 import { NPuzzleService } from '../_services/n-puzzle.service'
 import { ErrorsService } from '../_services/errors.service';
+import { TileMoveDirection } from '../../../../entities/n-puzzle/enums/tile-move-direction.enum';
+import { animate, keyframes, state, style, transition, trigger } from '@angular/animations';
 
 @Component({
   selector: 'app-n-puzzle',
   templateUrl: './n-puzzle.component.html',
-  styleUrls: ['./n-puzzle.component.scss']
+  styleUrls: ['./n-puzzle.component.scss'],
+  animations: [
+    trigger('moveRight', [
+      transition('* => true',
+        animate('500ms linear', keyframes([
+          style({ transform: 'translateX(0)', offset: 0 }),
+          style({ transform: 'translateX(100px)', offset: 0.8 }),
+          style({ transform: 'translateX(100px)', offset: 1 }),
+        ])),
+      )
+    ]),
+    trigger('moveLeft', [
+      transition('* => true',
+        animate('500ms linear', keyframes([
+          style({ transform: 'translateX(0)', offset: 0 }),
+          style({ transform: 'translateX(-100px)', offset: 0.8 }),
+          style({ transform: 'translateX(-100px)', offset: 1 }),
+        ])),
+      )
+    ]),
+    trigger('moveBottom', [
+      transition('* => true',
+        animate('500ms linear', keyframes([
+          style({ transform: 'translateY(0)', offset: 0 }),
+          style({ transform: 'translateY(100px)', offset: 0.8 }),
+          style({ transform: 'translateY(100px)', offset: 1 }),
+        ])),
+      )
+    ]),
+    trigger('moveTop', [
+      transition('* => true',
+        animate('500ms linear', keyframes([
+          style({ transform: 'translateY(0)', offset: 0 }),
+          style({ transform: 'translateY(-100px)', offset: 0.8 }),
+          style({ transform: 'translateY(-100px)', offset: 1 }),
+        ])),
+      )
+    ]),
+  ]
 })
+
 export class NPuzzleComponent implements OnInit {
   sizes = [3, 4, 5]
   currentSize: number = 3
@@ -19,6 +61,10 @@ export class NPuzzleComponent implements OnInit {
   finalStateType = NPuzzleFinalState
   algorithms = NPuzzleAlgo
   loading: boolean = false
+  currentSolvedPuzzle: CustomNPuzzle
+  nextStepSolvedPuzzle: CustomNPuzzle
+  tileMoveDirection = TileMoveDirection
+  autoMove: boolean = true
 
   constructor(
     private nPuzzleService: NPuzzleService,
@@ -211,8 +257,11 @@ export class NPuzzleComponent implements OnInit {
 
   resolve() {
     this.loading = true
-    this.nPuzzleService.resolve(this.currentAlgo, this.settings.size, this.settings.startState, this.settings.finalState).subscribe((res) => {
+    this.nPuzzleService.resolve(this.currentAlgo, this.settings.size, this.settings.startState, this.settings.finalState).subscribe((res: CustomNPuzzle) => {
       console.log(res)
+      res.currentState = res.origin
+      res.stateIndex = 0
+      this.currentSolvedPuzzle = res
       this.loading = false
     }, err => {
       this.errorsService.displayError(err)
@@ -220,6 +269,40 @@ export class NPuzzleComponent implements OnInit {
     })
   }
 
+  nextMove() {
+    if (!this.currentSolvedPuzzle) return
+
+    let currentStep = this.currentSolvedPuzzle.operations[this.currentSolvedPuzzle.stateIndex]
+    let nextStepIndex = this.currentSolvedPuzzle.stateIndex + 1
+
+    if (nextStepIndex >= this.currentSolvedPuzzle.nbMoves) return
+    
+    let nextStep = this.currentSolvedPuzzle.operations[nextStepIndex]
+    this.currentSolvedPuzzle.stateIndex = nextStepIndex
+    let nextStepSolvedPuzzle = _.cloneDeep(this.currentSolvedPuzzle)
+    this.currentSolvedPuzzle.currentOperation = nextStep
+
+    nextStepSolvedPuzzle.currentOperation = null
+    let p = nextStepSolvedPuzzle.currentState
+    let tileIndex = p.indexOf(nextStep.tile)
+    let zeroIndex = p.indexOf(0)
+    p[zeroIndex] = nextStep.tile
+    p[tileIndex] = 0
+    this.nextStepSolvedPuzzle = nextStepSolvedPuzzle
+  }
+
+  goToNextStep(event: any, direction: TileMoveDirection) {
+    if (!this.nextStepSolvedPuzzle || !this.currentSolvedPuzzle || !this.currentSolvedPuzzle.currentOperation) return
+    if (direction === this.currentSolvedPuzzle.currentOperation.direction) {
+      if (event.totalTime > 0 && event.phaseName === 'done' && event.toState === true) {
+        this.currentSolvedPuzzle = this.nextStepSolvedPuzzle
+        if (this.autoMove) {
+          setTimeout(() => this.nextMove(), 100)
+        }
+      }
+    }
+  }
+ 
 }
 
 class Settings {
@@ -228,4 +311,10 @@ class Settings {
   finalState: number[]
   selectedTile: number
   isSolvable: boolean
+}
+
+class CustomNPuzzle extends NPuzzle {
+  currentState: number[]
+  stateIndex: number
+  currentOperation: TileMove
 }

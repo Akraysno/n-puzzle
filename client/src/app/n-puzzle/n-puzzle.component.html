@@ -37,7 +37,7 @@
           }" 
           *ngFor="let tile of settings.startState; let i = index"
         >
-          {{tile}}
+          <span *ngIf="tile !== 0">{{tile}}</span>
         </div>
       </div>
       <p class="error" *ngIf="!settings.isSolvable">Cette configuration ne peut pas être résolue.</p>
@@ -59,7 +59,7 @@
           }" 
           *ngFor="let tile of settings.finalState; let i = index"
         >
-          {{tile}}
+          <span *ngIf="tile !== 0">{{tile}}</span>
         </div>
       </div>
     </div>
@@ -74,5 +74,31 @@
 
   <div class="puzzle-container p-20">
     <h2 class="title">Puzzle</h2>
+    <div class="main-puzzle-container">
+      <div class="main-puzzle puzzle-{{currentSolvedPuzzle && currentSolvedPuzzle.size}}" *ngIf="currentSolvedPuzzle && currentSolvedPuzzle.currentState && currentSolvedPuzzle.currentState.length">
+        <div 
+          [@moveRight]="currentSolvedPuzzle.operations && currentSolvedPuzzle.currentOperation && currentSolvedPuzzle.currentOperation.direction === tileMoveDirection.LEFT && currentSolvedPuzzle.currentOperation.tile === tile"
+          [@moveLeft]="currentSolvedPuzzle.operations && currentSolvedPuzzle.currentOperation && currentSolvedPuzzle.currentOperation.direction === tileMoveDirection.RIGHT && currentSolvedPuzzle.currentOperation.tile === tile"
+          [@moveBottom]="currentSolvedPuzzle.operations && currentSolvedPuzzle.currentOperation && currentSolvedPuzzle.currentOperation.direction === tileMoveDirection.TOP && currentSolvedPuzzle.currentOperation.tile === tile"
+          [@moveTop]="currentSolvedPuzzle.operations && currentSolvedPuzzle.currentOperation && currentSolvedPuzzle.currentOperation.direction === tileMoveDirection.BOTTOM && currentSolvedPuzzle.currentOperation.tile === tile"
+          (@moveRight.done)="goToNextStep($event, tileMoveDirection.LEFT)"
+          (@moveLeft.done)="goToNextStep($event, tileMoveDirection.RIGHT)"
+          (@moveBottom.done)="goToNextStep($event, tileMoveDirection.TOP)"
+          (@moveTop.done)="goToNextStep($event, tileMoveDirection.BOTTOM)"
+          class="tile tile-{{tileIndex}}" 
+          [ngClass]="{'tile-border': tile !== 0}"
+          id="solved-puzzle-tile-{{tile}}" 
+          *ngFor="let tile of currentSolvedPuzzle.currentState; let tileIndex = index"
+        >
+          <span *ngIf="tile !== 0">{{tile}}</span>
+        </div>
+      </div>
+      <div class="bottomm-container" *ngIf="currentSolvedPuzzle && currentSolvedPuzzle.currentState && currentSolvedPuzzle.currentState.length">
+        <app-button label="Suivant" cssClass="width-100p" color="primary" (onClick)="nextMove()"></app-button>
+      </div>
+      <div class="no-puzzle" *ngIf="!currentSolvedPuzzle">
+        Aucun puzzle résolu pour le moment.
+      </div>
+    </div>
   </div>
 </div>

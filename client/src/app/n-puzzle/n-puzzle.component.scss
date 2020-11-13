@@ -2,6 +2,8 @@
 
 $blue: #90e5ff;
 $border: 1px solid rgba(0, 0, 0, 0.12);
+$solvedPuzzleTileSize: 100px;
+$solvedPuzzleAnimationDuration: 1s;
 
 .main-container {
     display: flex;
@@ -134,6 +136,94 @@ $border: 1px solid rgba(0, 0, 0, 0.12);
         width: 100%;
         height: calc(100vh - 4Opx);
         max-height: calc(100vh - 4Opx);
+        .main-puzzle-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: calc(100% - 68px);
+            padding: 0 0 20px;
+            .main-puzzle {
+                display: grid;
+                border: $border;
+                overflow: hidden;
+                .tile {
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    background-color: white;
+                    &.tile-border {
+                        border: $border;
+                    }
+                }
+                &.puzzle-3 {
+                    grid-template-columns: repeat(3, $solvedPuzzleTileSize);
+                    grid-template-rows: repeat(3, $solvedPuzzleTileSize);
+                    .tile-0 { grid-column: 1; grid-row: 1; }
+                    .tile-1 { grid-column: 2; grid-row: 1; }
+                    .tile-2 { grid-column: 3; grid-row: 1; }
+                    .tile-3 { grid-column: 1; grid-row: 2; }
+                    .tile-4 { grid-column: 2; grid-row: 2; }
+                    .tile-5 { grid-column: 3; grid-row: 2; }
+                    .tile-6 { grid-column: 1; grid-row: 3; }
+                    .tile-7 { grid-column: 2; grid-row: 3; }
+                    .tile-8 { grid-column: 3; grid-row: 3; }
+                }
+                &.puzzle-4 {
+                    grid-template-columns: repeat(4, $solvedPuzzleTileSize);
+                    grid-template-rows: repeat(4, $solvedPuzzleTileSize);
+                    .tile-0  { grid-column: 1; grid-row: 1; }
+                    .tile-1  { grid-column: 2; grid-row: 1; }
+                    .tile-2  { grid-column: 3; grid-row: 1; }
+                    .tile-3  { grid-column: 4; grid-row: 1; }
+                    .tile-4  { grid-column: 1; grid-row: 2; }
+                    .tile-5  { grid-column: 2; grid-row: 2; }
+                    .tile-6  { grid-column: 3; grid-row: 2; }
+                    .tile-7  { grid-column: 4; grid-row: 2; }
+                    .tile-8  { grid-column: 1; grid-row: 3; }
+                    .tile-9  { grid-column: 2; grid-row: 3; }
+                    .tile-10 { grid-column: 3; grid-row: 3; }
+                    .tile-11 { grid-column: 4; grid-row: 3; }
+                    .tile-12 { grid-column: 1; grid-row: 4; }
+                    .tile-13 { grid-column: 2; grid-row: 4; }
+                    .tile-14 { grid-column: 3; grid-row: 4; }
+                    .tile-15 { grid-column: 4; grid-row: 4; }
+                }
+                &.puzzle-5 {
+                    grid-template-columns: repeat(5, $solvedPuzzleTileSize);
+                    grid-template-rows: repeat(5, $solvedPuzzleTileSize);
+                    .tile-0  { grid-column: 1; grid-row: 1; }
+                    .tile-1  { grid-column: 2; grid-row: 1; }
+                    .tile-2  { grid-column: 3; grid-row: 1; }
+                    .tile-3  { grid-column: 4; grid-row: 1; }
+                    .tile-4  { grid-column: 5; grid-row: 1; }
+                    .tile-5  { grid-column: 1; grid-row: 2; }
+                    .tile-6  { grid-column: 2; grid-row: 2; }
+                    .tile-7  { grid-column: 3; grid-row: 2; }
+                    .tile-8  { grid-column: 4; grid-row: 2; }
+                    .tile-9  { grid-column: 5; grid-row: 2; }
+                    .tile-10 { grid-column: 1; grid-row: 3; }
+                    .tile-11 { grid-column: 2; grid-row: 3; }
+                    .tile-12 { grid-column: 3; grid-row: 3; }
+                    .tile-13 { grid-column: 4; grid-row: 3; }
+                    .tile-14 { grid-column: 5; grid-row: 3; }
+                    .tile-15 { grid-column: 1; grid-row: 4; }
+                    .tile-16 { grid-column: 2; grid-row: 4; }
+                    .tile-17 { grid-column: 3; grid-row: 4; }
+                    .tile-18 { grid-column: 4; grid-row: 4; }
+                    .tile-19 { grid-column: 5; grid-row: 4; }
+                    .tile-20 { grid-column: 1; grid-row: 5; }
+                    .tile-21 { grid-column: 2; grid-row: 5; }
+                    .tile-22 { grid-column: 3; grid-row: 5; }
+                    .tile-23 { grid-column: 4; grid-row: 5; }
+                    .tile-24 { grid-column: 5; grid-row: 5; }
+                }
+            }
+            .no-puzzle {
+                color: rgba(0, 0, 0, 0.2);
+                font-size: 30px;
+            }
+        }
     }
 }
 .separator {
