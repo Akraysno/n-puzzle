@@ -46,3 +46,10 @@ $pink-color-status: #BF2D6C;
     font-weight: normal;
     src: local("Comfortaa_Light"), url("#{$font-path}/Comfortaa-Light.ttf") format("opentype");
 }
+
+@font-face {
+    font-family: 'Material Icons';
+    font-style: normal;
+    font-weight: 400;
+    src: local('Material Icons'), url("#{$font-path}/Material-Icons.woff2") format('woff2');
+}

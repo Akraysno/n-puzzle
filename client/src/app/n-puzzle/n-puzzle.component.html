@@ -72,15 +72,15 @@
     </div>
   </div>
 
-  <div class="puzzle-container p-20">
+  <div class="puzzle-container p-t-20 p-b-20">
     <h2 class="title">Puzzle</h2>
-    <div class="main-puzzle-container">
-      <div class="main-puzzle puzzle-{{currentSolvedPuzzle && currentSolvedPuzzle.size}}" *ngIf="currentSolvedPuzzle && currentSolvedPuzzle.currentState && currentSolvedPuzzle.currentState.length">
+    <div class="main-puzzle-container p-l-20 p-r-20">
+      <div class="main-puzzle puzzle-{{result && result.puzzle.size}}" *ngIf="result && result.puzzle && result.currentState && result.currentState.length">
         <div 
-          [@moveRight]="currentSolvedPuzzle.operations && currentSolvedPuzzle.currentOperation && currentSolvedPuzzle.currentOperation.direction === tileMoveDirection.LEFT && currentSolvedPuzzle.currentOperation.tile === tile"
-          [@moveLeft]="currentSolvedPuzzle.operations && currentSolvedPuzzle.currentOperation && currentSolvedPuzzle.currentOperation.direction === tileMoveDirection.RIGHT && currentSolvedPuzzle.currentOperation.tile === tile"
-          [@moveBottom]="currentSolvedPuzzle.operations && currentSolvedPuzzle.currentOperation && currentSolvedPuzzle.currentOperation.direction === tileMoveDirection.TOP && currentSolvedPuzzle.currentOperation.tile === tile"
-          [@moveTop]="currentSolvedPuzzle.operations && currentSolvedPuzzle.currentOperation && currentSolvedPuzzle.currentOperation.direction === tileMoveDirection.BOTTOM && currentSolvedPuzzle.currentOperation.tile === tile"
+          [@moveRight]="result.currentMove && result.currentMove.direction === tileMoveDirection.LEFT && result.currentMove.tile === tile"
+          [@moveLeft]="result.currentMove && result.currentMove.direction === tileMoveDirection.RIGHT && result.currentMove.tile === tile"
+          [@moveBottom]="result.currentMove && result.currentMove.direction === tileMoveDirection.TOP && result.currentMove.tile === tile"
+          [@moveTop]="result.currentMove && result.currentMove.direction === tileMoveDirection.BOTTOM && result.currentMove.tile === tile"
           (@moveRight.done)="goToNextStep($event, tileMoveDirection.LEFT)"
           (@moveLeft.done)="goToNextStep($event, tileMoveDirection.RIGHT)"
           (@moveBottom.done)="goToNextStep($event, tileMoveDirection.TOP)"
@@ -88,16 +88,48 @@
           class="tile tile-{{tileIndex}}" 
           [ngClass]="{'tile-border': tile !== 0}"
           id="solved-puzzle-tile-{{tile}}" 
-          *ngFor="let tile of currentSolvedPuzzle.currentState; let tileIndex = index"
+          *ngFor="let tile of result.currentState; let tileIndex = index"
         >
-          <span *ngIf="tile !== 0">{{tile}}</span>
+          <span *ngIf="tile !== 0">
+            {{tile}} -- {{
+              (result.currentMove && result.currentMove.direction === tileMoveDirection.LEFT && result.currentMove.tile === tile) ? 'RIGHT' :
+              (result.currentMove && result.currentMove.direction === tileMoveDirection.RIGHT && result.currentMove.tile === tile) ? 'LEFT' :
+              (result.currentMove && result.currentMove.direction === tileMoveDirection.TOP && result.currentMove.tile === tile) ? 'BOTTOM' :
+              (result.currentMove && result.currentMove.direction === tileMoveDirection.BOTTOM && result.currentMove.tile === tile) ? 'TOP' :
+              'NONE'
+            }} -- {{result && result.currentMove ? result.currentMove.direction : 'NONE'}}_{{result && result.currentMove ? result.currentMove.tile : -1}}
+          </span>
         </div>
       </div>
-      <div class="bottomm-container" *ngIf="currentSolvedPuzzle && currentSolvedPuzzle.currentState && currentSolvedPuzzle.currentState.length">
-        <app-button label="Suivant" cssClass="width-100p" color="primary" (onClick)="nextMove()"></app-button>
-      </div>
-      <div class="no-puzzle" *ngIf="!currentSolvedPuzzle">
+      <div class="no-puzzle" *ngIf="!result || !result.puzzle">
         Aucun puzzle résolu pour le moment.
+      </div>
+    </div>
+    <div class="bottom-puzzle-container p-l-20 p-r-20 p-t-20" *ngIf="result && result.puzzle">
+      <div class="step-number-container">
+        {{result.currentStepIndex + 1}} / {{result.maxStep}}
+      </div>
+      <div class="controls-container">
+        <div class="control">
+          <button mat-mini-fab color="accent" (click)="nextMove(true)">
+            <mat-icon>skip_previous</mat-icon>
+          </button>
+        </div>
+        <div class="control" *ngIf="result.running">
+          <button mat-mini-fab color="accent">
+            <mat-icon>pause</mat-icon>
+          </button>
+        </div>
+        <div class="control" *ngIf="!result.running">
+          <button mat-mini-fab color="accent">
+            <mat-icon>play_arrow</mat-icon>
+          </button>
+        </div>
+        <div class="control">
+          <button mat-mini-fab color="accent" (click)="nextMove(false)">
+            <mat-icon>skip_next</mat-icon>
+          </button>
+        </div>
       </div>
     </div>
   </div>

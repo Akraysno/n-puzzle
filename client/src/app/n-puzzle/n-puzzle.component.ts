@@ -61,10 +61,8 @@ export class NPuzzleComponent implements OnInit {
   finalStateType = NPuzzleFinalState
   algorithms = NPuzzleAlgo
   loading: boolean = false
-  currentSolvedPuzzle: CustomNPuzzle
-  nextStepSolvedPuzzle: CustomNPuzzle
   tileMoveDirection = TileMoveDirection
-  autoMove: boolean = true
+  result: PuzzleResult
 
   constructor(
     private nPuzzleService: NPuzzleService,
@@ -259,9 +257,7 @@ export class NPuzzleComponent implements OnInit {
     this.loading = true
     this.nPuzzleService.resolve(this.currentAlgo, this.settings.size, this.settings.startState, this.settings.finalState).subscribe((res: CustomNPuzzle) => {
       console.log(res)
-      res.currentState = res.origin
-      res.stateIndex = 0
-      this.currentSolvedPuzzle = res
+      this.result = new PuzzleResult(res)
       this.loading = false
     }, err => {
       this.errorsService.displayError(err)
@@ -269,36 +265,42 @@ export class NPuzzleComponent implements OnInit {
     })
   }
 
-  nextMove() {
-    if (!this.currentSolvedPuzzle) return
-
-    let currentStep = this.currentSolvedPuzzle.operations[this.currentSolvedPuzzle.stateIndex]
-    let nextStepIndex = this.currentSolvedPuzzle.stateIndex + 1
-
-    if (nextStepIndex >= this.currentSolvedPuzzle.nbMoves) return
-    
-    let nextStep = this.currentSolvedPuzzle.operations[nextStepIndex]
-    this.currentSolvedPuzzle.stateIndex = nextStepIndex
-    let nextStepSolvedPuzzle = _.cloneDeep(this.currentSolvedPuzzle)
-    this.currentSolvedPuzzle.currentOperation = nextStep
-
-    nextStepSolvedPuzzle.currentOperation = null
-    let p = nextStepSolvedPuzzle.currentState
-    let tileIndex = p.indexOf(nextStep.tile)
+  nextMove(back: boolean) {
+    console.log(this)
+    if (!this.result || !this.result.puzzle) return
+    let nextStepIndex = this.result.currentStepIndex + (back === true ? -1 : 1)
+    console.log(nextStepIndex)
+    if (nextStepIndex >= this.result.maxStep || nextStepIndex < 0) return
+    console.log(33)
+    this.result.running = true
+    console.log(this.result.puzzle.operations, nextStepIndex)
+    let nextMove = this.result.puzzle.operations[nextStepIndex]
+    console.log(nextMove)
+    nextMove.back = back
+    this.result.currentStepIndex = nextStepIndex
+    this.result.currentMove = nextMove
+    let p = this.result.currentState.map(v => v)
+    let tileIndex = p.indexOf(nextMove.tile)
     let zeroIndex = p.indexOf(0)
-    p[zeroIndex] = nextStep.tile
+    p[zeroIndex] = nextMove.tile
     p[tileIndex] = 0
-    this.nextStepSolvedPuzzle = nextStepSolvedPuzzle
+    this.result.nextState = p
+    console.log(this.result.currentState)
+    console.log(this.result.nextState)
   }
 
   goToNextStep(event: any, direction: TileMoveDirection) {
-    if (!this.nextStepSolvedPuzzle || !this.currentSolvedPuzzle || !this.currentSolvedPuzzle.currentOperation) return
-    if (direction === this.currentSolvedPuzzle.currentOperation.direction) {
-      if (event.totalTime > 0 && event.phaseName === 'done' && event.toState === true) {
-        this.currentSolvedPuzzle = this.nextStepSolvedPuzzle
-        if (this.autoMove) {
-          setTimeout(() => this.nextMove(), 100)
-        }
+    if (!this.result || !this.result.puzzle || !this.result.currentMove) return
+    //console.log(event)
+    if (direction === this.result.currentMove.direction && event.totalTime > 0 && event.phaseName === 'done' && event.toState === true) {
+      console.log('Done')
+      this.result.currentMove = null
+      this.result.currentState = this.result.nextState
+      this.result.nextState = null
+      this.result.running = false
+      this.result = _.cloneDeep(this.result)
+      if (this.result.autoRun) {
+        setTimeout(() => this.nextMove(false))
       }
     }
   }
@@ -314,7 +316,33 @@ class Settings {
 }
 
 class CustomNPuzzle extends NPuzzle {
+  operations: CustomTileMove[]
+}
+
+class CustomTileMove extends TileMove {
+  back: boolean
+}
+
+class PuzzleResult {
+  running: boolean = false
+  puzzle: CustomNPuzzle
   currentState: number[]
-  stateIndex: number
-  currentOperation: TileMove
+  nextState: number[]
+  currentStepIndex: number
+  maxStep: number
+  progress: number
+  currentMove: TileMove
+  autoRun: boolean
+
+  constructor(puzzle: CustomNPuzzle) {
+    if (!puzzle) return
+    this.running = false
+    this.puzzle = puzzle
+    this.currentState = puzzle.origin.map(v => v)
+    this.currentStepIndex = 0
+    this.maxStep = puzzle.nbMoves
+    this.progress = 0
+    this.currentMove = null
+    this.autoRun = false
+  }
 }

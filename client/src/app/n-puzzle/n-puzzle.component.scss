@@ -134,15 +134,17 @@ $solvedPuzzleAnimationDuration: 1s;
     }
     .puzzle-container {
         width: 100%;
-        height: calc(100vh - 4Opx);
-        max-height: calc(100vh - 4Opx);
+        height: calc(100% - 40px);
+        min-height: calc(100% - 40px);
+        max-height: calc(100% - 40px);
+        display: flex;
+        flex-direction: column;
         .main-puzzle-container {
             display: flex;
             align-items: center;
             justify-content: center;
-            width: 100%;
-            height: calc(100% - 68px);
-            padding: 0 0 20px;
+            height: 100%;
+            margin-bottom: 20px;
             .main-puzzle {
                 display: grid;
                 border: $border;
@@ -222,6 +224,27 @@ $solvedPuzzleAnimationDuration: 1s;
             .no-puzzle {
                 color: rgba(0, 0, 0, 0.2);
                 font-size: 30px;
+            }
+        }
+        .bottom-puzzle-container {
+            position: relative;
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            align-items: center;
+            border-top: $border;
+            .step-number-container {
+                position: absolute;
+                left: 30px;
+            }
+            .controls-container {
+                display: flex;
+                flex-direction: row;
+                justify-content: center;
+                align-items: center;
+                .control {
+                    margin: 0 10px;
+                }
             }
         }
     }

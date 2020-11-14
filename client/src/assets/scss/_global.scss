@@ -3,7 +3,7 @@ body{
   margin: 0px;
 }
 * {
-  font-family: $font-family !important;
+  font-family: $font-family;
 }
 *:focus {
   outline:0;
@@ -154,4 +154,19 @@ app-ngx-editor {
 }
 .mat-tooltip {
   white-space: pre-line;
+}
+.material-icons {
+  font-family: 'Material Icons';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
 }
