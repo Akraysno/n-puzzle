@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import * as _ from 'lodash'
 import { NPuzzleFinalState } from '../../../../entities/n-puzzle/enums/n-puzzle-final-state.enum'
 import { NPuzzleAlgo } from '../../../../entities/n-puzzle/enums/n-puzzle-algo.enum'
 import { NPuzzle, TileMove } from '../../../../entities/n-puzzle/n-puzzle.entity'
@@ -48,7 +47,7 @@ import { animate, keyframes, state, style, transition, trigger } from '@angular/
           style({ transform: 'translateY(-100px)', offset: 1 }),
         ])),
       )
-    ]),
+    ])
   ]
 })
 
@@ -143,8 +142,8 @@ export class NPuzzleComponent implements OnInit {
   }
 
   private validateInversions(boardSize: number, board: number[], finalBoard: number[]) {
-    let start: number[][] = _.chunk(board, boardSize)
-    let final: number[][] = _.chunk(finalBoard, boardSize)
+    let start: number[][] = this.chunkArray(board, boardSize)
+    let final: number[][] = this.chunkArray(finalBoard, boardSize)
     const findD = () => {
       let xi: number
       let yi: number
@@ -201,7 +200,7 @@ export class NPuzzleComponent implements OnInit {
     if (type === NPuzzleFinalState.LINE) {
       let len = Math.pow(size, 2)
       let finalBoard: number[] = Array(len).fill(0, 0, len).map((v, i) => (i + 1) === len ? 0 : (i + 1))
-      final = _.chunk(finalBoard, size)
+      final = this.chunkArray(finalBoard, size)
     } else if (type === NPuzzleFinalState.SPIRAL) {
       final = Array(size).fill(null, 0, size).map(row => {
         return Array(size).fill(-1, 0, size)
@@ -250,11 +249,12 @@ export class NPuzzleComponent implements OnInit {
       }
       final
     }
-    return _.flatten(final)
+    return this.flattenArray(final)
   }
 
   resolve() {
     this.loading = true
+    this.result = null
     this.nPuzzleService.resolve(this.currentAlgo, this.settings.size, this.settings.startState, this.settings.finalState).subscribe((res: CustomNPuzzle) => {
       console.log(res)
       this.result = new PuzzleResult(res)
@@ -266,18 +266,18 @@ export class NPuzzleComponent implements OnInit {
   }
 
   nextMove(back: boolean) {
-    console.log(this)
-    if (!this.result || !this.result.puzzle) return
+    if (!this.result || !this.result.puzzle || this.result.running) return
     let nextStepIndex = this.result.currentStepIndex + (back === true ? -1 : 1)
     console.log(nextStepIndex)
     if (nextStepIndex >= this.result.maxStep || nextStepIndex < 0) return
     console.log(33)
     this.result.running = true
     console.log(this.result.puzzle.operations, nextStepIndex)
-    let nextMove = this.result.puzzle.operations[nextStepIndex]
+    let nextMove = this.result.puzzle.operations[nextStepIndex + (back === true ? 1 : 0)]
     console.log(nextMove)
     nextMove.back = back
     this.result.currentStepIndex = nextStepIndex
+    this.result.progress = (this.result.currentStepIndex / (this.result.maxStep - 1)) * 100
     this.result.currentMove = nextMove
     let p = this.result.currentState.map(v => v)
     let tileIndex = p.indexOf(nextMove.tile)
@@ -290,21 +290,64 @@ export class NPuzzleComponent implements OnInit {
   }
 
   goToNextStep(event: any, direction: TileMoveDirection) {
-    if (!this.result || !this.result.puzzle || !this.result.currentMove) return
+    if (!this.result || !this.result.puzzle || !this.result.currentMove || !this.result.running) return
     //console.log(event)
-    if (direction === this.result.currentMove.direction && event.totalTime > 0 && event.phaseName === 'done' && event.toState === true) {
-      console.log('Done')
+    if (event.totalTime > 0 && event.phaseName === 'done' && event.toState === true) {
+      console.log(direction, this.result.currentMove)
+      if (direction !== this.result.currentMove.direction) return
       this.result.currentMove = null
       this.result.currentState = this.result.nextState
+      console.log(this.result.currentState, this.result.nextState)
       this.result.nextState = null
-      this.result.running = false
-      this.result = _.cloneDeep(this.result)
-      if (this.result.autoRun) {
-        setTimeout(() => this.nextMove(false))
-      }
+      setTimeout(() => {
+        console.log('Done')
+        this.result.running = false
+        if (this.result.puzzle.final.join(',') === this.result.currentState.join(',')) {
+          this.result.autoRun = false
+        }
+        if (this.result.autoRun) {
+          this.nextMove(false)
+        }
+      })
     }
   }
- 
+
+  moveTile(back: boolean) {
+    this.result.autoRun = false
+    this.nextMove(back)
+  }
+
+  play() {
+    this.result.autoRun = true
+    if (this.result.puzzle.final.join(',') === this.result.currentState.join(',')) {
+      this.result.autoRun = false
+    }
+    this.nextMove(false)
+  }
+
+  pause() {
+    this.result.autoRun = false
+  }
+
+  chunkArray(arr: any[], size: number) {
+    let resultArray: any[][] = []
+    let nbRow: number = Math.ceil(arr.length / size)
+    for (let i = 0; i < nbRow; i++) {
+      let index = i * size
+      resultArray.push(arr.slice(index, index + size))
+    }
+    console.log(arr, resultArray)
+    return resultArray
+  }
+
+  flattenArray(arr: any[][]) {
+    let resultArray: any[] = []
+    for (let cell of arr) {
+      resultArray = resultArray.concat(cell)
+    }
+    console.log(arr, resultArray)
+    return resultArray
+  }
 }
 
 class Settings {

@@ -226,6 +226,14 @@ $solvedPuzzleAnimationDuration: 1s;
                 font-size: 30px;
             }
         }
+        .progress-bar-container {
+            height: 5px;
+            width: 100%;
+            .progress-bar {
+                height: 100%;
+                background-color: $danger-color;
+            }
+        }
         .bottom-puzzle-container {
             position: relative;
             display: flex;
