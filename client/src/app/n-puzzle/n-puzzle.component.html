@@ -111,18 +111,13 @@
       </div>
       <div class="controls-container">
         <div class="control">
-          <button mat-mini-fab color="accent" (click)="moveTile(true)">
+          <button mat-mini-fab color="accent" (click)="moveTile(false, true)">
             <mat-icon>skip_previous</mat-icon>
           </button>
         </div>
-        <div class="control" *ngIf="result.autoRun">
-          <button mat-mini-fab color="accent" (click)="pause()">
-            <mat-icon>pause</mat-icon>
-          </button>
-        </div>
-        <div class="control" *ngIf="!result.autoRun">
-          <button mat-mini-fab color="accent" (click)="play()">
-            <mat-icon>play_arrow</mat-icon>
+        <div class="control" *ngIf="true || !result.autoRun">
+          <button mat-mini-fab color="accent" (click)="result.autoRun ? pause() : moveTile(true)">
+            <mat-icon>{{result.autoRun ? 'pause' : 'play_arrow'}}</mat-icon>
           </button>
         </div>
         <div class="control">

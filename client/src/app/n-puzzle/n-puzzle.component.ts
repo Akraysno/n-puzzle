@@ -268,16 +268,14 @@ export class NPuzzleComponent implements OnInit {
   nextMove(back: boolean) {
     if (!this.result || !this.result.puzzle || this.result.running) return
     let nextStepIndex = this.result.currentStepIndex + (back === true ? -1 : 1)
-    console.log(nextStepIndex)
-    if (nextStepIndex >= this.result.maxStep || nextStepIndex < 0) return
-    console.log(33)
+    if (nextStepIndex >= this.result.maxStep || nextStepIndex < 0) {
+      this.result.autoRun = false
+      return
+    }
     this.result.running = true
-    console.log(this.result.puzzle.operations, nextStepIndex)
     let nextMove = this.result.puzzle.operations[nextStepIndex + (back === true ? 1 : 0)]
-    console.log(nextMove)
     nextMove.back = back
     this.result.currentStepIndex = nextStepIndex
-    this.result.progress = (this.result.currentStepIndex / (this.result.maxStep - 1)) * 100
     this.result.currentMove = nextMove
     let p = this.result.currentState.map(v => v)
     let tileIndex = p.indexOf(nextMove.tile)
@@ -285,23 +283,18 @@ export class NPuzzleComponent implements OnInit {
     p[zeroIndex] = nextMove.tile
     p[tileIndex] = 0
     this.result.nextState = p
-    console.log(this.result.currentState)
-    console.log(this.result.nextState)
   }
 
   goToNextStep(event: any, direction: TileMoveDirection) {
-    if (!this.result || !this.result.puzzle || !this.result.currentMove || !this.result.running) return
-    //console.log(event)
     if (event.totalTime > 0 && event.phaseName === 'done' && event.toState === true) {
-      console.log(direction, this.result.currentMove)
+      if (!this.result || !this.result.puzzle || !this.result.currentMove || !this.result.running) return
       if (direction !== this.result.currentMove.direction) return
       this.result.currentMove = null
       this.result.currentState = this.result.nextState
-      console.log(this.result.currentState, this.result.nextState)
       this.result.nextState = null
       setTimeout(() => {
-        console.log('Done')
         this.result.running = false
+        this.result.progress = (this.result.currentStepIndex / (this.result.maxStep - 1)) * 100
         if (this.result.puzzle.final.join(',') === this.result.currentState.join(',')) {
           this.result.autoRun = false
         }
@@ -312,17 +305,9 @@ export class NPuzzleComponent implements OnInit {
     }
   }
 
-  moveTile(back: boolean) {
-    this.result.autoRun = false
+  moveTile(autoRun: boolean, back: boolean = false) {
+    this.result.autoRun = !!autoRun
     this.nextMove(back)
-  }
-
-  play() {
-    this.result.autoRun = true
-    if (this.result.puzzle.final.join(',') === this.result.currentState.join(',')) {
-      this.result.autoRun = false
-    }
-    this.nextMove(false)
   }
 
   pause() {
@@ -336,7 +321,6 @@ export class NPuzzleComponent implements OnInit {
       let index = i * size
       resultArray.push(arr.slice(index, index + size))
     }
-    console.log(arr, resultArray)
     return resultArray
   }
 
@@ -345,7 +329,6 @@ export class NPuzzleComponent implements OnInit {
     for (let cell of arr) {
       resultArray = resultArray.concat(cell)
     }
-    console.log(arr, resultArray)
     return resultArray
   }
 }
