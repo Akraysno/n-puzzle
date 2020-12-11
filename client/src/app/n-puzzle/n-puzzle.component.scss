@@ -139,6 +139,19 @@ $solvedPuzzleAnimationDuration: 1s;
         max-height: calc(100% - 40px);
         display: flex;
         flex-direction: column;
+        position: relative;
+        .stats {
+            position: absolute;
+            top: 0;
+            right: 0;
+            text-align: left;
+            border: $border;
+            font-size: 11px;
+            padding: 3px 6px;
+            table {
+                border-collapse: collapse;
+            }
+        }
         .main-puzzle-container {
             display: flex;
             align-items: center;

@@ -292,9 +292,9 @@ export class NPuzzleComponent implements OnInit {
       this.result.currentMove = null
       this.result.currentState = this.result.nextState
       this.result.nextState = null
+      this.result.progress = ((this.result.currentStepIndex + 1) / this.result.maxStep) * 100
       setTimeout(() => {
         this.result.running = false
-        this.result.progress = (this.result.currentStepIndex / (this.result.maxStep - 1)) * 100
         if (this.result.puzzle.final.join(',') === this.result.currentState.join(',')) {
           this.result.autoRun = false
         }
@@ -359,6 +359,9 @@ class PuzzleResult {
   progress: number
   currentMove: TileMove
   autoRun: boolean
+  nbCloseList: number
+  nbOpenList: number
+  duration: number
 
   constructor(puzzle: CustomNPuzzle) {
     if (!puzzle) return
@@ -367,7 +370,7 @@ class PuzzleResult {
     this.currentState = puzzle.origin.map(v => v)
     this.currentStepIndex = 0
     this.maxStep = puzzle.nbMoves
-    this.progress = 0
+    this.progress = ((this.currentStepIndex + 1) / this.maxStep) * 100
     this.currentMove = null
     this.autoRun = false
   }

@@ -148,9 +148,8 @@ export class NPuzzleService {
      * @param dto 
      */
     async resolvePuzzle(type: NPuzzleAlgo, size: number, startState: number[], finalState: number[]): Promise<NPuzzle> {
-        const resolveCurrent = async (nPuzzle: NPuzzle) => {
+        const resolveCurrent = async (search: SearchUsingAStar) => {
             return new Promise(async (resolve, reject) => {
-                let search = new SearchUsingAStar(new State(_.flatten(nPuzzle.origin), _.flatten(nPuzzle.final)), new State(_.flatten(nPuzzle.final), _.flatten(nPuzzle.final)))
                 let solution = await search.search()
                 let operations = solution.map(s => new TileMove(s.state.swip, s.state.moveDirection))
                 resolve(operations)
@@ -170,9 +169,12 @@ export class NPuzzleService {
             throw new BadRequestException(`Le puzzle ne peut pas être résolu`)
         }
         let startTime = moment()
-        let solution: TileMove[] = (await resolveCurrent(nPuzzle)) as TileMove[]
+        let search = new SearchUsingAStar(new State(_.flatten(nPuzzle.origin), _.flatten(nPuzzle.final)), new State(_.flatten(nPuzzle.final), _.flatten(nPuzzle.final)))
+        let solution: TileMove[] = (await resolveCurrent(search)) as TileMove[]
         nPuzzle.nbMoves = solution.length
         nPuzzle.operations = solution
+        nPuzzle.nbCloseList = search.closedList.size
+        nPuzzle.nbOpenList = search.openList.count()
         nPuzzle.duration = moment().diff(startTime)
         return nPuzzle
     }

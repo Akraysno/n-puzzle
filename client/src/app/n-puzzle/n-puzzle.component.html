@@ -73,7 +73,37 @@
   </div>
 
   <div class="puzzle-container p-t-20 p-b-20">
+    <div class="stats" *ngIf="result && result.puzzle">
+      <table>
+        <tr>
+          <td>Taille :</td>
+          <td>{{result.puzzle.size}}</td>
+        </tr>
+        <tr>
+          <td>Algorithme : </td>
+          <td>{{result.puzzle.type}}</td>
+        </tr>
+        <tr>
+          <td>Temps de résolution : </td>
+          <td>{{result.puzzle.duration}} ms</td>
+        </tr>
+        <tr>
+          <td>Nombre de mouvements : </td>
+          <td>{{result.puzzle.nbMoves}}</td>
+        </tr>
+        <tr>
+          <td>Close list : </td>
+          <td>{{result.puzzle.nbCloseList}}</td>
+        </tr>
+        <tr>
+          <td>Open list : </td>
+          <td>{{result.puzzle.nbOpenList}}</td>
+        </tr>
+      </table>
+    </div>
+
     <h2 class="title">Puzzle</h2>
+
     <div class="main-puzzle-container p-l-20 p-r-20">
       <div class="main-puzzle puzzle-{{result && result.puzzle.size}}" *ngIf="result && result.puzzle && result.currentState && result.currentState.length">
         <div 

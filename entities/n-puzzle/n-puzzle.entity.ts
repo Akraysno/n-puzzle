@@ -10,6 +10,8 @@ export class NPuzzle {
     nbMoves: number;
     duration: number;
     solvable: boolean;
+    nbOpenList: number;
+    nbCloseList: number;
 }
 
 export class TileMove {
