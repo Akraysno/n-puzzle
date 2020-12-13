@@ -67,24 +67,6 @@ export class NPuzzleService {
         return nPuzzle
     }
 
-    /**
-     * Generate random board for the given size
-     * 
-     * @param size
-     */
-    async generateRandomBoard(size?: number): Promise<number[]> {
-        if (!size || size <= 0) {
-            size = 3
-        }
-        let tmpArray: number[] = Array(Math.pow(size, 2)).fill(-1).map((v, i) => i)
-        let shuffleArray: number[] = []
-        while (tmpArray.length > 0) {
-            let r = Math.floor(Math.random() * tmpArray.length);
-            shuffleArray.push(tmpArray.splice(r, 1)[0])
-        }
-        return shuffleArray
-    }
-
     async getSolvability(boardSize: number, board: number[], final: number[]): Promise<boolean> {
         let isSolvable: boolean = false
         if (boardSize % 2 !== 0) {
@@ -160,55 +142,6 @@ export class NPuzzleService {
     }
 
     /**
-     * Check if file is a valid board
-     * 
-     * @param fileString 
-     */
-    checkFile(fileString: string): FileChecker {
-        let fileLines: string[] = _.compact(fileString.split('\n').map(line => {
-            line = line.trim()
-            if (!(line.length && line[0] === '#')) {
-                return line
-            }
-        }))
-        let lineSize = fileLines.shift().trim()
-        let size = parseInt(lineSize)
-        if (size < 1 || size.toString() !== lineSize) {
-            throw new BadRequestException('Mauvait format de fichier')
-        }
-        if (fileLines.length !== size) {
-            throw new BadRequestException('La taille du puzzle et le nombre de lignes ne correspondent pas')
-        }
-
-        let board: number[][] = []
-
-        for (let line of fileLines) {
-            let numbersStr = line.split(' ')
-            let numbers = numbersStr.map(n => {
-                let num = parseInt(n.trim())
-                return num
-            }).filter(n => n >= 0)
-            board.push(numbers)
-        }
-
-        for (let line of board) {
-            if (line.length !== size) {
-                throw new BadRequestException('La taille du puzzle et la longueur des lignes ne correspondent pas')
-            }
-        }
-
-        // Verify numbers in board
-        let numbersList = _.flattenDeep(board).sort((a, b) => a > b ? 1 : -1)
-        numbersList.forEach((num: number, index: number) => {
-            if (num !== index) {
-                throw new BadRequestException('Les nombres sur la plateau sont incorrect')
-            }
-        });
-
-        return new FileChecker(size, board)
-    }
-
-    /**
      * Check if puzzle is a valid board
      * 
      * @param puzzle 
@@ -232,89 +165,6 @@ export class NPuzzleService {
         return true
     }
 
-    /**
-     * Generate final board for a specified size
-     * 
-     * @param size 
-     */
-
-    private generateFinalBoard(size: number, type: NPuzzleFinalState = NPuzzleFinalState.SPIRAL): number[] {
-        let final: number[][] = []
-        if (type === NPuzzleFinalState.LINE) {
-            let len = Math.pow(size, 2)
-            let finalBoard: number[] = Array(len).fill(0, 0, len).map((v, i) => (i + 1) === len ? 0 : (i + 1))
-            final = this.chunkArray(finalBoard, size)
-        } else if (type === NPuzzleFinalState.SPIRAL) {
-            final = Array(size).fill(null, 0, size).map(row => {
-                return Array(size).fill(-1, 0, size)
-            })
-
-            let nbCase: number = size * size
-            let dirIsHoriz: boolean = true
-            let x: number = 0
-            let y: number = 0
-            let xNeg: boolean = false
-            let yNeg: boolean = false
-            let nbCaseFilled: number = 0
-
-            while (nbCase !== nbCaseFilled) {
-                final[x][y] = nbCaseFilled + 1 < nbCase ? nbCaseFilled + 1 : 0
-                if (dirIsHoriz === true) {
-                    if (y < size - 1) {
-                        if (final[x][y + (yNeg ? -1 : 1)] === -1) {
-                            y += (yNeg ? -1 : 1)
-                        } else {
-                            x += (xNeg ? -1 : 1)
-                            dirIsHoriz = false
-                            yNeg = !yNeg
-                        }
-                    } else {
-                        x += (xNeg ? -1 : 1)
-                        dirIsHoriz = false
-                        yNeg = !yNeg
-                    }
-                } else {
-                    if (x < size - 1) {
-                        if (final[x + (xNeg ? -1 : 1)][y] === -1) {
-                            x += (xNeg ? -1 : 1)
-                        } else {
-                            y += (yNeg ? -1 : 1)
-                            dirIsHoriz = true
-                            xNeg = !xNeg
-                        }
-                    } else {
-                        y += (yNeg ? -1 : 1)
-                        dirIsHoriz = true
-                        xNeg = !xNeg
-                    }
-                }
-                nbCaseFilled++
-            }
-            final
-        }
-        return this.flattenArray(final)
-    }
-
-    /**
-     * Search a tile in the board passed in params
-     * Returns the coordinates of the found tile
-     * 
-     * @param board 
-     * @param search 
-     */
-    searchNumberInBoard(board: number[][], search: number): TileCoords {
-        let coords = new TileCoords()
-        for (let [index, row] of board.entries()) {
-            let searchIndex: number = row.indexOf(search)
-            if (searchIndex !== -1) {
-                coords.row = index
-                coords.cell = searchIndex
-                break;
-            }
-        }
-        return coords
-    }
-
 
     chunkArray(arr: any[], size: number) {
         let resultArray: any[][] = []
@@ -333,21 +183,6 @@ export class NPuzzleService {
         }
         return resultArray
     }
-}
-
-class FileChecker {
-    size: number
-    board: number[][]
-
-    constructor(size: number, board: number[][]) {
-        this.size = size
-        this.board = board
-    }
-}
-
-export class TileCoords {
-    row: number
-    cell: number
 }
 
 export class State {
