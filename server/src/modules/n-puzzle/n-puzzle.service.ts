@@ -1,28 +1,13 @@
-import { Injectable, BadRequestException, flatten } from '@nestjs/common';
+import { Injectable, BadRequestException } from '@nestjs/common';
 import * as _ from 'lodash'
 import * as moment from 'moment'
 import { NPuzzle, TileMove } from '../../../../shared/models/n-puzzle.entity'
 import { NPuzzleAlgo } from '../../../../shared/models/enums/n-puzzle-algo.enum';
 import { TileMoveDirection } from '../../../../shared/models/enums/tile-move-direction.enum';
-import { NPuzzleFinalState } from '../../../../shared/models/enums/n-puzzle-final-state.enum'
 
 /**
  * Weigthed A* => https://github.com/hjlkon/A-star-algorithm/blob/main/weighted_A_star_Algorithm.m
  */
-
-const USE_PYTHON = false
-
-class ResolveStats {
-    unsolvable: number = 0
-    solved: number = 0
-    tooManyTime: NPuzzle[] = []
-    tooManyTimeCount: number = 0
-    lessThanOne: number = 0
-    rightTime: number = 0
-    finished: number = 0
-    totalDuration: number = 0
-    maxDuration: number = 0
-}
 
 @Injectable()
 export class NPuzzleService {
@@ -357,50 +342,10 @@ export class State {
     }
 }
 
-// Neighbours class.
-/// this is the class that creates and holds the graph relationship for the 8 puzzle and the empty slot.
-/// note that for this simple configuration the 8 puzzle graph is hardcoded.
-export class Neighbours {
-    private _edges: Map<number, number[]> = new Map();
-    private _instance: Neighbours = null;
-
-    constructor() { }
-
-    public set instance(instance: Neighbours) { this._instance = instance }
-    public get instance(): Neighbours { return this._instance || new Neighbours() }
-
-    public getNeighbours(id: number): number[] {
-        return this._edges.get(id);
-    }
-
-    public createGraphForNPuzzle(rowsOrCols: number): void {
-        for (let i = 0; i < rowsOrCols; i++) {
-            for (let j = 0; j < rowsOrCols; j++) {
-                let index: number = i * rowsOrCols + j
-                let li: number[] = []
-                if (i - 1 >= 0) {
-                    li.push((i - 1) * rowsOrCols + j)
-                }
-                if (i + 1 < rowsOrCols) {
-                    li.push((i + 1) * rowsOrCols + j);
-                }
-                if (j - 1 >= 0) {
-                    li.push(i * rowsOrCols + j - 1);
-                }
-                if (j + 1 < rowsOrCols) {
-                    li.push(i * rowsOrCols + j + 1);
-                }
-                this._edges.set(index, li)
-            }
-        }
-    }
-}
-
-// class Node
-/// <summary>
-/// A class to hold the State of the 8 puzzle. This is used to create the solution.
-/// Node not only holds the state of the 8 puzzle but also the cost associated with the specific state.
-/// </summary>
+/**
+ * A class to hold the State of the 8 puzzle. This is used to create the solution.
+ * Node not only holds the state of the 8 puzzle but also the cost associated with the specific state.
+ */
 export class Node {
     private _state: State
     private _parent: Node
