@@ -28,105 +28,6 @@ class ResolveStats {
 export class NPuzzleService {
     constructor() {
         moment().locale('fr')
-        //setTimeout(() => this.loopRun(1, 100000, new ResolveStats()), 5000)
-    }
-
-    async loopRun(counter: number, limit: number, stats: ResolveStats) {
-        if (!stats) stats = new ResolveStats()
-        let duration = -1
-        console.log('counter Start', counter)
-        try {
-            let solution = await this.defaultRun()
-            duration = solution.duration
-            if (!solution.solvable) {
-                stats.unsolvable += 1
-                counter--
-            } else {
-                if (duration >= 10000) {
-                    stats.tooManyTime.push(solution)
-                    stats.tooManyTimeCount += 1
-                } else {
-                    stats.rightTime += 1
-                    if (duration <= 1000) {
-                        stats.lessThanOne += 1
-                    }
-                }
-                stats.totalDuration += duration
-                stats.solved += 1
-            }
-        } catch (e) {
-            console.log(` ===> ${e.message ? e.message.message || e.toString() : e.toString()}`,)
-            counter--
-        }
-        stats.finished++
-        stats.maxDuration = duration > stats.maxDuration ? duration : stats.maxDuration
-        if (counter < limit) {
-            console.log(`\n${counter}---------------[${stats.finished}]  --  ${moment().format('LLL')}\n`)
-            counter++
-            await this.loopRun(counter, limit, stats)
-        } else {
-            console.log(`\n ===>  FINISH :   Duration max is ${stats.maxDuration}ms for ${stats.finished} puzzles`)
-            console.log(`\n              ->  ${stats.solved} solved in ${stats.totalDuration}ms`)
-            console.log(`\n              ->  ${stats.unsolvable} puzzle can't be solved`)
-            console.log(`\n              ->  ${stats.rightTime} solved in less than 10 secondes with ${stats.lessThanOne} in less than 1 seconde`)
-            console.log(`\n              ->  ${stats.tooManyTimeCount} solved in more than 10 secondes`)
-            for (let p of stats.tooManyTime) {
-                console.log(`\n                        -> [${p.origin.join(', ')}] solved in ${p.duration}ms`)
-            }
-        }
-    }
-
-    async defaultRun() {
-        let puzzle = await this.generateRandomBoard(3)//'3\n7 8 2\n0 4 6\n3 5 1'//'3\n2, 5, 7\n 0, 3, 4\n 6, 1, 8'//
-        let solution = await this.resolvePuzzleOld(puzzle, NPuzzleAlgo.MANHATTAN)
-        console.log(`Finish in ${solution.duration} millisecondes`)
-        return solution
-    }
-
-    /**
-     * Resolve a puzzle
-     * 
-     * @param dto 
-     */
-    async resolvePuzzleOld(puzzle: string, type: NPuzzleAlgo): Promise<NPuzzle> {
-        const resolveCurrent = async (python: boolean, nPuzzle: NPuzzle) => {
-            return new Promise(async (resolve, reject) => {
-                if (python || USE_PYTHON) {
-                    let py = spawn('python3', ['./scripts/puzzle-resolver.py', _.flatten(nPuzzle.origin), _.flatten(nPuzzle.final)])
-                    py.stdout.on('data', (data) => {
-                        let solution = JSON.parse(data.toString())
-                        resolve(solution)
-                    })
-                } else {
-                    let search = new SearchUsingAStar(new State(_.flatten(nPuzzle.origin), _.flatten(nPuzzle.final)), new State(_.flatten(nPuzzle.final), _.flatten(nPuzzle.final)))
-                    let solution = await search.search()
-                    let operations = solution.map(s => new TileMove(s.state.swip, s.state.moveDirection))
-                    resolve(operations)
-                }
-            })
-        }
-
-        let fileChecker: FileChecker = this.checkFile(puzzle)
-        let finalBoard: number[][] = this.generateFinalBoard(fileChecker.size);
-        console.log('Start is : \n', this.boardToString(fileChecker.board))
-        let nPuzzle = new NPuzzle()
-        nPuzzle.final = _.flatten(finalBoard)
-        nPuzzle.origin = _.flatten(fileChecker.board)
-        nPuzzle.type = type
-        nPuzzle.size = fileChecker.size
-        nPuzzle.solvable = await this.validateInversions(fileChecker.size, _.flatten(fileChecker.board), _.flatten(finalBoard))
-        if (nPuzzle.solvable) {
-            let startTime = moment()
-            let solution: TileMove[] = (await resolveCurrent(false, nPuzzle)) as TileMove[]
-            nPuzzle.nbMoves = solution.length
-            nPuzzle.operations = solution
-            nPuzzle.duration = moment().diff(startTime)
-        } else {
-            nPuzzle.operations = []
-            nPuzzle.nbMoves = 0
-            nPuzzle.duration = 0
-        }
-        return nPuzzle
     }
 
     /**
@@ -171,7 +72,7 @@ export class NPuzzleService {
      * 
      * @param size
      */
-    async generateRandomBoard(size?: number): Promise<string> {
+    async generateRandomBoard(size?: number): Promise<number[]> {
         if (!size || size <= 0) {
             size = 3
         }
@@ -181,9 +82,7 @@ export class NPuzzleService {
             let r = Math.floor(Math.random() * tmpArray.length);
             shuffleArray.push(tmpArray.splice(r, 1)[0])
         }
-        let chunkedArray: string[] = _.chunk(shuffleArray, size).map((chunk: number[]) => chunk.join(' '))
-        let board: string = `${size}\n${chunkedArray.join('\n')}`
-        return board
+        return shuffleArray
     }
 
     async getSolvability(boardSize: number, board: number[], final: number[]): Promise<boolean> {
@@ -204,57 +103,6 @@ export class NPuzzleService {
 
         }
         return isSolvable
-    }
-
-    async validateInversionsV1(boardSize: number, board: number[], final: number[]) {
-        let size = boardSize * boardSize - 1
-        let CountNumberOfRegularInversions = (toCheck: number[]) => {
-            let num: number = 0;
-            for (let i = 0; i < size; i++) {
-                if (toCheck[i] !== 0) {
-                    for (let j = i + 1; j < size + 1; j++) {
-                        if (toCheck[j] !== 0 && toCheck[i] > toCheck[j]) {
-                            num++;
-                        }
-                    }
-                }
-            }
-            return num;
-        }
-
-        let numberOfInversions: number = CountNumberOfRegularInversions(board)
-        let numberOfInversionsSolution: number = CountNumberOfRegularInversions(final)
-        let chunkedBoard: number[][] = _.chunk(board, boardSize)
-        let chunkedFinal: number[][] = _.chunk(final, boardSize)
-        console.log('numberOfInversions', numberOfInversions)
-        console.log('numberOfInversionsSolution', numberOfInversionsSolution)
-
-        let start0Index: number = -1;
-        let goal0Index: number = -1;
-
-        for (let i = 0; i < chunkedBoard.length; i++) {
-            start0Index = chunkedBoard[i].findIndex(c => c === 0);
-            if (start0Index > -1) {
-                start0Index = i * chunkedBoard.length + start0Index;
-                break;
-            }
-        }
-        for (let i = 0; i < chunkedFinal.length; i++) {
-            goal0Index = chunkedFinal[i].findIndex(c => c == 0);
-            if (goal0Index > -1) {
-                goal0Index = i * chunkedFinal.length + goal0Index;
-                break;
-            }
-        }
-        if (chunkedBoard.length % 2 == 0) { // In this case, the row of the '0' tile matters
-            numberOfInversions += start0Index / chunkedBoard.length;
-            numberOfInversionsSolution += goal0Index / chunkedFinal.length;
-        }
-
-        if (numberOfInversions % 2 != numberOfInversionsSolution % 2) {
-            return false//throw new BadRequestException("Unsolvable puzzle");
-        }
-        return true
     }
 
     async validateInversions(boardSize: number, board: number[], finalBoard: number[]) {
@@ -389,14 +237,14 @@ export class NPuzzleService {
      * 
      * @param size 
      */
-    generateFinalBoard(size: number): number[][] {
-        let defaultBoard = false
+
+    private generateFinalBoard(size: number, type: NPuzzleFinalState = NPuzzleFinalState.SPIRAL): number[] {
         let final: number[][] = []
-        if (defaultBoard) {
+        if (type === NPuzzleFinalState.LINE) {
             let len = Math.pow(size, 2)
             let finalBoard: number[] = Array(len).fill(0, 0, len).map((v, i) => (i + 1) === len ? 0 : (i + 1))
-            final = _.chunk(finalBoard, size)
-        } else {
+            final = this.chunkArray(finalBoard, size)
+        } else if (type === NPuzzleFinalState.SPIRAL) {
             final = Array(size).fill(null, 0, size).map(row => {
                 return Array(size).fill(-1, 0, size)
             })
@@ -444,7 +292,7 @@ export class NPuzzleService {
             }
             final
         }
-        return final
+        return this.flattenArray(final)
     }
 
     /**
@@ -467,26 +315,23 @@ export class NPuzzleService {
         return coords
     }
 
-    /**
-     * Transform board to string ready to print
-     * 
-     * @param board 
-     */
-    boardToString(board: number[][]): string {
-        let numLen = Math.pow(board.length, 2).toString().length
-        let b: string = ''
-        for (let r of board) {
-            let s: string = (b.length ? '\n' : '') + '\t'
-            for (let n of r) {
-                let ns = n.toString()
-                while (ns.length < numLen) {
-                    ns = ' ' + ns
-                }
-                s += ns + ' '
-            }
-            b += s
+
+    chunkArray(arr: any[], size: number) {
+        let resultArray: any[][] = []
+        let nbRow: number = Math.ceil(arr.length / size)
+        for (let i = 0; i < nbRow; i++) {
+            let index = i * size
+            resultArray.push(arr.slice(index, index + size))
         }
-        return b
+        return resultArray
+    }
+
+    flattenArray(arr: any[][]) {
+        let resultArray: any[] = []
+        for (let cell of arr) {
+            resultArray = resultArray.concat(cell)
+        }
+        return resultArray
     }
 }
 
@@ -503,22 +348,6 @@ class FileChecker {
 export class TileCoords {
     row: number
     cell: number
-}
-
-class OptionList {
-    dist?: number
-    len?: number
-    fScore?: number
-    board?: number[][]
-    parent?: number[][]
-
-    constructor(value?: OptionList) {
-        this.dist = value.dist
-        this.len = value.len
-        this.fScore = value.fScore
-        this.board = value.board
-        this.parent = value.parent
-    }
 }
 
 export class State {
@@ -572,7 +401,6 @@ export class State {
                 .map((value: number, index: number) => args.arr[index])
         }
         this._goal = goal
-        //this.createGraphForNPuzzle()
     }
 
     public equals(tileA: State, tileB: State): boolean {
@@ -691,25 +519,6 @@ export class State {
             }
         }
 
-    }
-
-    public createGridToPrint() {
-        let arr: number[][] = _.chunk(this.arr, this.numRowsOrCols)
-
-        let numLen = this.numRowsOrCols.toString().length
-        let b: string = ''
-        for (let r of arr) {
-            let s: string = (b.length ? '\n' : '') + '\t'
-            for (let n of r) {
-                let ns = n.toString()
-                while (ns.length < numLen) {
-                    ns = ' ' + ns
-                }
-                s += ns + ' '
-            }
-            b += s
-        }
-        return b
     }
 }
 
