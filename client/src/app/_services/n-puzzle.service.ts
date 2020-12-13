@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import { HttpClient } from '@angular/common/http'
 import { environment } from 'src/environments/environment';
-import { NPuzzleAlgo } from '../../../../entities/n-puzzle/enums/n-puzzle-algo.enum';
+import { NPuzzleAlgo } from '../../../../shared/models/enums/n-puzzle-algo.enum';
 
 @Injectable()
 export class NPuzzleService {

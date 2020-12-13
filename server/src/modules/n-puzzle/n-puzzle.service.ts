@@ -1,10 +1,10 @@
 import { Injectable, BadRequestException, flatten } from '@nestjs/common';
 import * as _ from 'lodash'
 import * as moment from 'moment'
-import { NPuzzle, TileMove } from '../../../../entities/n-puzzle/n-puzzle.entity'
-import { NPuzzleAlgo } from '../../../../entities/n-puzzle/enums/n-puzzle-algo.enum';
-import { TileMoveDirection } from '../../../../entities/n-puzzle/enums/tile-move-direction.enum';
-import { spawn } from 'child_process'
+import { NPuzzle, TileMove } from '../../../../shared/models/n-puzzle.entity'
+import { NPuzzleAlgo } from '../../../../shared/models/enums/n-puzzle-algo.enum';
+import { TileMoveDirection } from '../../../../shared/models/enums/tile-move-direction.enum';
+import { NPuzzleFinalState } from '../../../../shared/models/enums/n-puzzle-final-state.enum'
 
 /**
  * Weigthed A* => https://github.com/hjlkon/A-star-algorithm/blob/main/weighted_A_star_Algorithm.m
