@@ -2,7 +2,7 @@
   <div class="menu-container p-20" *ngIf="settings">
     <h2 class="title">Configuration</h2>
 
-    <div class="size-selector">
+    <div class="size-selector" *ngIf="true">
       <div class="separator"></div>
       <h3 class="sub-title">Taille : </h3>
       <div class="size-group">
@@ -16,7 +16,19 @@
       <div class="algo-group">
         <button class="algo-option custom-button" (click)="onAlgoChange(algorithms.ASTAR)" [ngClass]="{'selected': currentAlgo === algorithms.ASTAR}"> A* </button>
         <button class="algo-option custom-button" (click)="onAlgoChange(algorithms.WEIGHTED_ASTAR)" [ngClass]="{'selected': currentAlgo === algorithms.WEIGHTED_ASTAR}"> Weighted A* </button>
-        <button class="algo-option custom-button" (click)="onAlgoChange(algorithms.UNIFORM)" [ngClass]="{'selected': currentAlgo === algorithms.UNIFORM}"> Uniform </button>
+        <button class="algo-option custom-button" (click)="onAlgoChange(algorithms.SLOW_ASTART)" [ngClass]="{'selected': currentAlgo === algorithms.SLOW_ASTART}"> Slow A* </button>
+        <button class="algo-option custom-button" (click)="onAlgoChange(algorithms.BEST_FIRST)" [ngClass]="{'selected': currentAlgo === algorithms.BEST_FIRST}"> Best First </button>
+      </div>
+    </div>
+
+    <div class="algo-selector">
+      <div class="separator"></div>
+      <h3 class="sub-title">Heuristique : </h3>
+      <div class="heuristic-group">
+        <button class="algo-option custom-button" (click)="onHeuristicChange(heuristics.MANHATTAN)" [ngClass]="{'selected': currentHeuristic === heuristics.MANHATTAN}"> Manhattan </button>
+        <button class="algo-option custom-button" (click)="onHeuristicChange(heuristics.HAMMING)" [ngClass]="{'selected': currentHeuristic === heuristics.HAMMING}"> Hamming </button>
+        <button class="algo-option custom-button" (click)="onHeuristicChange(heuristics.CARTESIAN)" [ngClass]="{'selected': currentHeuristic === heuristics.CARTESIAN}"> Cartesian </button>
+        <button class="algo-option custom-button" (click)="onHeuristicChange(heuristics.LINEAR_CONFLICT)" [ngClass]="{'selected': currentHeuristic === heuristics.LINEAR_CONFLICT}"> Linear Conflict </button>
       </div>
     </div>
 

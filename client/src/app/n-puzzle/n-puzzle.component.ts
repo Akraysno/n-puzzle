@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { NPuzzleFinalState } from '../../../../shared/models/enums/n-puzzle-final-state.enum'
 import { NPuzzleAlgo } from '../../../../shared/models/enums/n-puzzle-algo.enum'
+import { NPuzzleHeuristics } from '../../../../shared/models/enums/n-puzzle-heuristics.enum'
 import { NPuzzle, TileMove } from '../../../../shared/models/n-puzzle.entity'
 import { NPuzzleService } from '../_services/n-puzzle.service'
 import { ErrorsService } from '../_services/errors.service';
@@ -56,12 +57,15 @@ export class NPuzzleComponent implements OnInit {
   currentSize: number = 3
   currentFinalStateType: NPuzzleFinalState = NPuzzleFinalState.SPIRAL
   currentAlgo: NPuzzleAlgo = NPuzzleAlgo.ASTAR
+  currentHeuristic: NPuzzleHeuristics = NPuzzleHeuristics.MANHATTAN
   settings: Settings
+  loading: boolean = false
+  result: PuzzleResult
+
+  tileMoveDirection = TileMoveDirection
   finalStateType = NPuzzleFinalState
   algorithms = NPuzzleAlgo
-  loading: boolean = false
-  tileMoveDirection = TileMoveDirection
-  result: PuzzleResult
+  heuristics = NPuzzleHeuristics
 
   constructor(
     private nPuzzleService: NPuzzleService,
@@ -91,7 +95,7 @@ export class NPuzzleComponent implements OnInit {
         this.settings.startState[indexTileA] = tileB
         this.settings.startState[indexTileB] = tileA
         this.settings.selectedTile = undefined
-        this.settings.isSolvable = this.validateInversions(this.settings.size, this.settings.startState, this.settings.finalState)
+        this.settings.isSolvable = this.nPuzzleService.validateInversions(this.settings.size, this.settings.startState, this.settings.finalState)
       }
     } else {
       this.settings.selectedTile = tile
@@ -104,13 +108,17 @@ export class NPuzzleComponent implements OnInit {
   }
 
   onFinalStateTypeChange(type: NPuzzleFinalState) {
-    this.settings.finalState = this.generateFinalBoard(this.settings.size, type)
-    this.settings.isSolvable = this.validateInversions(this.settings.size, this.settings.startState, this.settings.finalState)
+    this.settings.finalState = this.nPuzzleService.generateFinalBoard(this.settings.size, type)
+    this.settings.isSolvable = this.nPuzzleService.validateInversions(this.settings.size, this.settings.startState, this.settings.finalState)
     this.currentFinalStateType = type
   }
 
   onAlgoChange(algo: NPuzzleAlgo) {
     this.currentAlgo = algo
+  }
+
+  onHeuristicChange(heuristic: NPuzzleHeuristics) {
+    this.currentHeuristic = heuristic
   }
 
   private generateValidRandomBoard(size?: number, type: NPuzzleFinalState = NPuzzleFinalState.SPIRAL): Settings {
@@ -121,141 +129,17 @@ export class NPuzzleComponent implements OnInit {
     settings.isSolvable = false
     settings.size = size
     while (!settings.isSolvable) {
-      settings.startState = this.generateRandomBoard(size)
-      settings.finalState = this.generateFinalBoard(size, type)
-      settings.isSolvable = this.validateInversions(settings.size, settings.startState, settings.finalState)
+      settings.startState = this.nPuzzleService.generateRandomBoard(size)
+      settings.finalState = this.nPuzzleService.generateFinalBoard(size, type)
+      settings.isSolvable = this.nPuzzleService.validateInversions(settings.size, settings.startState, settings.finalState)
     }
     return settings
-  }
-
-  private generateRandomBoard(size?: number): number[] {
-    if (!size || size <= 0) {
-      size = 3
-    }
-    let tmpArray: number[] = Array(Math.pow(size, 2)).fill(-1).map((v, i) => i)
-    let shuffleArray: number[] = []
-    while (tmpArray.length > 0) {
-      let r = Math.floor(Math.random() * tmpArray.length);
-      shuffleArray.push(tmpArray.splice(r, 1)[0])
-    }
-    return shuffleArray
-  }
-
-  private validateInversions(boardSize: number, board: number[], finalBoard: number[]) {
-    let start: number[][] = this.chunkArray(board, boardSize)
-    let final: number[][] = this.chunkArray(finalBoard, boardSize)
-    const findD = () => {
-      let xi: number
-      let yi: number
-      let xf: number
-      let yf: number
-      for (let i = 0; i < boardSize; i++) {
-        for (let j = 0; j < boardSize; j++) {
-          if (start[i][j] === 0) {
-            xi = j
-            yi = i
-            break
-          }
-        }
-      }
-      if (boardSize % 2 !== 0) {
-        xf = Math.ceil(boardSize / 2)
-        yf = Math.ceil(boardSize / 2)
-      } else {
-        xf = boardSize / 2 - 1
-        yf = boardSize / 2
-      }
-      let d = Math.abs(xf - xi) + Math.abs(yf - yi)
-      return d
-    }
-    const findP = () => {
-      let tab: number[] = []
-      let p: number = 0
-      for (let line of start) {
-        tab = tab.concat(line)
-      }
-      let finalTab: number[] = []
-      for (let line of final) {
-        finalTab = finalTab.concat(line)
-      }
-
-      for (let i = 0; i < tab.length; i++) {
-        for (let j = 0; j < tab.length; j++) {
-          if (finalTab.indexOf(tab[i]) > finalTab.indexOf(tab[j])) {
-            let tmp = tab[j]
-            tab[j] = tab[i]
-            tab[i] = tmp
-            p++
-          }
-        }
-      }
-      return p
-    }
-
-    return (findD() % 2) === (findP() % 2)
-  }
-
-  private generateFinalBoard(size: number, type: NPuzzleFinalState = NPuzzleFinalState.SPIRAL): number[] {
-    let final: number[][] = []
-    if (type === NPuzzleFinalState.LINE) {
-      let len = Math.pow(size, 2)
-      let finalBoard: number[] = Array(len).fill(0, 0, len).map((v, i) => (i + 1) === len ? 0 : (i + 1))
-      final = this.chunkArray(finalBoard, size)
-    } else if (type === NPuzzleFinalState.SPIRAL) {
-      final = Array(size).fill(null, 0, size).map(row => {
-        return Array(size).fill(-1, 0, size)
-      })
-
-      let nbCase: number = size * size
-      let dirIsHoriz: boolean = true
-      let x: number = 0
-      let y: number = 0
-      let xNeg: boolean = false
-      let yNeg: boolean = false
-      let nbCaseFilled: number = 0
-
-      while (nbCase !== nbCaseFilled) {
-        final[x][y] = nbCaseFilled + 1 < nbCase ? nbCaseFilled + 1 : 0
-        if (dirIsHoriz === true) {
-          if (y < size - 1) {
-            if (final[x][y + (yNeg ? -1 : 1)] === -1) {
-              y += (yNeg ? -1 : 1)
-            } else {
-              x += (xNeg ? -1 : 1)
-              dirIsHoriz = false
-              yNeg = !yNeg
-            }
-          } else {
-            x += (xNeg ? -1 : 1)
-            dirIsHoriz = false
-            yNeg = !yNeg
-          }
-        } else {
-          if (x < size - 1) {
-            if (final[x + (xNeg ? -1 : 1)][y] === -1) {
-              x += (xNeg ? -1 : 1)
-            } else {
-              y += (yNeg ? -1 : 1)
-              dirIsHoriz = true
-              xNeg = !xNeg
-            }
-          } else {
-            y += (yNeg ? -1 : 1)
-            dirIsHoriz = true
-            xNeg = !xNeg
-          }
-        }
-        nbCaseFilled++
-      }
-      final
-    }
-    return this.flattenArray(final)
   }
 
   resolve() {
     this.loading = true
     this.result = null
-    this.nPuzzleService.resolve(this.currentAlgo, this.settings.size, this.settings.startState, this.settings.finalState).subscribe((res: CustomNPuzzle) => {
+    this.nPuzzleService.resolvePuzzle(this.currentAlgo, this.settings.size, this.settings.startState, this.settings.finalState).subscribe((res: CustomNPuzzle) => {
       console.log(res)
       this.result = new PuzzleResult(res)
       this.loading = false
@@ -312,24 +196,6 @@ export class NPuzzleComponent implements OnInit {
 
   pause() {
     this.result.autoRun = false
-  }
-
-  chunkArray(arr: any[], size: number) {
-    let resultArray: any[][] = []
-    let nbRow: number = Math.ceil(arr.length / size)
-    for (let i = 0; i < nbRow; i++) {
-      let index = i * size
-      resultArray.push(arr.slice(index, index + size))
-    }
-    return resultArray
-  }
-
-  flattenArray(arr: any[][]) {
-    let resultArray: any[] = []
-    for (let cell of arr) {
-      resultArray = resultArray.concat(cell)
-    }
-    return resultArray
   }
 }
 

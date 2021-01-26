@@ -57,16 +57,28 @@ $solvedPuzzleAnimationDuration: 1s;
         background-color: #F0F0F0;
         border-right: $border;
         overflow: auto;
-        .size-group,
-        .algo-group {
+        .size-group {
             display: flex;
             flex-direction: row;
             justify-content: space-around;
             align-items: center;
             padding-bottom: 5px;
-            .size-option,
-            .algo-option {
+            .size-option {
                 width: 30%;
+            }
+        }
+        .algo-group,
+        .heuristic-group {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-around;
+            align-items: center;
+            padding-bottom: 5px;
+            flex-wrap: wrap;
+            .algo-option,
+            .heuristic-option {
+                margin-bottom: 5px;
+                width: 48%;
             }
         }
         .start-state,

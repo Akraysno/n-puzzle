@@ -1,0 +1,6 @@
+export enum NPuzzleHeuristics {
+    HAMMING = 'HAMMING',
+    CARTESIAN = 'CARTESIAN',
+    MANHATTAN = 'MANHATTAN',
+    LINEAR_CONFLICT = 'LINEAR_CONFLICT'
+}
