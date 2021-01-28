@@ -157,9 +157,12 @@
             <mat-icon>skip_previous</mat-icon>
           </button>
         </div>
-        <div class="control" *ngIf="true || !result.autoRun">
-          <button mat-mini-fab color="accent" (click)="result.autoRun ? pause() : moveTile(true)">
+        <div class="control" *ngIf="true">
+          <button mat-mini-fab color="accent" (click)="result.autoRun ? pause() : moveTile(true)" *ngIf="!(result.currentStepIndex + 1 === result.maxStep)">
             <mat-icon>{{result.autoRun ? 'pause' : 'play_arrow'}}</mat-icon>
+          </button>
+          <button mat-mini-fab color="accent" (click)="resetPuzzlePosition()" *ngIf="(result.currentStepIndex + 1 === result.maxStep)">
+            <mat-icon>replay</mat-icon>
           </button>
         </div>
         <div class="control">

@@ -159,7 +159,7 @@ export class NPuzzleComponent implements OnInit {
     this.result.running = true
     let nextMove = this.result.puzzle.operations[nextStepIndex + (back === true ? 1 : 0)]
     nextMove.back = back
-    this.result.currentStepIndex = nextStepIndex
+    this.result.nextStepIndex = nextStepIndex
     this.result.currentMove = nextMove
     let p = this.result.currentState.map(v => v)
     let tileIndex = p.indexOf(nextMove.tile)
@@ -176,9 +176,10 @@ export class NPuzzleComponent implements OnInit {
       this.result.currentMove = null
       this.result.currentState = this.result.nextState
       this.result.nextState = null
-      this.result.progress = ((this.result.currentStepIndex + 1) / this.result.maxStep) * 100
       setTimeout(() => {
         this.result.running = false
+        this.result.currentStepIndex = this.result.nextStepIndex
+        this.result.progress = ((this.result.currentStepIndex + 1) / this.result.maxStep) * 100
         if (this.result.puzzle.final.join(',') === this.result.currentState.join(',')) {
           this.result.autoRun = false
         }
@@ -197,6 +198,11 @@ export class NPuzzleComponent implements OnInit {
   pause() {
     this.result.autoRun = false
   }
+
+  resetPuzzlePosition() {
+    this.result.reset()
+  }
+
 }
 
 class Settings {
@@ -221,9 +227,10 @@ class PuzzleResult {
   currentState: number[]
   nextState: number[]
   currentStepIndex: number
+  nextStepIndex: number
   maxStep: number
   progress: number
-  currentMove: TileMove
+  currentMove: CustomTileMove
   autoRun: boolean
   nbCloseList: number
   nbOpenList: number
@@ -231,11 +238,15 @@ class PuzzleResult {
 
   constructor(puzzle: CustomNPuzzle) {
     if (!puzzle) return
-    this.running = false
     this.puzzle = puzzle
-    this.currentState = puzzle.origin.map(v => v)
+    this.reset()
+  }
+
+  reset() {
+    this.running = false
+    this.currentState = this.puzzle.origin.map(v => v)
     this.currentStepIndex = 0
-    this.maxStep = puzzle.nbMoves
+    this.maxStep = this.puzzle.nbMoves
     this.progress = ((this.currentStepIndex + 1) / this.maxStep) * 100
     this.currentMove = null
     this.autoRun = false
