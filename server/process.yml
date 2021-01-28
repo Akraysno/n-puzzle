@@ -1,8 +1,0 @@
-apps:
-  - script   : dist/main.js
-    instances: 1
-    watch: true
-    env:
-        ENV: dev
-    env_production:
-        ENV: prod
