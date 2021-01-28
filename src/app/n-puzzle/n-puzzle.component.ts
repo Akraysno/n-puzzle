@@ -1,11 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { NPuzzleFinalState } from '../../../../shared/models/enums/n-puzzle-final-state.enum'
-import { NPuzzleAlgo } from '../../../../shared/models/enums/n-puzzle-algo.enum'
-import { NPuzzleHeuristics } from '../../../../shared/models/enums/n-puzzle-heuristics.enum'
-import { NPuzzle, TileMove } from '../../../../shared/models/n-puzzle.entity'
+import { NPuzzleFinalState } from '../__models/enums/n-puzzle-final-state.enum'
+import { NPuzzleAlgo } from '../__models/enums/n-puzzle-algo.enum'
+import { NPuzzleHeuristics } from '../__models/enums/n-puzzle-heuristics.enum'
+import { NPuzzle, TileMove } from '../__models/n-puzzle.entity'
 import { NPuzzleService } from '../_services/n-puzzle.service'
 import { ErrorsService } from '../_services/errors.service';
-import { TileMoveDirection } from '../../../../shared/models/enums/tile-move-direction.enum';
+import { TileMoveDirection } from '../__models/enums/tile-move-direction.enum';
 import { animate, keyframes, state, style, transition, trigger } from '@angular/animations';
 
 @Component({

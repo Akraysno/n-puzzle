@@ -1,4 +1,4 @@
-import { TileMoveDirection } from "../../../../shared/models/enums/tile-move-direction.enum"
+import { TileMoveDirection } from "../__models/enums/tile-move-direction.enum"
 import * as _ from 'lodash'
 
 export class State {

@@ -1,12 +1,12 @@
 import { Injectable } from "@angular/core";
-import { NPuzzleAlgo } from '../../../../shared/models/enums/n-puzzle-algo.enum';
-import { NPuzzleHeuristics } from "../../../../shared/models/enums/n-puzzle-heuristics.enum";
+import { NPuzzleAlgo } from '../__models/enums/n-puzzle-algo.enum';
+import { NPuzzleHeuristics } from "../__models/enums/n-puzzle-heuristics.enum";
 //import { Heuristics } from "./new/heuristics";
-import { NPuzzle, TileMove } from "../../../../shared/models/n-puzzle.entity";
+import { NPuzzle, TileMove } from "../__models/n-puzzle.entity";
 import * as moment from 'moment'
 import * as _ from 'lodash'
 import { Observable } from "rxjs";
-import { NPuzzleFinalState } from "../../../../shared/models/enums/n-puzzle-final-state.enum";
+import { NPuzzleFinalState } from "../__models/enums/n-puzzle-final-state.enum";
 import { PriorityQueue } from "../_classes/priority-queue.class";
 import { Node } from "../_classes/node.class";
 import { State } from "../_classes/state.class";
