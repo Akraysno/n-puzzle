@@ -8,7 +8,8 @@ export class NPuzzle {
     final: number[];
     operations: TileMove[];
     nbMoves: number;
-    duration: number;
+    durationResolve: number;
+    durationTotal: number;
     solvable: boolean;
     nbOpenList: number;
     nbCloseList: number;

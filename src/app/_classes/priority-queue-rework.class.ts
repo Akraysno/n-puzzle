@@ -1,8 +1,8 @@
-import { Node } from "./node.class";
+import { State } from "./state-rework.class";
 
 export class PriorityQueue {
     // The items and priorities.
-    private _nodes: Map<number, Node[]> = new Map()
+    private _nodes: Map<number, State[]> = new Map()
   
     // Return the number of items in the queue.
     public count(): number {
@@ -21,7 +21,7 @@ export class PriorityQueue {
   
     // Add an item to the queue.
     // Old, to delete
-    public add(n: Node): void {
+    public add(n: State): void {
       let key = n.cost
       let pack = this._nodes.get(key)
       if (!pack) {
@@ -31,7 +31,7 @@ export class PriorityQueue {
       this._nodes.set(key, pack)
     }
     // Add an item to the queue.
-    public addItem(n: Node, cost: number): void {
+    public addItem(n: State, cost: number): void {
       let key = cost
       let pack = this._nodes.get(key)
       if (!pack) {
@@ -42,7 +42,7 @@ export class PriorityQueue {
     }
   
     // Add an item to the queue.
-    public addToQueue(n: Node, cost: number): void {
+    public addToQueue(n: State, cost: number): void {
       let pack = this._nodes.get(cost)
       if (!pack) {
         pack = []
@@ -52,7 +52,7 @@ export class PriorityQueue {
     }
   
     // Get the item with the highest priority (in our case the lowest cost)
-    public getAndRemoveTop(): Node {
+    public getAndRemoveTop(): State {
       let key = this.minCost()
       let pack = this._nodes.get(key)
       let node = pack.shift()

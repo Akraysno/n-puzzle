@@ -1,12 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { NPuzzleFinalState } from '../__models/enums/n-puzzle-final-state.enum'
-import { NPuzzleAlgo } from '../__models/enums/n-puzzle-algo.enum'
-import { NPuzzleHeuristics } from '../__models/enums/n-puzzle-heuristics.enum'
+import { NPuzzleAlgo, NPuzzleAlgoLabel } from '../__models/enums/n-puzzle-algo.enum'
+import { NPuzzleHeuristics, NPuzzleHeuristicsLabel } from '../__models/enums/n-puzzle-heuristics.enum'
 import { NPuzzle, TileMove } from '../__models/n-puzzle.entity'
 import { NPuzzleService } from '../_services/n-puzzle.service'
 import { ErrorsService } from '../_services/errors.service';
 import { TileMoveDirection } from '../__models/enums/tile-move-direction.enum';
 import { animate, keyframes, state, style, transition, trigger } from '@angular/animations';
+import { State } from '../_classes/state-rework.class';
+import { Result } from '../_classes/result.class';
 
 @Component({
   selector: 'app-n-puzzle',
@@ -60,12 +62,14 @@ export class NPuzzleComponent implements OnInit {
   currentHeuristic: NPuzzleHeuristics = NPuzzleHeuristics.MANHATTAN
   settings: Settings
   loading: boolean = false
-  result: PuzzleResult
+  result: PuzzleSolution//PuzzleResult
 
   tileMoveDirection = TileMoveDirection
   finalStateType = NPuzzleFinalState
   algorithms = NPuzzleAlgo
+  algoLabel = NPuzzleAlgoLabel
   heuristics = NPuzzleHeuristics
+  heuristicLabel = NPuzzleHeuristicsLabel
 
   constructor(
     private nPuzzleService: NPuzzleService,
@@ -135,18 +139,34 @@ export class NPuzzleComponent implements OnInit {
     }
     return settings
   }
-
+  /*
+    resolve() {
+      this.loading = true
+      this.result = null
+      this.nPuzzleService.resolvePuzzle(this.currentAlgo, this.currentHeuristic, this.settings.size, this.settings.startState, this.settings.finalState).subscribe((res: CustomNPuzzle) => {
+        console.log(res)
+        this.result = new PuzzleResult(res)
+        console.log(this.result)
+        let state = new State(this.settings.startState, this.settings.finalState, this.settings.size)
+        state.solve(this.currentAlgo, this.currentHeuristic).subscribe(res => {
+          console.log(res)
+        })
+        this.loading = false
+      }, err => {
+        this.errorsService.displayError(err)
+        this.loading = false
+      })
+    }
+  */
   resolve() {
     this.loading = true
     this.result = null
-    this.nPuzzleService.resolvePuzzle(this.currentAlgo, this.settings.size, this.settings.startState, this.settings.finalState).subscribe((res: CustomNPuzzle) => {
+    let state = new State(this.settings.startState, this.settings.finalState, this.settings.size)
+    state.solve(this.currentAlgo, this.currentHeuristic).subscribe(res => {
       console.log(res)
-      this.result = new PuzzleResult(res)
-      this.loading = false
-    }, err => {
-      this.errorsService.displayError(err)
-      this.loading = false
+      this.result = new PuzzleSolution(res)
     })
+    this.loading = false
   }
 
   nextMove(back: boolean) {
@@ -157,7 +177,7 @@ export class NPuzzleComponent implements OnInit {
       return
     }
     this.result.running = true
-    let nextMove = this.result.puzzle.operations[nextStepIndex + (back === true ? 1 : 0)]
+    let nextMove: CustomTileMove = this.result.puzzle.operations[nextStepIndex + (back === true ? 1 : 0)] as CustomTileMove
     nextMove.back = back
     this.result.nextStepIndex = nextStepIndex
     this.result.currentMove = nextMove
@@ -176,10 +196,10 @@ export class NPuzzleComponent implements OnInit {
       this.result.currentMove = null
       this.result.currentState = this.result.nextState
       this.result.nextState = null
+      this.result.running = false
+      this.result.currentStepIndex = this.result.nextStepIndex
+      this.result.progress = ((this.result.currentStepIndex + 1) / this.result.maxStep) * 100
       setTimeout(() => {
-        this.result.running = false
-        this.result.currentStepIndex = this.result.nextStepIndex
-        this.result.progress = ((this.result.currentStepIndex + 1) / this.result.maxStep) * 100
         if (this.result.puzzle.final.join(',') === this.result.currentState.join(',')) {
           this.result.autoRun = false
         }
@@ -245,6 +265,37 @@ class PuzzleResult {
   reset() {
     this.running = false
     this.currentState = this.puzzle.origin.map(v => v)
+    this.currentStepIndex = 0
+    this.maxStep = this.puzzle.nbMoves
+    this.progress = ((this.currentStepIndex + 1) / this.maxStep) * 100
+    this.currentMove = null
+    this.autoRun = false
+  }
+}
+class PuzzleSolution {
+  running: boolean = false
+  puzzle: Result
+  currentState: number[]
+  nextState: number[]
+  currentStepIndex: number
+  nextStepIndex: number
+  maxStep: number
+  progress: number
+  currentMove: CustomTileMove
+  autoRun: boolean
+  nbCloseList: number
+  nbOpenList: number
+  duration: number
+
+  constructor(puzzle: Result) {
+    if (!puzzle) return
+    this.puzzle = puzzle
+    this.reset()
+  }
+
+  reset() {
+    this.running = false
+    this.currentState = [...this.puzzle.start]
     this.currentStepIndex = 0
     this.maxStep = this.puzzle.nbMoves
     this.progress = ((this.currentStepIndex + 1) / this.maxStep) * 100

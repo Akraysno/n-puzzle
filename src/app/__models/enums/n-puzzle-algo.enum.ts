@@ -5,3 +5,9 @@ export enum NPuzzleAlgo {
     BEST_FIRST = 'BEST_FIRST'
 }
 
+export enum NPuzzleAlgoLabel {
+    ASTAR = 'A*',
+    WEIGHTED_ASTAR = 'Weighted A*',
+    SLOW_ASTAR = 'Slow A*',
+    BEST_FIRST = 'Best First'
+}

@@ -93,11 +93,15 @@
         </tr>
         <tr>
           <td>Algorithme : </td>
-          <td>{{result.puzzle.type}}</td>
+          <td>{{algoLabel[result.puzzle.algo] || result.puzzle.algo}}</td>
+        </tr>
+        <tr>
+          <td>Heuristique : </td>
+          <td>{{heuristicLabel[result.puzzle.heuristic] || result.puzzle.heuristic}}</td>
         </tr>
         <tr>
           <td>Temps de résolution : </td>
-          <td>{{result.puzzle.duration}} ms</td>
+          <td>{{result.puzzle.durationResolve}} ms</td>
         </tr>
         <tr>
           <td>Nombre de mouvements : </td>

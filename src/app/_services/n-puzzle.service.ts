@@ -10,8 +10,8 @@ import { NPuzzleFinalState } from "../__models/enums/n-puzzle-final-state.enum";
 import { PriorityQueue } from "../_classes/priority-queue.class";
 import { Node } from "../_classes/node.class";
 import { State } from "../_classes/state.class";
+import { DistHeuristic } from "../_classes/heuristics.class";
 
-export type DistHeuristic = (board: number[], final: number[], size: number) => number;
 export type Solver = (board: State, heuristic: DistHeuristic) => any; // Set return type
 
 @Injectable()
@@ -31,58 +31,118 @@ export class NPuzzleService {
 
   constructor() { }
 
-  resolvePuzzle(type: NPuzzleAlgo, size: number, startState: number[], finalState: number[]): Observable<NPuzzle> {
+  resolvePuzzle(type: NPuzzleAlgo, heuristic: NPuzzleHeuristics , size: number, startState: number[], finalState: number[]): Observable<NPuzzle> {
     return new Observable(obs => {
       console.log(type, size, startState, finalState)
-      this.checkPuzzle(startState, size, false)
-      this.checkPuzzle(finalState, size, true)
-      let nPuzzle = new NPuzzle()
-      nPuzzle.final = finalState
-      nPuzzle.origin = startState
-      nPuzzle.type = type
-      nPuzzle.size = size
-      nPuzzle.solvable = this.validateInversions(size, startState, finalState)
-      console.log(nPuzzle)
-      if (nPuzzle.solvable) {
-        let startTime = moment()
-        let search = new SearchUsingAStar(new State(_.flatten(nPuzzle.origin), _.flatten(nPuzzle.final)), new State(_.flatten(nPuzzle.final), _.flatten(nPuzzle.final)))
-        let solution = search.search()
-        let operations = solution.map(s => new TileMove(s.state.swip, s.state.moveDirection))
-        nPuzzle.nbMoves = solution.length
-        nPuzzle.operations = operations
-        nPuzzle.nbCloseList = search.closedList.size
-        nPuzzle.nbOpenList = search.openList.count()
-        nPuzzle.duration = moment().diff(startTime)
-        obs.next(nPuzzle)
-        obs.complete()
+      this.checkPuzzle(startState, finalState, size).subscribe(() => {
+        console.log('Puzzle tiles ok')
+        let nPuzzle = new NPuzzle()
+        nPuzzle.final = finalState
+        nPuzzle.origin = startState
+        nPuzzle.type = type
+        nPuzzle.size = size
+        nPuzzle.solvable = this.validateInversions(size, startState, finalState)
+        console.log(nPuzzle)
+        if (nPuzzle.solvable) {
+          console.log('Puzzle solvable')
+          let startTime = moment()
+          let search = new SearchUsingAStar(new State(nPuzzle.origin, nPuzzle.final), new State(nPuzzle.final, nPuzzle.final), heuristic)
+          let solution = search.search()
+          let operations = solution.map(s => new TileMove(s.state.swip, s.state.moveDirection))
+          nPuzzle.nbMoves = solution.length
+          nPuzzle.operations = operations
+          nPuzzle.nbCloseList = search.closedList.size
+          nPuzzle.nbOpenList = search.openList.count()
+          nPuzzle.durationResolve = moment().diff(startTime)
+          obs.next(nPuzzle)
+          obs.complete()
+        } else {
+          obs.error(`Le puzzle ne peut pas être résolu`)
+        }
+      }, err => obs.error(err))
+    })
+  }
+
+  checkPuzzle(startState: number[], finalState: number[], size: number): Observable<boolean> {
+    return new Observable((obs) => {
+      if (size < 1) {
+        obs.error('Taille du puzzle incorrecte.')
+      } else if (size * size !== startState.length) {
+        obs.error(`La taille de l'état de départ ne correspond pas à la taille indiquée.`)
+      } else if (size * size !== finalState.length) {
+        obs.error(`La taille de l'état final ne correspond pas à la taille indiquée.`)
       } else {
-        obs.error(`Le puzzle ne peut pas être résolu`)
+        let startNumberList = startState.map(v => v).sort((a, b) => a > b ? 1 : -1)
+        let failIndex = startNumberList.findIndex((val: number, index: number) => val !== index)
+        if (failIndex !== -1) {
+          obs.error(`Les nombres de l'état de départ sont incorrects.`)
+        } else {
+          let finalNumberList = finalState.map(v => v).sort((a, b) => a > b ? 1 : -1)
+          let failIndex = finalNumberList.findIndex((val: number, index: number) => val !== index)
+          if (failIndex !== -1) {
+            obs.error(`Les nombres de l'état final sont incorrects.`)
+          } else {
+            obs.next(true)
+            obs.complete()
+          }
+        }
       }
     })
   }
 
-  checkPuzzle(puzzle: number[], size: number, isFinalBoard: boolean = false): boolean {
-    if (
-      size < 1 ||
-      ((size * size) !== puzzle.length)
-    ) {
-      //throw new BadRequestException(`La taille de l'état ${isFinalBoard ? 'final' : 'de départ'} ne correspond pas à la taille indiquée`)
+  validateInversions(boardSize: number, board: number[], finalBoard: number[]) {
+    let start: number[][] = this.chunkArray(board, boardSize)
+    let final: number[][] = this.chunkArray(finalBoard, boardSize)
+    const findD = () => {
+      let xi: number
+      let yi: number
+      let xf: number
+      let yf: number
+      for (let i = 0; i < boardSize; i++) {
+        for (let j = 0; j < boardSize; j++) {
+          if (start[i][j] === 0) {
+            xi = j
+            yi = i
+            break
+          }
+        }
+      }
+      if (boardSize % 2 !== 0) {
+        xf = Math.ceil(boardSize / 2)
+        yf = Math.ceil(boardSize / 2)
+      } else {
+        xf = boardSize / 2 - 1
+        yf = boardSize / 2
+      }
+      let d = Math.abs(xf - xi) + Math.abs(yf - yi)
+      return d
+    }
+    const findP = () => {
+      let tab: number[] = []
+      let p: number = 0
+      for (let line of start) {
+        tab = tab.concat(line)
+      }
+      let finalTab: number[] = []
+      for (let line of final) {
+        finalTab = finalTab.concat(line)
+      }
+
+      for (let i = 0; i < tab.length; i++) {
+        for (let j = 0; j < tab.length; j++) {
+          if (finalTab.indexOf(tab[i]) > finalTab.indexOf(tab[j])) {
+            let tmp = tab[j]
+            tab[j] = tab[i]
+            tab[i] = tmp
+            p++
+          }
+        }
+      }
+      return p
     }
 
-    // Verify numbers in board
-    let numbersList = puzzle.map(v => v).sort((a, b) => a > b ? 1 : -1)
-    numbersList.forEach((num: number, index: number) => {
-      if (num !== index) {
-        //throw new BadRequestException(`Les nombres de l'état ${isFinalBoard ? 'final' : 'de départ'} sont incorrects`)
-      }
-    });
-
-    return true
+    return (findD() % 2) === (findP() % 2)
   }
-
-
-
-
 
   generateRandomBoard(size?: number): number[] {
     if (!size || size <= 0) {
@@ -152,60 +212,6 @@ export class NPuzzleService {
       final
     }
     return this.flattenArray(final)
-  }
-
-  validateInversions(boardSize: number, board: number[], finalBoard: number[]) {
-    let start: number[][] = this.chunkArray(board, boardSize)
-    let final: number[][] = this.chunkArray(finalBoard, boardSize)
-    const findD = () => {
-      let xi: number
-      let yi: number
-      let xf: number
-      let yf: number
-      for (let i = 0; i < boardSize; i++) {
-        for (let j = 0; j < boardSize; j++) {
-          if (start[i][j] === 0) {
-            xi = j
-            yi = i
-            break
-          }
-        }
-      }
-      if (boardSize % 2 !== 0) {
-        xf = Math.ceil(boardSize / 2)
-        yf = Math.ceil(boardSize / 2)
-      } else {
-        xf = boardSize / 2 - 1
-        yf = boardSize / 2
-      }
-      let d = Math.abs(xf - xi) + Math.abs(yf - yi)
-      return d
-    }
-    const findP = () => {
-      let tab: number[] = []
-      let p: number = 0
-      for (let line of start) {
-        tab = tab.concat(line)
-      }
-      let finalTab: number[] = []
-      for (let line of final) {
-        finalTab = finalTab.concat(line)
-      }
-
-      for (let i = 0; i < tab.length; i++) {
-        for (let j = 0; j < tab.length; j++) {
-          if (finalTab.indexOf(tab[i]) > finalTab.indexOf(tab[j])) {
-            let tmp = tab[j]
-            tab[j] = tab[i]
-            tab[i] = tmp
-            p++
-          }
-        }
-      }
-      return p
-    }
-
-    return (findD() % 2) === (findP() % 2)
   }
 
   private chunkArray(arr: any[], size: number) {
@@ -373,14 +379,16 @@ export class SearchUsingAStar {
   root: Node
   start: State
   goal: State
+  heuristic: NPuzzleHeuristics
   solution: Node[] = []
   solved: boolean = false
   openList: PriorityQueue = new PriorityQueue()
   closedList: Set<String> = new Set()
 
-  constructor(start: State, goal: State) {
+  constructor(start: State, goal: State, heuristic: NPuzzleHeuristics) {
     this.start = start
     this.goal = goal
+    this.heuristic = heuristic
     this.root = new Node(start, 0, null);
   }
 
