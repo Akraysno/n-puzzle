@@ -115,10 +115,8 @@ export class Solvers {
         */
 
     static aStar(start: State, heuristic: DistHeuristic, openedList: OpenedList, closedList: ClosedList): State {
-        let nb_tries = 0;
         openedList.addItem(start, start.getDist(heuristic));
         while (openedList.count() > 0) {
-            nb_tries += 1;
             const current = openedList.getAndRemoveTop();
             if (current.getHeuristicValue(heuristic) === 0) {
                 return current
