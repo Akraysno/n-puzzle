@@ -252,6 +252,16 @@ $solvedPuzzleAnimationDuration: 1s;
                 line-height: 50px;
                 text-align: center;
             }
+            .loading-puzzle {
+                color: rgba(0, 0, 0, 0.2);
+                font-size: 30px;
+                line-height: 50px;
+                text-align: center;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+            }
         }
         .progress-bar-container {
             height: 5px;

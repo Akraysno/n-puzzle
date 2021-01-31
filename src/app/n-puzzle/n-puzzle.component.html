@@ -145,7 +145,14 @@
         Aucun puzzle résolu pour le moment.
       </div>
       <div class="loading-puzzle" *ngIf="loading">
-        Aucun puzzle résolu pour le moment.
+        <mat-progress-spinner
+          class="prefix-icon" 
+          color="accent" 
+          *ngIf="loading" 
+          mode="indeterminate"
+        >
+        </mat-progress-spinner>
+        Puzzle en cours de résolution...
       </div>
     </div>
     <div class="progress-bar-container" *ngIf="result && result.puzzle">
