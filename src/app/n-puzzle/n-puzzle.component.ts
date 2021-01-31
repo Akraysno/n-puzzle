@@ -6,7 +6,7 @@ import { NPuzzle, TileMove } from '../__models/n-puzzle.entity'
 import { NPuzzleService } from '../_services/n-puzzle.service'
 import { TileMoveDirection } from '../__models/enums/tile-move-direction.enum';
 import { animate, keyframes, state, style, transition, trigger } from '@angular/animations';
-import { State } from '../_classes/state-rework.class';
+import { State } from '../_classes/state.class';
 import { Result } from '../_classes/result.class';
 
 @Component({

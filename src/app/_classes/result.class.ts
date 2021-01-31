@@ -1,7 +1,7 @@
 import { NPuzzleAlgo } from "../__models/enums/n-puzzle-algo.enum";
 import { NPuzzleHeuristics } from "../__models/enums/n-puzzle-heuristics.enum";
 import { TileMove } from "../__models/n-puzzle.entity";
-import { State } from "./state-rework.class";
+import { State } from "./state.class";
 
 export class Result {
     algo: NPuzzleAlgo;

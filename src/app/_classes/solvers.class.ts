@@ -1,8 +1,7 @@
 import { NPuzzleAlgo } from "../__models/enums/n-puzzle-algo.enum";
 import { DistHeuristic } from "./heuristics.class";
-import { PriorityQueue } from "./priority-queue-rework.class";
-import { ClosedList, OpenedList } from "./state-rework.class";
-import { State } from "./state-rework.class";
+import { ClosedList, OpenedList } from "./state.class";
+import { State } from "./state.class";
 
 export type NPuzzleSolver = (start: State, heuristic: DistHeuristic, openedList: OpenedList, closedList: ClosedList) => State
 

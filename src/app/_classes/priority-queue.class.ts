@@ -1,4 +1,4 @@
-import { State } from "./state-rework.class";
+import { State } from "./state.class";
 
 export class PriorityQueue {
     private _nodes: Map<number, State[]> = new Map()
