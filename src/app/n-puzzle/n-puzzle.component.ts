@@ -4,7 +4,6 @@ import { NPuzzleAlgo, NPuzzleAlgoLabel } from '../__models/enums/n-puzzle-algo.e
 import { NPuzzleHeuristics, NPuzzleHeuristicsLabel } from '../__models/enums/n-puzzle-heuristics.enum'
 import { NPuzzle, TileMove } from '../__models/n-puzzle.entity'
 import { NPuzzleService } from '../_services/n-puzzle.service'
-import { ErrorsService } from '../_services/errors.service';
 import { TileMoveDirection } from '../__models/enums/tile-move-direction.enum';
 import { animate, keyframes, state, style, transition, trigger } from '@angular/animations';
 import { State } from '../_classes/state-rework.class';
@@ -73,7 +72,6 @@ export class NPuzzleComponent implements OnInit {
 
   constructor(
     private nPuzzleService: NPuzzleService,
-    private errorsService: ErrorsService,
   ) { }
 
   ngOnInit() {
