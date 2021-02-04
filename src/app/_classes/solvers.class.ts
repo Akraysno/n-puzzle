@@ -13,7 +13,7 @@ export type NPuzzleSolver = (start: State, heuristic: DistHeuristic, openedList:
 export class Solvers {
     static solvers = {
         [NPuzzleAlgo.ASTAR]: Solvers.aStar,
-        [NPuzzleAlgo.BEST_FIRST]: null,
+        [NPuzzleAlgo.BEST_FIRST]: Solvers.bestFirst,
         [NPuzzleAlgo.SLOW_ASTAR]: null,
         [NPuzzleAlgo.WEIGHTED_ASTAR]: null,
     }
@@ -85,39 +85,31 @@ export class Solvers {
             }
             throw 'impossible';
         }
-    
-        function _bestFirst(start: State, heuristic: dist_heuristic): [State, number, number] {
-            const opened = new PriorityQueue<State>();
-            const closed = new Map<string, number>();
-            let nb_tries = 0;
-            opened.insert(start, start.get_h(heuristic));
-            while (!opened.is_empty()) {
-                nb_tries += 1;
-                const state_e = opened.min();
-                const state_e_hash = state_e.hash();
-                const closed_dist = closed.get(state_e_hash);
-                if (typeof closed_dist !== 'undefined' && state_e.g >= closed_dist) {
-                    continue;
-                }
-                if (state_e.get_h(heuristic) === 0) {
-                    return [state_e, nb_tries, opened.size() + closed.size];
-                }
-                // console.log('state:', state_e);
-                // console.log('opened:', opened.size(), 'closed:', closed.size);
-                closed.set(state_e_hash, state_e.g);
-                for (const state of state_e.expand()) {
-                    opened.insert(state, state.get_h(heuristic));
-                }
-            }
-            throw 'impossible';
-        }
         */
+
+
+    static bestFirst(start: State, heuristic: DistHeuristic, openedList: OpenedList, closedList: ClosedList): State {
+        openedList.addItem(start, start.getDist(heuristic));
+        while (openedList.count() > 0) {
+            const current = openedList.getFirst();
+            for (const state of current.neighbours()) {
+                const key: string = state.getClosedListKey();
+                const closed: boolean = closedList.has(key);
+                if (closed) continue
+                if (state.board.toString() === start.final.toString()) {
+                    return current
+                }
+                closedList.add(key);
+                openedList.addItem(state, state.getDist(heuristic));
+            }
+        }
+    }
 
     static aStar(start: State, heuristic: DistHeuristic, openedList: OpenedList, closedList: ClosedList): State {
         openedList.addItem(start, start.getDist(heuristic));
         while (openedList.count() > 0) {
-            const current = openedList.getAndRemoveTop();
-            if (current.getHeuristicValue(heuristic) === 0) {
+            const current = openedList.getFirst();
+            if (current.board.toString() === start.final.toString()) {
                 return current
             }
             const key: string = current.getClosedListKey();
