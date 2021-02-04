@@ -8,6 +8,7 @@ import { TileMoveDirection } from '../__models/enums/tile-move-direction.enum';
 import { animate, keyframes, state, style, transition, trigger } from '@angular/animations';
 import { State } from '../_classes/state.class';
 import { Result } from '../_classes/result.class';
+import { ErrorsService } from '../_services/errors.service';
 
 @Component({
   selector: 'app-n-puzzle',
@@ -72,6 +73,7 @@ export class NPuzzleComponent implements OnInit {
 
   constructor(
     private nPuzzleService: NPuzzleService,
+    private errorsService: ErrorsService,
   ) { }
 
   ngOnInit() {
@@ -137,34 +139,18 @@ export class NPuzzleComponent implements OnInit {
     }
     return settings
   }
-  /*
-    resolve() {
-      this.loading = true
-      this.result = null
-      this.nPuzzleService.resolvePuzzle(this.currentAlgo, this.currentHeuristic, this.settings.size, this.settings.startState, this.settings.finalState).subscribe((res: CustomNPuzzle) => {
-        console.log(res)
-        this.result = new PuzzleResult(res)
-        console.log(this.result)
-        let state = new State(this.settings.startState, this.settings.finalState, this.settings.size)
-        state.solve(this.currentAlgo, this.currentHeuristic).subscribe(res => {
-          console.log(res)
-        })
-        this.loading = false
-      }, err => {
-        this.errorsService.displayError(err)
-        this.loading = false
-      })
-    }
-  */
+
   resolve() {
     this.loading = true
     this.result = null
-    let state = new State(this.settings.startState, this.settings.finalState, this.settings.size)
-    state.solve(this.currentAlgo, this.currentHeuristic).subscribe(res => {
-      console.log(res)
-      this.result = new PuzzleSolution(res)
+    setTimeout(() => {
+      let state = new State(this.settings.startState, this.settings.finalState, this.settings.size)
+      state.solve(this.currentAlgo, this.currentHeuristic).subscribe(res => {
+        console.log(res)
+        this.result = new PuzzleSolution(res)
+        this.loading = false
+      }, err => this.errorsService.displayError(err))
     })
-    this.loading = false
   }
 
   nextMove(back: boolean) {

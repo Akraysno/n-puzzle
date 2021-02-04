@@ -8,7 +8,6 @@ export class PriorityQueue {
      */
     public count(): number {
       let count = 0
-      //console.log(this._nodes)
       this._nodes.forEach((nodes, index) => count += nodes.length);
       return count
     }
