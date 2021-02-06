@@ -6,7 +6,8 @@
       <div class="separator"></div>
       <h3 class="sub-title">Taille : </h3>
       <div class="size-group">
-        <button class="size-option custom-button" *ngFor="let s of sizes" (click)="sizeChanged(s)" [ngClass]="{'selected': currentSize === s}"> {{s}} x {{s}} </button>
+        <button class="size-option custom-button" (click)="sizeChanged(3)" [ngClass]="{'selected': currentSize === 3}"> 3 x 3 </button>
+        <button class="size-option custom-button" (click)="sizeChanged(4)" [ngClass]="{'selected': currentSize === 4}"> 4 x 4 </button>
       </div>
     </div>
 

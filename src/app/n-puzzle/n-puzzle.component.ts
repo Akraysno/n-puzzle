@@ -55,7 +55,6 @@ import { ErrorsService } from '../_services/errors.service';
 })
 
 export class NPuzzleComponent implements OnInit {
-  sizes = [3, 4, 5]
   currentSize: number = 3
   currentFinalStateType: NPuzzleFinalState = NPuzzleFinalState.SPIRAL
   currentAlgo: NPuzzleAlgo = NPuzzleAlgo.ASTAR
