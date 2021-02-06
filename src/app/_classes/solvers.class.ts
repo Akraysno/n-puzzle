@@ -15,7 +15,7 @@ export class Solvers {
         [NPuzzleAlgo.ASTAR]: Solvers.aStar,
         [NPuzzleAlgo.BEST_FIRST]: Solvers.bestFirst,
         [NPuzzleAlgo.SLOW_ASTAR]: null,
-        [NPuzzleAlgo.WEIGHTED_ASTAR]: null,
+        [NPuzzleAlgo.WEIGHTED_ASTAR]: Solvers.aStar,
     }
     /*
         static _aStarStandard(start: State, heuristic: dist_heuristic): [State, number, number] {

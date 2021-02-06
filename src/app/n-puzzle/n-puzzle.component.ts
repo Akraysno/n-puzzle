@@ -145,7 +145,7 @@ export class NPuzzleComponent implements OnInit {
     this.result = null
     setTimeout(() => {
       let state = new State(this.settings.startState, this.settings.finalState, this.settings.size)
-      state.solve(this.currentAlgo, this.currentHeuristic).subscribe(res => {
+      state.solve(this.currentAlgo, this.currentHeuristic, this.currentAlgo === NPuzzleAlgo.WEIGHTED_ASTAR ? 2 : 1).subscribe(res => {
         console.log(res)
         this.result = new PuzzleSolution(res)
         this.loading = false

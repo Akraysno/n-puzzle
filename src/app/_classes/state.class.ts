@@ -21,6 +21,7 @@ export class State {
   public moveDirection: TileMoveDirection
   public g: number;
   public h: number;
+  public w: number;
   public parent: State
   public cost: number
   public depth: number
@@ -48,6 +49,7 @@ export class State {
     this.parent = parent
     this._move = move
     this.g = parent ? parent.g + 1 : 0
+    this.w = parent ? parent.w : 1
   }
 
   /**
@@ -121,9 +123,9 @@ export class State {
     return this.h;
   }
 
-  /** @returns g(n) + h(n) */
+  /** @returns g(n) + w * h(n) */
   public getDist(f: DistHeuristic): number {
-    return this.g + this.getHeuristicValue(f);
+    return this.g + this.w * this.getHeuristicValue(f);
   }
 
   /**
@@ -237,9 +239,10 @@ export class State {
    * @param moveslog 
    * @returns Array of State objects 
    */
-  public solve(solver: NPuzzleAlgo, heuristic: NPuzzleHeuristics): Observable<Result> {
+  public solve(solver: NPuzzleAlgo, heuristic: NPuzzleHeuristics, weight: number = 1): Observable<Result> {
     this._algo = solver
     this._heuristic = heuristic
+    this.w = weight
     return new Observable(obs => {
       this.checkPuzzle().subscribe(() => {
         this.isSolvable = this.validateInversions()
