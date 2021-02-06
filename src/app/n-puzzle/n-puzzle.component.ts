@@ -149,7 +149,11 @@ export class NPuzzleComponent implements OnInit {
         console.log(res)
         this.result = new PuzzleSolution(res)
         this.loading = false
-      }, err => this.errorsService.displayError(err))
+      }, err => {
+        this.result = null
+        this.loading = false
+        this.errorsService.displayError(err)
+      })
     })
   }
 
