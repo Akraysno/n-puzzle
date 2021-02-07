@@ -5,8 +5,8 @@ export class PriorityQueue {
     private _minCost: number = -1
     private _length: number = 0
 
-    get length() { return this._length }
-    get minCost() { return this._minCost }
+    get length() { return this._length }//{ return this.count() }//
+    get minCost() { return this._minCost }//{ return Math.min(...Array.from(this.nodes.keys())) }//
     get nodes() { return this._nodes }
   
     /**

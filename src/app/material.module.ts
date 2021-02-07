@@ -16,6 +16,7 @@ import { MatGridListModule } from '@angular/material/grid-list';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatIconModule } from '@angular/material/icon';
+import { MatSliderModule } from '@angular/material/slider';
 
 @NgModule({
     imports: [
@@ -35,6 +36,7 @@ import { MatIconModule } from '@angular/material/icon';
         MatTooltipModule,
         MatCheckboxModule,
         MatIconModule,
+        MatSliderModule,
     ],
     exports: [
         MatSnackBarModule,
@@ -53,6 +55,7 @@ import { MatIconModule } from '@angular/material/icon';
         MatTooltipModule,
         MatCheckboxModule,
         MatIconModule,
+        MatSliderModule,
     ]
 })
 export class MaterialModule { }

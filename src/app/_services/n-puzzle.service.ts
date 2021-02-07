@@ -89,16 +89,41 @@ export class NPuzzleService {
     return (findD() % 2) === (findP() % 2)
   }
 
-  generateRandomBoard(size?: number): number[] {
+  generateRandomBoard(size: number, finalBoard: number[], nbShuffleIterations: number = 100): number[] {
+    const getRandomIndex = (i: number, size: number) => {
+      const indexes = [];
+      if (i % size > 0) indexes.push(i - 1);
+      if (i % size < size - 1) indexes.push(i + 1);
+      if (i / size > 0) indexes.push(i - size);
+      if (i / size < size - 1) indexes.push(i + size);
+      return indexes[Math.floor(Math.random() * indexes.length)];
+    };
+
     if (!size || size <= 0) {
       size = 3
     }
-    let tmpArray: number[] = Array(Math.pow(size, 2)).fill(-1).map((v, i) => i)
     let shuffleArray: number[] = []
-    while (tmpArray.length > 0) {
-      let r = Math.floor(Math.random() * tmpArray.length);
-      shuffleArray.push(tmpArray.splice(r, 1)[0])
+    if (nbShuffleIterations < 0) {
+      let tmpArray: number[] = Array(Math.pow(size, 2)).fill(-1).map((v, i) => i)
+      while (tmpArray.length > 0) {
+        let r = Math.floor(Math.random() * tmpArray.length);
+        shuffleArray.push(tmpArray.splice(r, 1)[0])
+      }
+    } else {
+      let i = 0;
+      shuffleArray = [...finalBoard];
+      while (i < nbShuffleIterations) {
+        const index = shuffleArray.findIndex(el => el === 0);
+        let next: number = -1;
+        while (next >= shuffleArray.length || next < 0) {
+          next = getRandomIndex(index, size);
+        }
+        shuffleArray[index] = shuffleArray[next];
+        shuffleArray[next] = 0;
+        i += 1;
+      }
     }
+    console.log(shuffleArray)
     return shuffleArray
   }
 

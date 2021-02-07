@@ -62,6 +62,7 @@ export class NPuzzleComponent implements OnInit {
   settings: Settings
   loading: boolean = false
   result: PuzzleSolution//PuzzleResult
+  nbShuffleIterations: number = 100
 
   tileMoveDirection = TileMoveDirection
   finalStateType = NPuzzleFinalState
@@ -132,8 +133,8 @@ export class NPuzzleComponent implements OnInit {
     settings.isSolvable = false
     settings.size = size
     while (!settings.isSolvable) {
-      settings.startState = this.nPuzzleService.generateRandomBoard(size)
       settings.finalState = this.nPuzzleService.generateFinalBoard(size, type)
+      settings.startState = this.nPuzzleService.generateRandomBoard(size, settings.finalState, this.nbShuffleIterations)
       settings.isSolvable = this.nPuzzleService.validateInversions(settings.size, settings.startState, settings.finalState)
     }
     return settings
