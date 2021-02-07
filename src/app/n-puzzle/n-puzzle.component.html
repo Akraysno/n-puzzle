@@ -26,10 +26,10 @@
       <div class="separator"></div>
       <h3 class="sub-title">Heuristique : </h3>
       <div class="heuristic-group">
-        <button class="algo-option custom-button" (click)="onHeuristicChange(heuristics.MANHATTAN)" [ngClass]="{'selected': currentHeuristic === heuristics.MANHATTAN}"> Manhattan </button>
-        <button class="algo-option custom-button" (click)="onHeuristicChange(heuristics.HAMMING)" [ngClass]="{'selected': currentHeuristic === heuristics.HAMMING}"> Hamming </button>
-        <button class="algo-option custom-button" (click)="onHeuristicChange(heuristics.CARTESIAN)" [ngClass]="{'selected': currentHeuristic === heuristics.CARTESIAN}"> Cartesian </button>
-        <button class="algo-option custom-button" (click)="onHeuristicChange(heuristics.LINEAR_CONFLICT)" [ngClass]="{'selected': currentHeuristic === heuristics.LINEAR_CONFLICT}"> Linear Conflict </button>
+        <button class="heuristic-option custom-button" (click)="onHeuristicChange(heuristics.MANHATTAN)" [ngClass]="{'selected': currentHeuristic === heuristics.MANHATTAN}"> Manhattan </button>
+        <button class="heuristic-option custom-button" (click)="onHeuristicChange(heuristics.HAMMING)" [ngClass]="{'selected': currentHeuristic === heuristics.HAMMING}"> Hamming </button>
+        <button class="heuristic-option custom-button" (click)="onHeuristicChange(heuristics.CARTESIAN)" [ngClass]="{'selected': currentHeuristic === heuristics.CARTESIAN}"> Cartesian </button>
+        <button class="heuristic-option custom-button" (click)="onHeuristicChange(heuristics.LINEAR_CONFLICT)" [ngClass]="{'selected': currentHeuristic === heuristics.LINEAR_CONFLICT}"> Linear Conflict </button>
       </div>
     </div>
 
@@ -42,14 +42,11 @@
           min="0"
           step="10"
           (change)="nbShuffleIterations = $event.value"
-          [(ngModel)]="nbShuffleIterations"
+          [value]="nbShuffleIterations"
           autoTicks="true"
+          color="primary"
         ></mat-slider>
-        {{nbShuffleIterations > 0 ? nbShuffleIterations : 'Complet'}}
-        <button class="shuffle-option custom-button" *ngIf="false" (click)="nbShuffleIterations = 10" [ngClass]="{'selected': nbShuffleIterations === 10}"> 10 </button>
-        <button class="shuffle-option custom-button" *ngIf="false" (click)="nbShuffleIterations = 100" [ngClass]="{'selected': nbShuffleIterations === 100}"> 100 </button>
-        <button class="shuffle-option custom-button" *ngIf="false" (click)="nbShuffleIterations = 1000" [ngClass]="{'selected': nbShuffleIterations === 1000}"> 1000 </button>
-        <button class="shuffle-option custom-button" *ngIf="false" (click)="nbShuffleIterations = -1" [ngClass]="{'selected': nbShuffleIterations === -1}"> Complet </button>
+        <div class="nb-iterations">{{nbShuffleIterations > 0 ? nbShuffleIterations : 'Complet'}}</div>
       </div>
     </div>
 

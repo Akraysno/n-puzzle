@@ -77,7 +77,11 @@ $solvedPuzzleAnimationDuration: 1s;
                 width: 48%;
             }
             .mat-slider {
-                min-width: calc(100% - 50px);
+                min-width: calc(100% - 80px);
+            }
+            .nb-iterations {
+                width: 80px;
+                text-align: center;
             }
         }
         .start-state,
