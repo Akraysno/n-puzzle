@@ -67,11 +67,11 @@ $solvedPuzzleAnimationDuration: 1s;
             align-items: center;
             padding-bottom: 5px;
             flex-wrap: wrap;
-            .size-option {
+            .size-option,
+            .algo-option {
                 margin-bottom: 5px;
-                width: 30%;;
+                width: 30%;
             }
-            .algo-option,
             .heuristic-option {
                 margin-bottom: 5px;
                 width: 48%;
