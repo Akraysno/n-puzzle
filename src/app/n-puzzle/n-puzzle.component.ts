@@ -10,6 +10,8 @@ import { State } from '../_classes/state.class';
 import { Result } from '../_classes/result.class';
 import { ErrorsService } from '../_services/errors.service';
 
+const TILE_SIZE: number = 100
+
 @Component({
   selector: 'app-n-puzzle',
   templateUrl: './n-puzzle.component.html',
@@ -19,42 +21,43 @@ import { ErrorsService } from '../_services/errors.service';
       transition('* => true',
         animate('500ms linear', keyframes([
           style({ transform: 'translateX(0)', offset: 0 }),
-          style({ transform: 'translateX(100px)', offset: 0.8 }),
-          style({ transform: 'translateX(100px)', offset: 1 }),
-        ])),
+          style({ transform: 'translateX({{tileSlide}}px)', offset: 0.8 }),
+          style({ transform: 'translateX({{tileSlide}}px)', offset: 1 }),
+        ])), { params: { tileSlide: TILE_SIZE } }
       )
     ]),
     trigger('moveLeft', [
       transition('* => true',
         animate('500ms linear', keyframes([
           style({ transform: 'translateX(0)', offset: 0 }),
-          style({ transform: 'translateX(-100px)', offset: 0.8 }),
-          style({ transform: 'translateX(-100px)', offset: 1 }),
-        ])),
+          style({ transform: 'translateX(-{{tileSlide}}px)', offset: 0.8 }),
+          style({ transform: 'translateX(-{{tileSlide}}px)', offset: 1 }),
+        ])), { params: { tileSlide: TILE_SIZE } }
       )
     ]),
     trigger('moveBottom', [
       transition('* => true',
         animate('500ms linear', keyframes([
           style({ transform: 'translateY(0)', offset: 0 }),
-          style({ transform: 'translateY(100px)', offset: 0.8 }),
-          style({ transform: 'translateY(100px)', offset: 1 }),
-        ])),
+          style({ transform: 'translateY({{tileSlide}}px)', offset: 0.8 }),
+          style({ transform: 'translateY({{tileSlide}}px)', offset: 1 }),
+        ])), { params: { tileSlide: TILE_SIZE } }
       )
     ]),
     trigger('moveTop', [
       transition('* => true',
         animate('500ms linear', keyframes([
           style({ transform: 'translateY(0)', offset: 0 }),
-          style({ transform: 'translateY(-100px)', offset: 0.8 }),
-          style({ transform: 'translateY(-100px)', offset: 1 }),
-        ])),
+          style({ transform: 'translateY(-{{tileSlide}}px)', offset: 0.8 }),
+          style({ transform: 'translateY(-{{tileSlide}}px)', offset: 1 }),
+        ])), { params: { tileSlide: TILE_SIZE } }
       )
     ])
   ]
 })
 
 export class NPuzzleComponent implements OnInit {
+  resultTileSize: number = TILE_SIZE
   currentSize: number = 3
   currentFinalStateType: NPuzzleFinalState = NPuzzleFinalState.SPIRAL
   currentAlgo: NPuzzleAlgo = NPuzzleAlgo.ASTAR

@@ -56,18 +56,21 @@
         <h3 class="sub-title">Etat de départ :</h3>
         <button class="custom-button witdh-100" (click)="onGenerateRandomBoard()">Mélanger</button>
       </div>
-      <div class="puzzle-container modifiable" [ngClass]="'puzzle-'+settings.size">
-        <div 
-          class="tile"
-          (click)="selectTile(tile)"
-          [ngClass]="{
-            'border-left': i % settings.size !== 0, 
-            'border-top': i >= settings.size,
-            'selected': tile === settings.selectedTile
-          }" 
-          *ngFor="let tile of settings.startState; let i = index"
-        >
-          <span *ngIf="tile !== 0">{{tile}}</span>
+      <div class="puzzle-container">
+        <div class="puzzle puzzle-{{settings.size}} clickable">
+          <div 
+            class="tile tile-{{tileIndex}}" 
+            (click)="selectTile(tile)"
+            [ngClass]="{
+              'tile-border': tile !== 0,
+              'selected': tile === settings.selectedTile
+            }"
+            *ngFor="let tile of settings.startState"
+          >
+            <span *ngIf="tile !== 0">
+              {{tile}}
+            </span>
+          </div>
         </div>
       </div>
       <p class="error" *ngIf="!settings.isSolvable">Cette configuration ne peut pas être résolue.</p>
@@ -80,20 +83,20 @@
         <button class="custom-button witdh-100" [ngClass]="{'selected': currentFinalStateType === finalStateType.SPIRAL}" (click)="onFinalStateTypeChange(finalStateType.SPIRAL)">Spirale</button>
         <button class="custom-button witdh-100" [ngClass]="{'selected': currentFinalStateType === finalStateType.LINE}" (click)="onFinalStateTypeChange(finalStateType.LINE)">Ligne</button>
       </div>
-      <div class="puzzle-container" [ngClass]="'puzzle-'+settings.size">
-        <div 
-          class="tile"
-          [ngClass]="{
-            'border-left': i % settings.size !== 0, 
-            'border-top': i >= settings.size
-          }" 
-          *ngFor="let tile of settings.finalState; let i = index"
-        >
-          <span *ngIf="tile !== 0">{{tile}}</span>
+      <div class="puzzle-container">
+        <div class="puzzle puzzle-{{settings.size}}">
+          <div 
+            class="tile tile-{{tileIndex}}" 
+            [ngClass]="{'tile-border': tile !== 0}"
+            *ngFor="let tile of settings.finalState"
+          >
+            <span *ngIf="tile !== 0">
+              {{tile}}
+            </span>
+          </div>
         </div>
       </div>
     </div>
-
     <div class="valide-button-container">
       <div class="separator"></div>
       <div class="button-container">
@@ -139,12 +142,12 @@
     <h2 class="title">Puzzle</h2>
 
     <div class="main-puzzle-container p-l-20 p-r-20">
-      <div class="main-puzzle puzzle-{{result && result.puzzle.size}}" *ngIf="result && result.puzzle && result.currentState && result.currentState.length">
+      <div class="puzzle puzzle-{{result && result.puzzle.size}}" *ngIf="result && result.puzzle && result.currentState && result.currentState.length">
         <div 
-          [@moveRight]="result.puzzle.operations && result.currentMove && ((!result.currentMove.back && (result.currentMove.direction === tileMoveDirection.LEFT)) || (result.currentMove.back && (result.currentMove.direction === tileMoveDirection.RIGHT))) && result.currentMove.tile === tile"
-          [@moveLeft]="result.puzzle.operations && result.currentMove && ((!result.currentMove.back && (result.currentMove.direction === tileMoveDirection.RIGHT)) || (result.currentMove.back && (result.currentMove.direction === tileMoveDirection.LEFT))) && result.currentMove.tile === tile"
-          [@moveBottom]="result.puzzle.operations && result.currentMove && ((!result.currentMove.back && (result.currentMove.direction === tileMoveDirection.TOP)) || (result.currentMove.back && (result.currentMove.direction === tileMoveDirection.BOTTOM))) && result.currentMove.tile === tile"
-          [@moveTop]="result.puzzle.operations && result.currentMove && ((!result.currentMove.back && (result.currentMove.direction === tileMoveDirection.BOTTOM)) || (result.currentMove.back && (result.currentMove.direction === tileMoveDirection.TOP))) && result.currentMove.tile === tile"
+          [@moveRight]="{ value: result.puzzle.operations && result.currentMove && ((!result.currentMove.back && (result.currentMove.direction === tileMoveDirection.LEFT)) || (result.currentMove.back && (result.currentMove.direction === tileMoveDirection.RIGHT))) && result.currentMove.tile === tile, params: { tileSlide: (5 / result.puzzle.size) * resultTileSize } }"
+          [@moveLeft]="{ value: result.puzzle.operations && result.currentMove && ((!result.currentMove.back && (result.currentMove.direction === tileMoveDirection.RIGHT)) || (result.currentMove.back && (result.currentMove.direction === tileMoveDirection.LEFT))) && result.currentMove.tile === tile, params: { tileSlide: (5 / result.puzzle.size) * resultTileSize } }"
+          [@moveBottom]="{ value: result.puzzle.operations && result.currentMove && ((!result.currentMove.back && (result.currentMove.direction === tileMoveDirection.TOP)) || (result.currentMove.back && (result.currentMove.direction === tileMoveDirection.BOTTOM))) && result.currentMove.tile === tile, params: { tileSlide: (5 / result.puzzle.size) * resultTileSize } }"
+          [@moveTop]="{ value: result.puzzle.operations && result.currentMove && ((!result.currentMove.back && (result.currentMove.direction === tileMoveDirection.BOTTOM)) || (result.currentMove.back && (result.currentMove.direction === tileMoveDirection.TOP))) && result.currentMove.tile === tile, params: { tileSlide: (5 / result.puzzle.size) * resultTileSize } }"
           (@moveRight.done)="goToNextStep($event, result && result.currentMove && result.currentMove.back ? tileMoveDirection.RIGHT : tileMoveDirection.LEFT)"
           (@moveLeft.done)="goToNextStep($event, result && result.currentMove && result.currentMove.back ? tileMoveDirection.LEFT : tileMoveDirection.RIGHT)"
           (@moveBottom.done)="goToNextStep($event, result && result.currentMove && result.currentMove.back ? tileMoveDirection.BOTTOM : tileMoveDirection.TOP)"
