@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output, ViewEncapsulation } from '@angular/core';
 import { MatSliderChange } from '@angular/material/slider';
-import { Settings } from '../../_classes/settings.class';
+import { ColorType, Settings } from '../../_classes/settings.class';
 
 @Component({
   selector: 'app-puzzle-settings',
@@ -12,6 +12,7 @@ import { Settings } from '../../_classes/settings.class';
 export class PuzzleSettingsComponent implements OnInit {
   @Output() onChange: EventEmitter<Settings> = new EventEmitter()
   settings: Settings
+  colorType = ColorType
 
   constructor() { }
 
@@ -28,6 +29,11 @@ export class PuzzleSettingsComponent implements OnInit {
 
   iterationLabel(value: number) {
     return value > 0 ? value : ''
+  }
+
+  onColorChange(type: ColorType) {
+    this.settings.colorType = type
+    this.emit()
   }
 
   emit() {

@@ -36,7 +36,7 @@
       <button class="custom-button witdh-100" (click)="onGenerateRandomBoard()">Mélanger</button>
     </div>
     <div class="puzzle-container">
-      <div class="puzzle puzzle-{{config.size}} small clickable">
+      <div class="puzzle puzzle-{{config.size}} small clickable" [ngClass]="{'dark': settings?.colorType === colorType.DARK, 'light': settings?.colorType === colorType.LIGHT}">
         <div 
           class="tile tile-{{tileIndex}}" 
           (click)="selectTile(tile)"
@@ -63,7 +63,7 @@
       <button class="custom-button witdh-100" [ngClass]="{'selected': currentFinalStateType === finalStateType.LINE}" (click)="onFinalStateTypeChange(finalStateType.LINE)">Ligne</button>
     </div>
     <div class="puzzle-container">
-      <div class="puzzle puzzle-{{config.size}} small">
+      <div class="puzzle puzzle-{{config.size}} small" [ngClass]="{'dark': settings?.colorType === colorType.DARK, 'light': settings?.colorType === colorType.LIGHT}">
         <div 
           class="tile tile-{{tileIndex}}" 
           [ngClass]="{'tile-border': tile !== 0}"

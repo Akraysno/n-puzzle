@@ -19,6 +19,18 @@
             text-align: center;
         }
     }
+    .color-group {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-around;
+        align-items: center;
+        padding-bottom: 5px;
+        flex-wrap: wrap;
+        .color-option {
+            margin-bottom: 5px;
+            width: 30%;
+        }
+    }
 } 
 .separator {
     width: 80%;

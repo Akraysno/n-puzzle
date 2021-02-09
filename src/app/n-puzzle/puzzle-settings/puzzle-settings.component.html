@@ -16,4 +16,14 @@
       <div class="nb-iterations">{{settings.nbShuffleIterations > 0 ? settings.nbShuffleIterations : 'Complet'}}</div>
     </div>
   </div>
+
+  <div class="color-selector">
+    <div class="separator"></div>
+    <h3 class="sub-title">Couleur des tuiles : </h3>
+    <div class="color-group">
+      <button class="color-option custom-button" (click)="onColorChange(colorType.DARK)" [ngClass]="{'selected': settings.colorType === colorType.DARK}"> Sombre </button>
+      <button class="color-option custom-button" (click)="onColorChange(colorType.LIGHT)" [ngClass]="{'selected': settings.colorType === colorType.LIGHT}"> Clair </button>
+      <button class="color-option custom-button" (click)="onColorChange(colorType.CUSTOM)" [ngClass]="{'selected': settings.colorType === colorType.CUSTOM}"> Personnalisé </button>
+    </div>
+  </div>
 </div>

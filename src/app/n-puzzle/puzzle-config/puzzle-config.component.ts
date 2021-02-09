@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output, ViewEncapsulation } from '@angular/core';
-import { Config, Settings } from '../../_classes/settings.class';
+import { ColorType, Config, Settings } from '../../_classes/settings.class';
 import { NPuzzleService } from '../../_services/n-puzzle.service'
 import { NPuzzleFinalState } from '../../__models/enums/n-puzzle-final-state.enum'
 import { NPuzzleAlgo, NPuzzleAlgoLabel } from '../../__models/enums/n-puzzle-algo.enum'
@@ -36,6 +36,7 @@ export class PuzzleConfigComponent implements OnInit {
   heuristics = NPuzzleHeuristics
   heuristicLabel = NPuzzleHeuristicsLabel
   initialized: boolean = false
+  colorType = ColorType
 
   constructor(
     private nPuzzleService: NPuzzleService,

@@ -8,7 +8,7 @@ import { animate, keyframes, style, transition, trigger } from '@angular/animati
 import { State } from '../_classes/state.class';
 import { Result } from '../_classes/result.class';
 import { ErrorsService } from '../_services/errors.service';
-import { Config, Settings } from '../_classes/settings.class';
+import { ColorType, Config, Settings } from '../_classes/settings.class';
 
 const TILE_SIZE: number = 100
 
@@ -72,6 +72,7 @@ export class NPuzzleComponent implements OnInit {
   algoLabel = NPuzzleAlgoLabel
   heuristics = NPuzzleHeuristics
   heuristicLabel = NPuzzleHeuristicsLabel
+  colorType = ColorType
 
   constructor(
     private errorsService: ErrorsService,

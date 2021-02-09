@@ -13,5 +13,11 @@ export class Config {
 
 export class Settings {
     nbShuffleIterations: number = 100
+    colorType: ColorType = ColorType.DARK
 }
   
+export enum ColorType {
+    LIGHT = 'LIGHT',
+    DARK = 'DARK',
+    CUSTOM = 'CUSTOM'
+}

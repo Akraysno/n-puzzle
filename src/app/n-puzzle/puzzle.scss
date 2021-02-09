@@ -1,6 +1,7 @@
 @import '../../assets/scss/variables';
 
 $border: 1px solid rgba(0, 0, 0, 0.12);
+$borderLight: 1px solid rgba(214, 214, 214, 0.3);
 $basePuzzleTileSize: 100px;
 $configPuzzleTileSize3: calc(#{$basePuzzleTileSize} * 0.66);
 $configPuzzleTileSize4: calc(#{$basePuzzleTileSize} * 0.50);
@@ -8,21 +9,45 @@ $configPuzzleTileSize5: calc(#{$basePuzzleTileSize} * 0.40);
 $solvedPuzzleTileSize3: calc(#{$basePuzzleTileSize} * 1.66);
 $solvedPuzzleTileSize4: calc(#{$basePuzzleTileSize} * 1.25);
 $solvedPuzzleTileSize5: calc(#{$basePuzzleTileSize} * 1.00);
+$tileDark: #444;
+$tileLight: #fff;
 
 .puzzle {
     display: grid;
     border: $border;
     overflow: hidden;
+    background-color: $tileLight;
     .tile {
         display: flex;
         justify-content: center;
         align-items: center;
-        background-color: white;
+        background-color: $tileLight;
         &.tile-border {
             border: $border;
         }
         &.selected {
             background-color: $blue;
+        }
+    }
+    &.dark {
+        border: $borderLight;
+        background-color: $tileDark;
+        .tile {
+            background-color: $tileDark;
+            color: white;
+            &.tile-border {
+                border: $borderLight;
+            }
+        }
+    }
+    &.light {
+        border: $border;
+        background-color: $tileLight;
+        .tile {
+            background-color: $tileLight;
+            &.tile-border {
+                border: $border;
+            }
         }
     }
     &.puzzle-3,
