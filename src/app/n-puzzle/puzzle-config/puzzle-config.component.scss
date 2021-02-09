@@ -1,0 +1,47 @@
+@import '../../../assets/scss/variables';
+
+.puzzle-config-container {
+    height: 100%;
+    min-width: 100%;
+    max-width: 100%;
+    .size-group,
+    .algo-group,
+    .heuristic-group {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-around;
+        align-items: center;
+        padding-bottom: 5px;
+        flex-wrap: wrap;
+        .size-option,
+        .algo-option {
+            margin-bottom: 5px;
+            width: 30%;
+        }
+        .heuristic-option {
+            margin-bottom: 5px;
+            width: 48%;
+        }
+    }
+    .puzzle-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        height: fit-content;
+    }
+    .valide-button-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        .button-container {
+            width: 90%;
+        }
+    }
+} 
+.separator {
+    width: 80%;
+    margin: 20px auto;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+}

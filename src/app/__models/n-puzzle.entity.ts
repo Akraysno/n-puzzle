@@ -18,6 +18,7 @@ export class NPuzzle {
 export class TileMove {
     tile: number
     direction: TileMoveDirection
+    back: boolean
 
     constructor(tile: number, direction: TileMoveDirection) {
         this.tile = tile 

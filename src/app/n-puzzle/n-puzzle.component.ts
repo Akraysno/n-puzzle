@@ -1,21 +1,25 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { NPuzzleFinalState } from '../__models/enums/n-puzzle-final-state.enum'
 import { NPuzzleAlgo, NPuzzleAlgoLabel } from '../__models/enums/n-puzzle-algo.enum'
 import { NPuzzleHeuristics, NPuzzleHeuristicsLabel } from '../__models/enums/n-puzzle-heuristics.enum'
 import { NPuzzle, TileMove } from '../__models/n-puzzle.entity'
-import { NPuzzleService } from '../_services/n-puzzle.service'
 import { TileMoveDirection } from '../__models/enums/tile-move-direction.enum';
-import { animate, keyframes, state, style, transition, trigger } from '@angular/animations';
+import { animate, keyframes, style, transition, trigger } from '@angular/animations';
 import { State } from '../_classes/state.class';
 import { Result } from '../_classes/result.class';
 import { ErrorsService } from '../_services/errors.service';
+import { Config, Settings } from '../_classes/settings.class';
 
 const TILE_SIZE: number = 100
 
 @Component({
   selector: 'app-n-puzzle',
   templateUrl: './n-puzzle.component.html',
-  styleUrls: ['./n-puzzle.component.scss'],
+  styleUrls: [
+    './n-puzzle.component.scss',
+    './puzzle.scss'
+  ],
+  encapsulation: ViewEncapsulation.None,
   animations: [
     trigger('moveRight', [
       transition('* => true',
@@ -58,15 +62,10 @@ const TILE_SIZE: number = 100
 
 export class NPuzzleComponent implements OnInit {
   resultTileSize: number = TILE_SIZE
-  currentSize: number = 3
-  currentFinalStateType: NPuzzleFinalState = NPuzzleFinalState.SPIRAL
-  currentAlgo: NPuzzleAlgo = NPuzzleAlgo.ASTAR
-  currentHeuristic: NPuzzleHeuristics = NPuzzleHeuristics.MANHATTAN
   settings: Settings
+  config: Config
   loading: boolean = false
-  result: PuzzleSolution//PuzzleResult
-  nbShuffleIterations: number = 100
-
+  result: PuzzleSolution
   tileMoveDirection = TileMoveDirection
   finalStateType = NPuzzleFinalState
   algorithms = NPuzzleAlgo
@@ -75,80 +74,20 @@ export class NPuzzleComponent implements OnInit {
   heuristicLabel = NPuzzleHeuristicsLabel
 
   constructor(
-    private nPuzzleService: NPuzzleService,
     private errorsService: ErrorsService,
   ) { }
 
   ngOnInit() {
-    this.settings = this.generateValidRandomBoard(this.currentSize)
+    this.settings = new Settings()
   }
 
-  sizeChanged(size: number) {
-    if (size !== this.currentSize) {
-      this.currentSize = size
-      this.settings = this.generateValidRandomBoard(size, this.currentFinalStateType)
-    }
-  }
-
-  selectTile(tile: number) {
-    if (this.settings.selectedTile >= 0) {
-      if (this.settings.selectedTile === tile) {
-        this.settings.selectedTile = undefined
-      } else {
-        let tileA: number = this.settings.selectedTile
-        let tileB: number = tile
-        let indexTileA: number = this.settings.startState.indexOf(tileA)
-        let indexTileB: number = this.settings.startState.indexOf(tileB)
-        this.settings.startState[indexTileA] = tileB
-        this.settings.startState[indexTileB] = tileA
-        this.settings.selectedTile = undefined
-        this.settings.isSolvable = this.nPuzzleService.validateInversions(this.settings.size, this.settings.startState, this.settings.finalState)
-      }
-    } else {
-      this.settings.selectedTile = tile
-    }
-  }
-
-  onGenerateRandomBoard() {
-    if (!this.settings || !this.settings.size) return
-    this.settings = this.generateValidRandomBoard(this.settings.size, this.currentFinalStateType)
-  }
-
-  onFinalStateTypeChange(type: NPuzzleFinalState) {
-    this.settings.finalState = this.nPuzzleService.generateFinalBoard(this.settings.size, type)
-    this.settings.isSolvable = this.nPuzzleService.validateInversions(this.settings.size, this.settings.startState, this.settings.finalState)
-    this.currentFinalStateType = type
-  }
-
-  onAlgoChange(algo: NPuzzleAlgo) {
-    this.currentAlgo = algo
-  }
-
-  onHeuristicChange(heuristic: NPuzzleHeuristics) {
-    this.currentHeuristic = heuristic
-  }
-
-  private generateValidRandomBoard(size?: number, type: NPuzzleFinalState = NPuzzleFinalState.SPIRAL): Settings {
-    if (!size || size <= 0) {
-      size = 3
-    }
-    let settings = new Settings()
-    settings.isSolvable = false
-    settings.size = size
-    while (!settings.isSolvable) {
-      settings.finalState = this.nPuzzleService.generateFinalBoard(size, type)
-      settings.startState = this.nPuzzleService.generateRandomBoard(size, settings.finalState, this.nbShuffleIterations)
-      settings.isSolvable = this.nPuzzleService.validateInversions(settings.size, settings.startState, settings.finalState)
-    }
-    return settings
-  }
-
-  resolve() {
+  resolve(config: Config) {
+    this.config = config
     this.loading = true
     this.result = null
     setTimeout(() => {
-      let state = new State(this.settings.startState, this.settings.finalState, this.settings.size)
-      state.solve(this.currentAlgo, this.currentHeuristic, this.currentAlgo === NPuzzleAlgo.WEIGHTED_ASTAR ? 2 : 1).subscribe(res => {
+      let state = new State(this.config.startState, this.config.finalState, this.config.size)
+      state.solve(this.config.algo, this.config.heuristic, this.config.algo === NPuzzleAlgo.WEIGHTED_ASTAR ? 2 : 1).subscribe(res => {
         console.log(res)
         this.result = new PuzzleSolution(res)
         this.loading = false
@@ -168,7 +107,7 @@ export class NPuzzleComponent implements OnInit {
       return
     }
     this.result.running = true
-    let nextMove: CustomTileMove = this.result.puzzle.operations[nextStepIndex + (back === true ? 1 : 0)] as CustomTileMove
+    let nextMove: TileMove = this.result.puzzle.operations[nextStepIndex + (back === true ? 1 : 0)]
     nextMove.back = back
     this.result.nextStepIndex = nextStepIndex
     this.result.currentMove = nextMove
@@ -216,53 +155,6 @@ export class NPuzzleComponent implements OnInit {
 
 }
 
-class Settings {
-  size: number
-  startState: number[]
-  finalState: number[]
-  selectedTile: number
-  isSolvable: boolean
-}
-
-class CustomNPuzzle extends NPuzzle {
-  operations: CustomTileMove[]
-}
-
-class CustomTileMove extends TileMove {
-  back: boolean
-}
-
-class PuzzleResult {
-  running: boolean = false
-  puzzle: CustomNPuzzle
-  currentState: number[]
-  nextState: number[]
-  currentStepIndex: number
-  nextStepIndex: number
-  maxStep: number
-  progress: number
-  currentMove: CustomTileMove
-  autoRun: boolean
-  nbCloseList: number
-  nbOpenList: number
-  duration: number
-
-  constructor(puzzle: CustomNPuzzle) {
-    if (!puzzle) return
-    this.puzzle = puzzle
-    this.reset()
-  }
-
-  reset() {
-    this.running = false
-    this.currentState = this.puzzle.origin.map(v => v)
-    this.currentStepIndex = 0
-    this.maxStep = this.puzzle.nbMoves
-    this.progress = ((this.currentStepIndex + 1) / this.maxStep) * 100
-    this.currentMove = null
-    this.autoRun = false
-  }
-}
 class PuzzleSolution {
   running: boolean = false
   puzzle: Result
@@ -272,7 +164,7 @@ class PuzzleSolution {
   nextStepIndex: number
   maxStep: number
   progress: number
-  currentMove: CustomTileMove
+  currentMove: TileMove
   autoRun: boolean
   nbCloseList: number
   nbOpenList: number

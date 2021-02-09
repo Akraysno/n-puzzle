@@ -1,0 +1,85 @@
+<div class="puzzle-config-container" *ngIf="settings && config">
+  <div class="size-selector">
+    <h3 class="sub-title">Taille : </h3>
+    <div class="size-group">
+      <button class="size-option custom-button" (click)="sizeChanged(3)" [ngClass]="{'selected': currentSize === 3}"> 3 x 3 </button>
+      <button class="size-option custom-button" (click)="sizeChanged(4)" [ngClass]="{'selected': currentSize === 4}"> 4 x 4 </button>
+      <button class="size-option custom-button" (click)="sizeChanged(5)" [ngClass]="{'selected': currentSize === 5}"> 5 x 5 </button>
+    </div>
+  </div>
+
+  <div class="algo-selector">
+    <div class="separator"></div>
+    <h3 class="sub-title">Methode de résolution : </h3>
+    <div class="algo-group">
+      <button class="algo-option custom-button" (click)="onAlgoChange(algorithms.ASTAR)" [ngClass]="{'selected': config.algo === algorithms.ASTAR}"> A* </button>
+      <button class="algo-option custom-button" (click)="onAlgoChange(algorithms.WEIGHTED_ASTAR)" [ngClass]="{'selected': config.algo === algorithms.WEIGHTED_ASTAR}"> Weighted A* </button>
+      <button class="algo-option custom-button" (click)="onAlgoChange(algorithms.BEST_FIRST)" [ngClass]="{'selected': config.algo === algorithms.BEST_FIRST}"> Best First </button>
+    </div>
+  </div>
+
+  <div class="algo-selector">
+    <div class="separator"></div>
+    <h3 class="sub-title">Heuristique : </h3>
+    <div class="heuristic-group">
+      <button class="heuristic-option custom-button" (click)="onHeuristicChange(heuristics.MANHATTAN)" [ngClass]="{'selected': config.heuristic === heuristics.MANHATTAN}"> Manhattan </button>
+      <button class="heuristic-option custom-button" (click)="onHeuristicChange(heuristics.HAMMING)" [ngClass]="{'selected': config.heuristic === heuristics.HAMMING}"> Hamming </button>
+      <button class="heuristic-option custom-button" (click)="onHeuristicChange(heuristics.CARTESIAN)" [ngClass]="{'selected': config.heuristic === heuristics.CARTESIAN}"> Cartesian </button>
+      <button class="heuristic-option custom-button" (click)="onHeuristicChange(heuristics.LINEAR_CONFLICT)" [ngClass]="{'selected': config.heuristic === heuristics.LINEAR_CONFLICT}"> Linear Conflict </button>
+    </div>
+  </div>
+
+  <div class="start-state" *ngIf="currentSize === config.size">
+    <div class="separator"></div>
+    <div class="sub-title-container">
+      <h3 class="sub-title">Etat de départ :</h3>
+      <button class="custom-button witdh-100" (click)="onGenerateRandomBoard()">Mélanger</button>
+    </div>
+    <div class="puzzle-container">
+      <div class="puzzle puzzle-{{config.size}} small clickable">
+        <div 
+          class="tile tile-{{tileIndex}}" 
+          (click)="selectTile(tile)"
+          [ngClass]="{
+            'tile-border': tile !== 0,
+            'selected': tile === config.selectedTile
+          }"
+          *ngFor="let tile of config.startState"
+        >
+          <span *ngIf="tile !== 0">
+            {{tile}}
+          </span>
+        </div>
+      </div>
+    </div>
+    <p class="error" *ngIf="!config.isSolvable">Cette configuration ne peut pas être résolue.</p>
+  </div>
+
+  <div class="final-state" *ngIf="currentSize === config.size">
+    <div class="separator"></div>
+    <div class="sub-title-container">
+      <h3 class="sub-title">Etat final :</h3>
+      <button class="custom-button witdh-100" [ngClass]="{'selected': currentFinalStateType === finalStateType.SPIRAL}" (click)="onFinalStateTypeChange(finalStateType.SPIRAL)">Spirale</button>
+      <button class="custom-button witdh-100" [ngClass]="{'selected': currentFinalStateType === finalStateType.LINE}" (click)="onFinalStateTypeChange(finalStateType.LINE)">Ligne</button>
+    </div>
+    <div class="puzzle-container">
+      <div class="puzzle puzzle-{{config.size}} small">
+        <div 
+          class="tile tile-{{tileIndex}}" 
+          [ngClass]="{'tile-border': tile !== 0}"
+          *ngFor="let tile of config.finalState"
+        >
+          <span *ngIf="tile !== 0">
+            {{tile}}
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="valide-button-container">
+    <div class="separator"></div>
+    <div class="button-container">
+      <app-button label="Résoudre" cssClass="width-100p" [disabled]="!config.isSolvable || loading" [loading]="loading" color="primary" (onClick)="resolve()"></app-button>
+    </div>
+  </div>
+</div>

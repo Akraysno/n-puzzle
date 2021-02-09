@@ -1,109 +1,24 @@
 <div class="main-container">
-  <div class="menu-container p-20" *ngIf="settings">
-    <h2 class="title">Configuration</h2>
-
-    <div class="size-selector" *ngIf="true">
-      <div class="separator"></div>
-      <h3 class="sub-title">Taille : </h3>
-      <div class="size-group">
-        <button class="size-option custom-button" (click)="sizeChanged(3)" [ngClass]="{'selected': currentSize === 3}"> 3 x 3 </button>
-        <button class="size-option custom-button" (click)="sizeChanged(4)" [ngClass]="{'selected': currentSize === 4}"> 4 x 4 </button>
-        <button class="size-option custom-button" (click)="sizeChanged(5)" [ngClass]="{'selected': currentSize === 5}"> 5 x 5 </button>
+  <mat-tab-group mat-align-tabs="start" class="side-menu">
+    <mat-tab>
+      <ng-template mat-tab-label> Configuration </ng-template>
+      <div class="menu-container p-20" *ngIf="settings">
+        <app-puzzle-config [settings]="settings" [loading]="loading" (onResolve)="resolve($event)"></app-puzzle-config>
       </div>
-    </div>
-
-    <div class="algo-selector">
-      <div class="separator"></div>
-      <h3 class="sub-title">Methode de résolution : </h3>
-      <div class="algo-group">
-        <button class="algo-option custom-button" (click)="onAlgoChange(algorithms.ASTAR)" [ngClass]="{'selected': currentAlgo === algorithms.ASTAR}"> A* </button>
-        <button class="algo-option custom-button" (click)="onAlgoChange(algorithms.WEIGHTED_ASTAR)" [ngClass]="{'selected': currentAlgo === algorithms.WEIGHTED_ASTAR}"> Weighted A* </button>
-        <button class="algo-option custom-button" (click)="onAlgoChange(algorithms.BEST_FIRST)" [ngClass]="{'selected': currentAlgo === algorithms.BEST_FIRST}"> Best First </button>
+    </mat-tab>
+    <mat-tab>
+      <ng-template mat-tab-label> Résultat </ng-template>
+      <div class="menu-container p-20">
+        <app-puzzle-result></app-puzzle-result>
       </div>
-    </div>
-
-    <div class="algo-selector">
-      <div class="separator"></div>
-      <h3 class="sub-title">Heuristique : </h3>
-      <div class="heuristic-group">
-        <button class="heuristic-option custom-button" (click)="onHeuristicChange(heuristics.MANHATTAN)" [ngClass]="{'selected': currentHeuristic === heuristics.MANHATTAN}"> Manhattan </button>
-        <button class="heuristic-option custom-button" (click)="onHeuristicChange(heuristics.HAMMING)" [ngClass]="{'selected': currentHeuristic === heuristics.HAMMING}"> Hamming </button>
-        <button class="heuristic-option custom-button" (click)="onHeuristicChange(heuristics.CARTESIAN)" [ngClass]="{'selected': currentHeuristic === heuristics.CARTESIAN}"> Cartesian </button>
-        <button class="heuristic-option custom-button" (click)="onHeuristicChange(heuristics.LINEAR_CONFLICT)" [ngClass]="{'selected': currentHeuristic === heuristics.LINEAR_CONFLICT}"> Linear Conflict </button>
+    </mat-tab>
+    <mat-tab>
+      <ng-template mat-tab-label> <i class="material-icons">settings</i> </ng-template>
+      <div class="menu-container p-20">
+        <app-puzzle-settings (onChange)="settings = $event"></app-puzzle-settings>
       </div>
-    </div>
-
-    <div class="shuffles-selector" *ngIf="true">
-      <div class="separator"></div>
-      <h3 class="sub-title">Compléxité du mélange : </h3>
-      <div class="shuffle-group">
-        <mat-slider
-          max="1000"
-          min="0"
-          step="10"
-          (change)="nbShuffleIterations = $event.value"
-          [value]="nbShuffleIterations"
-          autoTicks="true"
-          color="primary"
-        ></mat-slider>
-        <div class="nb-iterations">{{nbShuffleIterations > 0 ? nbShuffleIterations : 'Complet'}}</div>
-      </div>
-    </div>
-
-    <div class="start-state" *ngIf="currentSize === settings.size">
-      <div class="separator"></div>
-      <div class="sub-title-container">
-        <h3 class="sub-title">Etat de départ :</h3>
-        <button class="custom-button witdh-100" (click)="onGenerateRandomBoard()">Mélanger</button>
-      </div>
-      <div class="puzzle-container">
-        <div class="puzzle puzzle-{{settings.size}} clickable">
-          <div 
-            class="tile tile-{{tileIndex}}" 
-            (click)="selectTile(tile)"
-            [ngClass]="{
-              'tile-border': tile !== 0,
-              'selected': tile === settings.selectedTile
-            }"
-            *ngFor="let tile of settings.startState"
-          >
-            <span *ngIf="tile !== 0">
-              {{tile}}
-            </span>
-          </div>
-        </div>
-      </div>
-      <p class="error" *ngIf="!settings.isSolvable">Cette configuration ne peut pas être résolue.</p>
-    </div>
-
-    <div class="final-state" *ngIf="currentSize === settings.size">
-      <div class="separator"></div>
-      <div class="sub-title-container">
-        <h3 class="sub-title">Etat final :</h3>
-        <button class="custom-button witdh-100" [ngClass]="{'selected': currentFinalStateType === finalStateType.SPIRAL}" (click)="onFinalStateTypeChange(finalStateType.SPIRAL)">Spirale</button>
-        <button class="custom-button witdh-100" [ngClass]="{'selected': currentFinalStateType === finalStateType.LINE}" (click)="onFinalStateTypeChange(finalStateType.LINE)">Ligne</button>
-      </div>
-      <div class="puzzle-container">
-        <div class="puzzle puzzle-{{settings.size}}">
-          <div 
-            class="tile tile-{{tileIndex}}" 
-            [ngClass]="{'tile-border': tile !== 0}"
-            *ngFor="let tile of settings.finalState"
-          >
-            <span *ngIf="tile !== 0">
-              {{tile}}
-            </span>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="valide-button-container">
-      <div class="separator"></div>
-      <div class="button-container">
-        <app-button label="Résoudre" cssClass="width-100p" [disabled]="!settings.isSolvable || loading" [loading]="loading" color="primary" (onClick)="resolve()"></app-button>
-      </div>
-    </div>
-  </div>
+    </mat-tab>
+  </mat-tab-group>
 
   <div class="puzzle-container p-t-20 p-b-20">
     <div class="stats" *ngIf="result && result.puzzle">

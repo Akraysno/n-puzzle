@@ -1,0 +1,19 @@
+<div class="puzzle-settings-container" *ngIf="settings">
+  <div class="shuffles-selector">
+    <h3 class="sub-title">Compléxité du mélange : </h3>
+    <div class="shuffle-group">
+      <mat-slider
+        max="1000"
+        min="0"
+        step="10"
+        autoTicks="true"
+        color="primary"
+        thumbLabel="true"
+        [value]="settings.nbShuffleIterations"
+        [displayWith]="iterationLabel"
+        (change)="nbIterationsChange($event)"
+      ></mat-slider>
+      <div class="nb-iterations">{{settings.nbShuffleIterations > 0 ? settings.nbShuffleIterations : 'Complet'}}</div>
+    </div>
+  </div>
+</div>

@@ -11,6 +11,9 @@ import { SnackbarComponent } from './_components/snackbar/snackbar.component';
 import { ButtonComponent } from './_components/button/button.component';
 import { ErrorsService } from './_services/errors.service';
 import { SnackbarService } from './_services/snackbar.service';
+import { PuzzleConfigComponent } from './n-puzzle/puzzle-config/puzzle-config.component';
+import { PuzzleSettingsComponent } from './n-puzzle/puzzle-settings/puzzle-settings.component';
+import { PuzzleResultComponent } from './n-puzzle/puzzle-result/puzzle-result.component';
 
 @NgModule({
   declarations: [
@@ -18,6 +21,9 @@ import { SnackbarService } from './_services/snackbar.service';
     NPuzzleComponent,
     SnackbarComponent,
     ButtonComponent,
+    PuzzleConfigComponent,
+    PuzzleSettingsComponent,
+    PuzzleResultComponent,
   ],
   imports: [
     BrowserModule,
