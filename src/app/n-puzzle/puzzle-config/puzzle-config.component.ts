@@ -95,7 +95,7 @@ export class PuzzleConfigComponent implements OnInit {
     if (!size || size <= 0) {
       size = 3
     }
-    let config = new Config()
+    let config = this.config || new Config()
     config.isSolvable = false
     config.size = size
     while (!config.isSolvable) {
