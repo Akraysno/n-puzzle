@@ -19,6 +19,7 @@
             text-align: center;
         }
     }
+    .board-group,
     .color-group {
         display: flex;
         flex-direction: row;
@@ -29,6 +30,10 @@
         .color-option {
             margin-bottom: 5px;
             width: 30%;
+        }
+        .board-option {
+            margin-bottom: 5px;
+            width: 48%;
         }
     }
 } 

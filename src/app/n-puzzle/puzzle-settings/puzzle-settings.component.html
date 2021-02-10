@@ -17,13 +17,22 @@
     </div>
   </div>
 
-  <div class="color-selector">
+  <div class="board-selector">
+    <div class="separator"></div>
+    <h3 class="sub-title">Couleur du plateau : </h3>
+    <div class="board-group">
+      <button class="board-option custom-button" (click)="onBoardColorChange(boardColorType.DARK)" [ngClass]="{'selected': settings.boardColorType === boardColorType.DARK}"> Sombre </button>
+      <button class="board-option custom-button" (click)="onBoardColorChange(boardColorType.LIGHT)" [ngClass]="{'selected': settings.boardColorType === boardColorType.LIGHT}"> Clair </button>
+    </div>
+  </div>
+
+  <div class="color-selector" *ngIf="false">
     <div class="separator"></div>
     <h3 class="sub-title">Couleur des tuiles : </h3>
     <div class="color-group">
-      <button class="color-option custom-button" (click)="onColorChange(colorType.DARK)" [ngClass]="{'selected': settings.colorType === colorType.DARK}"> Sombre </button>
-      <button class="color-option custom-button" (click)="onColorChange(colorType.LIGHT)" [ngClass]="{'selected': settings.colorType === colorType.LIGHT}"> Clair </button>
-      <button class="color-option custom-button" (click)="onColorChange(colorType.CUSTOM)" [ngClass]="{'selected': settings.colorType === colorType.CUSTOM}"> Personnalisé </button>
+      <button class="color-option custom-button" (click)="onTileColorChange(tileColorType.UNITED)" [ngClass]="{'selected': settings.tileColorType === tileColorType.UNITED}"> Sombre </button>
+      <button class="color-option custom-button" (click)="onTileColorChange(tileColorType.SPIRAL)" [ngClass]="{'selected': settings.tileColorType === tileColorType.SPIRAL}"> Clair </button>
+      <button class="color-option custom-button" (click)="onTileColorChange(tileColorType.DIAGONAL)" [ngClass]="{'selected': settings.tileColorType === tileColorType.DIAGONAL}"> Personnalisé </button>
     </div>
   </div>
 </div>

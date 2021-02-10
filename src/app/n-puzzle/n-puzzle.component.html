@@ -57,7 +57,7 @@
     <h2 class="title">Puzzle</h2>
 
     <div class="main-puzzle-container p-l-20 p-r-20">
-      <div class="puzzle puzzle-{{result && result.puzzle.size}}" [ngClass]="{'dark': settings?.colorType === colorType.DARK, 'light': settings?.colorType === colorType.LIGHT}" *ngIf="result && result.puzzle && result.currentState && result.currentState.length">
+      <div class="puzzle puzzle-{{result && result.puzzle.size}}" [ngClass]="{'dark': settings?.boardColorType === boardColorType.DARK, 'light': settings?.boardColorType === boardColorType.LIGHT}" *ngIf="result && result.puzzle && result.currentState && result.currentState.length">
         <div 
           [@moveRight]="{ value: result.puzzle.operations && result.currentMove && ((!result.currentMove.back && (result.currentMove.direction === tileMoveDirection.LEFT)) || (result.currentMove.back && (result.currentMove.direction === tileMoveDirection.RIGHT))) && result.currentMove.tile === tile, params: { tileSlide: (5 / result.puzzle.size) * resultTileSize } }"
           [@moveLeft]="{ value: result.puzzle.operations && result.currentMove && ((!result.currentMove.back && (result.currentMove.direction === tileMoveDirection.RIGHT)) || (result.currentMove.back && (result.currentMove.direction === tileMoveDirection.LEFT))) && result.currentMove.tile === tile, params: { tileSlide: (5 / result.puzzle.size) * resultTileSize } }"
@@ -68,7 +68,7 @@
           (@moveBottom.done)="goToNextStep($event, result && result.currentMove && result.currentMove.back ? tileMoveDirection.BOTTOM : tileMoveDirection.TOP)"
           (@moveTop.done)="goToNextStep($event, result && result.currentMove && result.currentMove.back ? tileMoveDirection.TOP : tileMoveDirection.BOTTOM)"
           class="tile tile-{{tileIndex}}" 
-          [ngClass]="{'tile-border': tile !== 0}"
+          [ngClass]="{'tile-border': tile !== 0, 'tile-empty': tile === 0}"
           id="solved-puzzle-tile-{{tile}}" 
           *ngFor="let tile of result.currentState; let tileIndex = index"
         >

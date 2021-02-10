@@ -36,13 +36,15 @@
       <button class="custom-button witdh-100" (click)="onGenerateRandomBoard()">Mélanger</button>
     </div>
     <div class="puzzle-container">
-      <div class="puzzle puzzle-{{config.size}} small clickable" [ngClass]="{'dark': settings?.colorType === colorType.DARK, 'light': settings?.colorType === colorType.LIGHT}">
+      <div class="puzzle puzzle-{{config.size}} small clickable" [ngClass]="{'dark': settings?.boardColorType === boardColorType.DARK, 'light': settings?.boardColorType === boardColorType.LIGHT}">
         <div 
           class="tile tile-{{tileIndex}}" 
           (click)="selectTile(tile)"
           [ngClass]="{
             'tile-border': tile !== 0,
-            'selected': tile === config.selectedTile
+            'selected': tile === config.selectedTile,
+            'tile-empty': tile === 0
+            
           }"
           *ngFor="let tile of config.startState"
         >
@@ -63,10 +65,10 @@
       <button class="custom-button witdh-100" [ngClass]="{'selected': currentFinalStateType === finalStateType.LINE}" (click)="onFinalStateTypeChange(finalStateType.LINE)">Ligne</button>
     </div>
     <div class="puzzle-container">
-      <div class="puzzle puzzle-{{config.size}} small" [ngClass]="{'dark': settings?.colorType === colorType.DARK, 'light': settings?.colorType === colorType.LIGHT}">
+      <div class="puzzle puzzle-{{config.size}} small" [ngClass]="{'dark': settings?.boardColorType === boardColorType.DARK, 'light': settings?.boardColorType === boardColorType.LIGHT}">
         <div 
           class="tile tile-{{tileIndex}}" 
-          [ngClass]="{'tile-border': tile !== 0}"
+          [ngClass]="{'tile-border': tile !== 0, 'tile-empty': tile === 0}"
           *ngFor="let tile of config.finalState"
         >
           <span *ngIf="tile !== 0">

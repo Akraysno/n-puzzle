@@ -2,6 +2,7 @@
 
 $border: 1px solid rgba(0, 0, 0, 0.12);
 $borderLight: 1px solid rgba(214, 214, 214, 0.3);
+$borderDark: 1px solid rgb(24, 24, 24);
 $basePuzzleTileSize: 100px;
 $configPuzzleTileSize3: calc(#{$basePuzzleTileSize} * 0.66);
 $configPuzzleTileSize4: calc(#{$basePuzzleTileSize} * 0.50);
@@ -14,7 +15,7 @@ $tileLight: #fff;
 
 .puzzle {
     display: grid;
-    border: $border;
+    border: $borderDark;
     overflow: hidden;
     background-color: $tileLight;
     .tile {
@@ -29,26 +30,14 @@ $tileLight: #fff;
             background-color: $blue;
         }
     }
+    .tile-empty {
+        background-color: transparent;
+    }
     &.dark {
-        border: $borderLight;
         background-color: $tileDark;
-        .tile {
-            background-color: $tileDark;
-            color: white;
-            &.tile-border {
-                border: $borderLight;
-            }
-        }
     }
     &.light {
-        border: $border;
         background-color: $tileLight;
-        .tile {
-            background-color: $tileLight;
-            &.tile-border {
-                border: $border;
-            }
-        }
     }
     &.puzzle-3,
     &.puzzle-4,
