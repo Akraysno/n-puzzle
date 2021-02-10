@@ -14,6 +14,7 @@ import { SnackbarService } from './_services/snackbar.service';
 import { PuzzleConfigComponent } from './n-puzzle/puzzle-config/puzzle-config.component';
 import { PuzzleSettingsComponent } from './n-puzzle/puzzle-settings/puzzle-settings.component';
 import { PuzzleResultComponent } from './n-puzzle/puzzle-result/puzzle-result.component';
+import { ColorPickerModule } from 'ngx-color-picker'
 
 @NgModule({
   declarations: [
@@ -31,6 +32,7 @@ import { PuzzleResultComponent } from './n-puzzle/puzzle-result/puzzle-result.co
     BrowserAnimationsModule,
     MaterialModule,
     HttpClientModule,
+    ColorPickerModule,
   ],
   providers: [
     NPuzzleService,

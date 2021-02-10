@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output, ViewEncapsulation } from '@angular/core';
 import { MatSliderChange } from '@angular/material/slider';
-import { TileColorType, Settings, BoardColorType } from '../../_classes/settings.class';
+import { TileColorType, Settings, BoardColorType, TileColor, Color } from '../../_classes/settings.class';
 
 @Component({
   selector: 'app-puzzle-settings',
@@ -14,6 +14,8 @@ export class PuzzleSettingsComponent implements OnInit {
   settings: Settings
   tileColorType = TileColorType
   boardColorType = BoardColorType
+  color1: string
+  color2: string
 
   constructor() { }
 
@@ -44,6 +46,13 @@ export class PuzzleSettingsComponent implements OnInit {
 
   emit() {
     this.onChange.emit(this.settings)
+  }
+
+  updateTileColor() {
+    let color1 = Color.hexaToColor(this.color1)
+    let color2 = Color.hexaToColor(this.color2)
+    this.settings.tilesColor = new TileColor(this.settings.tileColorType, color1, color2)
+    this.emit()
   }
 
 }

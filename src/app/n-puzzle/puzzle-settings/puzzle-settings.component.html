@@ -26,13 +26,59 @@
     </div>
   </div>
 
-  <div class="color-selector" *ngIf="false">
+  <div class="color-selector">
     <div class="separator"></div>
     <h3 class="sub-title">Couleur des tuiles : </h3>
     <div class="color-group">
-      <button class="color-option custom-button" (click)="onTileColorChange(tileColorType.UNITED)" [ngClass]="{'selected': settings.tileColorType === tileColorType.UNITED}"> Sombre </button>
-      <button class="color-option custom-button" (click)="onTileColorChange(tileColorType.SPIRAL)" [ngClass]="{'selected': settings.tileColorType === tileColorType.SPIRAL}"> Clair </button>
-      <button class="color-option custom-button" (click)="onTileColorChange(tileColorType.DIAGONAL)" [ngClass]="{'selected': settings.tileColorType === tileColorType.DIAGONAL}"> Personnalisé </button>
+      <button class="color-option custom-button" (click)="onTileColorChange(tileColorType.UNITED)" [ngClass]="{'selected': settings.tileColorType === tileColorType.UNITED}"> Unies </button>
+      <button class="color-option custom-button" (click)="onTileColorChange(tileColorType.SPIRAL)" [ngClass]="{'selected': settings.tileColorType === tileColorType.SPIRAL}"> Spirale </button>
+      <button class="color-option custom-button" (click)="onTileColorChange(tileColorType.DIAGONAL)" [ngClass]="{'selected': settings.tileColorType === tileColorType.DIAGONAL}"> Diagonale </button>
+    </div>
+  </div>
+
+  <div class="color-pickers-container">
+    <div class="color-picker-group">
+      <div class="color-picker-element-container" [ngClass]="{'full-width': settings.tileColorType === tileColorType.UNITED, 'margin': settings.tileColorType !== tileColorType.UNITED}">
+        <div 
+          class="color-picker-element" 
+          cpOutputFormat="hex"
+          [cpPosition]="'bottom'"
+          [cpPositionOffset]="'0%'"
+          cpAlphaChannel="disabled"
+          [cpPositionRelativeToArrow]="false"
+          [(colorPicker)]="color1"
+          (colorPickerChange)="updateTileColor()"
+          cpPositionRelativeToArrow="true"
+        >
+          <div class="color-picker-label" *ngIf="settings.tileColorType === tileColorType.UNITED">Couleur</div>
+          <div class="color-picker-label" *ngIf="settings.tileColorType !== tileColorType.UNITED">Couleur 1</div>
+          <span 
+            class="color-circle"
+            [style.backgroundColor]="color1"
+            
+          >
+          </span>
+        </div>
+      </div>
+      <div class="color-picker-element-container arrow-right" *ngIf="settings.tileColorType !== tileColorType.UNITED">
+        <div 
+          class="color-picker-element"
+          cpOutputFormat="hex"
+          cpPosition="bottom"
+          [cpPositionOffset]="'-43%'"
+          cpAlphaChannel="disabled"
+          [cpPositionRelativeToArrow]="false"
+          [(colorPicker)]="color2"
+          (colorPickerChange)="updateTileColor()"
+        >
+          <div class="color-picker-label">Couleur 2</div>
+          <span
+            class="color-circle"
+            [style.backgroundColor]="color2"
+          >
+          </span>
+        </div>
+      </div>
     </div>
   </div>
 </div>

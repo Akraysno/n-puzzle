@@ -36,6 +36,52 @@
             width: 48%;
         }
     }
+    .color-picker-group {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0 5px;
+        .color-picker-element-container {
+            width: 49%;
+            &.arrow-right {
+                .color-picker {
+                    .arrow {
+                        left: unset;
+                        right: 8px;
+                    }
+                }
+            }
+            &.full-width {
+                width: 100%;
+            }
+            &.margin {
+                margin-right: 10px;
+            }
+        }
+        .color-picker-element {
+            width: calc(100% - 42px);
+            border: 1px solid rgba(0, 0, 0, 0.12);
+            border-radius: 10px;
+            height: 30px;
+            padding: 10px 20px;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            background-color: white;
+            .color-picker-label {
+                width: 100%;
+            }
+            .color-circle {
+                min-width: 30px;
+                max-width: 30px;
+                min-height: 30px;
+                max-height: 30px;
+                border-radius: 50%;
+                border: 1px solid rgba(0, 0, 0, 0.12);
+            }
+        }
+    }
 } 
 .separator {
     width: 80%;
