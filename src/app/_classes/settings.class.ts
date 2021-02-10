@@ -105,12 +105,12 @@ export class Color {
 
     toHex(): string {
         let color: string = `#`
-        color += Color.hexaChars[this.red % 16]
         color += Color.hexaChars[Math.floor(this.red / 16)]
-        color += Color.hexaChars[this.green % 16]
+        color += Color.hexaChars[this.red % 16]
         color += Color.hexaChars[Math.floor(this.green / 16)]
-        color += Color.hexaChars[this.blue % 16]
+        color += Color.hexaChars[this.green % 16]
         color += Color.hexaChars[Math.floor(this.blue / 16)]
+        color += Color.hexaChars[this.blue % 16]
         return color
     }
 
@@ -125,9 +125,10 @@ export class Color {
         if (currentHexa.length !== 6) {
             return new Color(255, 255, 255)
         }
-        let red: number = Color.hexaChars[currentHexa[0]] * 16 + Color.hexaChars[currentHexa[1]]
-        let green: number = Color.hexaChars[currentHexa[2]] * 16 + Color.hexaChars[currentHexa[3]]
-        let blue: number = Color.hexaChars[currentHexa[4]] * 16 + Color.hexaChars[currentHexa[5]]
+        currentHexa = currentHexa.toUpperCase()
+        let red: number = Color.hexaChars.indexOf(currentHexa[0]) * 16 + Color.hexaChars.indexOf(currentHexa[1])
+        let green: number = Color.hexaChars.indexOf(currentHexa[2]) * 16 + Color.hexaChars.indexOf(currentHexa[3])
+        let blue: number = Color.hexaChars.indexOf(currentHexa[4]) * 16 + Color.hexaChars.indexOf(currentHexa[5])
         return new Color(red, green, blue)
     }
 }
