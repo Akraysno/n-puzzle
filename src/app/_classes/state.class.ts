@@ -5,7 +5,7 @@ import { TileMoveDirection } from "../__models/enums/tile-move-direction.enum"
 import { DistHeuristic, Heuristics } from "./heuristics.class"
 import { PriorityQueue } from "./priority-queue.class"
 import { NPuzzleSolver, Solvers } from "./solvers.class"
-import { ExecTime } from "./utils.class"
+import { ExecTime } from "./exec-time.class"
 import { Result } from "./result.class"
 import { TileMove } from "../__models/n-puzzle.entity"
 
