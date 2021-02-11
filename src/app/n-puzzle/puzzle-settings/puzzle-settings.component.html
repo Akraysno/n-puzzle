@@ -52,11 +52,7 @@
         >
           <div class="color-picker-label" *ngIf="settings.tileColorType === tileColorType.UNITED">Couleur</div>
           <div class="color-picker-label" *ngIf="settings.tileColorType !== tileColorType.UNITED">Couleur 1</div>
-          <span 
-            class="color-circle"
-            [style.backgroundColor]="color1"
-          >
-          </span>
+          <span class="color-circle" [style.backgroundColor]="color1"></span>
         </div>
       </div>
       <div class="color-picker-element-container arrow-right" *ngIf="settings.tileColorType !== tileColorType.UNITED">
@@ -71,11 +67,7 @@
           (colorPickerChange)="updateTileColor()"
         >
           <div class="color-picker-label">Couleur 2</div>
-          <span
-            class="color-circle"
-            [style.backgroundColor]="color2"
-          >
-          </span>
+          <span class="color-circle" [style.backgroundColor]="color2"></span>
         </div>
       </div>
     </div>

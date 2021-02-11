@@ -73,7 +73,11 @@
           id="solved-puzzle-tile-{{tile}}" 
           *ngFor="let tile of result.currentState; let tileIndex = index"
         >
-          <span *ngIf="tile !== 0">
+          <span
+            *ngIf="tile !== 0"
+            class="tile-label"
+            [ngStyle]="{'color': settings.tilesColor[result?.puzzle?.size][result.puzzle.final.indexOf(tile)]}"
+          >
             {{tile}}
           </span>
         </div>
