@@ -1,4 +1,7 @@
-import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+import { Component, Input, OnInit, ViewEncapsulation } from '@angular/core';
+import { Result } from 'src/app/_classes/result.class';
+import { NPuzzleAlgoLabel } from 'src/app/__models/enums/n-puzzle-algo.enum';
+import { NPuzzleHeuristicsLabel } from 'src/app/__models/enums/n-puzzle-heuristics.enum';
 
 @Component({
   selector: 'app-puzzle-result',
@@ -8,9 +11,34 @@ import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 })
 
 export class PuzzleResultComponent implements OnInit {
+  @Input() result: Result
+  @Input() loading: boolean = false
+  algoLabel = NPuzzleAlgoLabel
+  heuristicLabel = NPuzzleHeuristicsLabel
 
   constructor() { }
 
   ngOnInit() { }
+
+  formatDuration(value: number) {
+    let mn: number = 0
+    let s: number = 0;
+    let ms: number = 0;
+    ms = value % 1000
+    value = Math.floor(value / 1000)
+    s = value % 60
+    mn = Math.floor(value / 60)
+    let res: string = ''
+    if (mn > 0) {
+      res += `${mn}mn`
+    }
+    if (s > 0) {
+      res += ` ${s}s`
+    }
+    if (ms > 0) {
+      res += ` ${ms}ms`
+    }
+    return res
+  }
 
 }

@@ -27,11 +27,11 @@ export class Result {
         this.solvable = base.isSolvable
         this.nbCloseList = base.closedList.size
         this.nbOpenList = base.openedList.count()
-        this.durationResolve = base.execTime.diffT// / 1e6
+        this.durationResolve = base.execTime.diffT
 
         if (final) {
             let history = final.getHistory()
-            this.nbMoves = history.length
+            this.nbMoves = history.length - 1 // Remove start state from count
             this.operations = history.map(s => s.move)
         }
 

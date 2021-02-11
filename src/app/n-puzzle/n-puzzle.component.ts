@@ -2,7 +2,7 @@ import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { NPuzzleFinalState } from '../__models/enums/n-puzzle-final-state.enum'
 import { NPuzzleAlgo, NPuzzleAlgoLabel } from '../__models/enums/n-puzzle-algo.enum'
 import { NPuzzleHeuristics, NPuzzleHeuristicsLabel } from '../__models/enums/n-puzzle-heuristics.enum'
-import { NPuzzle, TileMove } from '../__models/n-puzzle.entity'
+import { TileMove } from '../__models/n-puzzle.entity'
 import { TileMoveDirection } from '../__models/enums/tile-move-direction.enum';
 import { animate, keyframes, style, transition, trigger } from '@angular/animations';
 import { State } from '../_classes/state.class';
@@ -74,6 +74,8 @@ export class NPuzzleComponent implements OnInit {
   heuristicLabel = NPuzzleHeuristicsLabel
   tileColorType = TileColorType
   boardColorType = BoardColorType
+  menuTab = MenuTab
+  currentMenuTab: MenuTab = MenuTab.CONFIGURATION
 
   constructor(
     private errorsService: ErrorsService,
@@ -93,6 +95,7 @@ export class NPuzzleComponent implements OnInit {
         console.log(res)
         this.result = new PuzzleSolution(res)
         this.loading = false
+        this.currentMenuTab = MenuTab.RESULT
       }, err => {
         this.result = null
         this.loading = false
@@ -155,6 +158,11 @@ export class NPuzzleComponent implements OnInit {
     this.result.reset()
   }
 
+  tabMenuChange(event: number) {
+    console.log(event)
+    this.currentMenuTab = event
+  }
+
 }
 
 class PuzzleSolution {
@@ -187,4 +195,10 @@ class PuzzleSolution {
     this.currentMove = null
     this.autoRun = false
   }
+}
+
+enum MenuTab {
+  CONFIGURATION = 0,
+  RESULT,
+  SETTINGS
 }

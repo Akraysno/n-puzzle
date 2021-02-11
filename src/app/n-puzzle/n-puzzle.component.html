@@ -1,5 +1,5 @@
 <div class="main-container">
-  <mat-tab-group mat-align-tabs="start" class="side-menu">
+  <mat-tab-group mat-align-tabs="start" class="side-menu" animationDuration="0ms" (selectedIndexChange)="tabMenuChange($event)" [selectedIndex]="currentMenuTab">
     <mat-tab>
       <ng-template mat-tab-label> Configuration </ng-template>
       <div class="menu-container p-20" *ngIf="settings">
@@ -9,7 +9,7 @@
     <mat-tab>
       <ng-template mat-tab-label> Résultat </ng-template>
       <div class="menu-container p-20">
-        <app-puzzle-result></app-puzzle-result>
+        <app-puzzle-result [loading]="loading" [result]="result?.puzzle"></app-puzzle-result>
       </div>
     </mat-tab>
     <mat-tab>
@@ -21,38 +21,6 @@
   </mat-tab-group>
 
   <div class="puzzle-container p-t-20 p-b-20">
-    <div class="stats" *ngIf="result && result.puzzle">
-      <table>
-        <tr>
-          <td>Taille :</td>
-          <td>{{result.puzzle.size}}</td>
-        </tr>
-        <tr>
-          <td>Algorithme : </td>
-          <td>{{algoLabel[result.puzzle.algo] || result.puzzle.algo}}</td>
-        </tr>
-        <tr>
-          <td>Heuristique : </td>
-          <td>{{heuristicLabel[result.puzzle.heuristic] || result.puzzle.heuristic}}</td>
-        </tr>
-        <tr>
-          <td>Temps de résolution : </td>
-          <td>{{result.puzzle.durationResolve}} ms</td>
-        </tr>
-        <tr>
-          <td>Nombre de mouvements : </td>
-          <td>{{result.puzzle.nbMoves}}</td>
-        </tr>
-        <tr>
-          <td>Close list : </td>
-          <td>{{result.puzzle.nbCloseList}}</td>
-        </tr>
-        <tr>
-          <td>Open list : </td>
-          <td>{{result.puzzle.nbOpenList}}</td>
-        </tr>
-      </table>
-    </div>
 
     <h2 class="title">Puzzle</h2>
 

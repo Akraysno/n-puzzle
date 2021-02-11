@@ -1,3 +1,95 @@
-<div class="puzzle-result-container">
-  <div class="coming-soon">Coming Soon</div>
+<div class="puzzle-result-container" *ngIf="!result && !loading">
+  <div class="no-result">Veuillez résoudre un puzzle avant d'avoir plus d'informations</div>
+</div>
+<div class="puzzle-result-container" *ngIf="!result && loading">
+  <mat-progress-spinner
+    class="prefix-icon" 
+    color="accent" 
+    *ngIf="loading" 
+    mode="indeterminate"
+  ></mat-progress-spinner>
+  <div class="no-result">Puzzle en cours de résolution...</div>
+</div>
+<div class="puzzle-result-container" *ngIf="result">
+  <div class="statistics-container">
+    <div class="stat">
+      <div class="row">
+        <div class="label">Taille :</div>
+        <div class="value">{{result.size}}</div>
+      </div>
+    </div>
+
+    <div class="stat">
+      <div class="separator"></div>
+      <div class="row">
+        <div class="label">Algorithme :</div>
+        <div class="value">{{algoLabel[result.algo]}}</div>
+      </div>
+    </div>
+
+    <div class="stat">
+      <div class="separator"></div>
+      <div class="row">
+        <div class="label">Heuristique :</div>
+        <div class="value">{{heuristicLabel[result.heuristic]}}</div>
+      </div>
+    </div>
+
+    <div class="stat">
+      <div class="separator"></div>
+      <div class="row">
+        <div class="label">Temps de résolution :</div>
+        <div class="value">{{formatDuration(result.durationResolve)}}</div>
+      </div>
+    </div>
+
+    <div class="stat">
+      <div class="separator"></div>
+      <div class="row">
+        <div class="label">Nombre de mouvements :</div>
+        <div class="value">{{result.nbMoves}}</div>
+      </div>
+    </div>
+
+    <div class="stat">
+      <div class="separator"></div>
+      <div class="row">
+        <div class="label">Size complexity :</div>
+        <div class="value np-result">Coming Soon</div>
+      </div>
+    </div>
+
+    <div class="stat">
+      <div class="separator"></div>
+      <div class="row">
+        <div class="label">Time complexity :</div>
+        <div class="value np-result">Coming Soon</div>
+      </div>
+    </div>
+
+    <div class="stat">
+      <div class="separator"></div>
+      <div class="row">
+        <div class="label">Liste ouverte :</div>
+        <div class="value">{{result.nbOpenList}}</div>
+      </div>
+    </div>
+
+    <div class="stat">
+      <div class="separator"></div>
+      <div class="row">
+        <div class="label">Liste fermée :</div>
+        <div class="value">{{result.nbCloseList}}</div>
+      </div>
+    </div>
+
+    <div class="stat">
+      <div class="separator"></div>
+      <div class="row">
+        <div class="label">Mouvements :</div>
+        <div class="value np-result">Coming soon</div>
+      </div>
+    </div>
+
+  </div>
 </div>
