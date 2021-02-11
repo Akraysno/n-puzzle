@@ -190,7 +190,7 @@ class PuzzleSolution {
     this.running = false
     this.currentState = [...this.puzzle.start]
     this.currentStepIndex = 0
-    this.maxStep = this.puzzle.nbMoves
+    this.maxStep = this.puzzle.operations.length
     this.progress = ((this.currentStepIndex + 1) / this.maxStep) * 100
     this.currentMove = null
     this.autoRun = false
