@@ -33,18 +33,38 @@ export class ExecTime {
         return endT[0] * 1e9 + endT[1];
     }
     */
-   startT: number
-   endT: number
-   diffT: number
+    startT: number
+    endT: number
+    diffT: number
 
-   public start(): void {
-       this.startT = Date.now()
-   }
+    public start(): void {
+        this.startT = Date.now()
+    }
 
-   public finish(): number {
-       this.endT = Date.now()
-       this.diffT = this.endT - this.startT
-       return this.diffT
-   }
+    public finish(): number {
+        this.endT = Date.now()
+        this.diffT = this.endT - this.startT
+        return this.diffT
+    }
 
+}
+
+export class Utils {
+    static chunkArray(arr: any[], size: number) {
+        let resultArray: any[][] = []
+        let nbRow: number = Math.ceil(arr.length / size)
+        for (let i = 0; i < nbRow; i++) {
+            let index = i * size
+            resultArray.push(arr.slice(index, index + size))
+        }
+        return resultArray
+    }
+
+    static flattenArray(arr: any[][]) {
+        let resultArray: any[] = []
+        for (let cell of arr) {
+            resultArray = resultArray.concat(cell)
+        }
+        return resultArray
+    }
 }

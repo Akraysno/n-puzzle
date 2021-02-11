@@ -1,10 +1,10 @@
 import { Component, EventEmitter, Input, OnInit, Output, ViewEncapsulation } from '@angular/core';
 import { BoardColorType, Config, Settings, TileColorType } from '../../_classes/settings.class';
-import { NPuzzleService } from '../../_services/n-puzzle.service'
 import { NPuzzleFinalState } from '../../__models/enums/n-puzzle-final-state.enum'
 import { NPuzzleAlgo, NPuzzleAlgoLabel } from '../../__models/enums/n-puzzle-algo.enum'
 import { NPuzzleHeuristics, NPuzzleHeuristicsLabel } from '../../__models/enums/n-puzzle-heuristics.enum'
 import { TileMoveDirection } from '../../__models/enums/tile-move-direction.enum';
+import { Board } from 'src/app/_classes/board.class';
 
 @Component({
   selector: 'app-puzzle-config',
@@ -39,9 +39,7 @@ export class PuzzleConfigComponent implements OnInit {
   tileColorType = TileColorType
   boardColorType = BoardColorType
 
-  constructor(
-    private nPuzzleService: NPuzzleService,
-  ) { }
+  constructor() { }
 
   ngOnInit() {
     this.generateValidRandomBoard()
@@ -66,7 +64,7 @@ export class PuzzleConfigComponent implements OnInit {
         this.config.startState[indexTileA] = tileB
         this.config.startState[indexTileB] = tileA
         this.config.selectedTile = undefined
-        this.config.isSolvable = this.nPuzzleService.validateInversions(this.config.size, this.config.startState, this.config.finalState)
+        this.config.isSolvable = Board.validateInversions(this.config.size, this.config.startState, this.config.finalState)
       }
     } else {
       this.config.selectedTile = tile
@@ -79,8 +77,8 @@ export class PuzzleConfigComponent implements OnInit {
   }
 
   onFinalStateTypeChange(type: NPuzzleFinalState) {
-    this.config.finalState = this.nPuzzleService.generateFinalBoard(this.config.size, type)
-    this.config.isSolvable = this.nPuzzleService.validateInversions(this.config.size, this.config.startState, this.config.finalState)
+    this.config.finalState = Board.generateFinalBoard(this.config.size, type)
+    this.config.isSolvable = Board.validateInversions(this.config.size, this.config.startState, this.config.finalState)
     this.currentFinalStateType = type
   }
 
@@ -101,9 +99,9 @@ export class PuzzleConfigComponent implements OnInit {
     config.isSolvable = false
     config.size = size
     while (!config.isSolvable) {
-      config.finalState = this.nPuzzleService.generateFinalBoard(size, type)
-      config.startState = this.nPuzzleService.generateRandomBoard(size, config.finalState, this.settings.nbShuffleIterations)
-      config.isSolvable = this.nPuzzleService.validateInversions(config.size, config.startState, config.finalState)
+      config.finalState = Board.generateFinalBoard(size, type)
+      config.startState = Board.generateRandomBoard(size, config.finalState, this.settings.nbShuffleIterations)
+      config.isSolvable = Board.validateInversions(config.size, config.startState, config.finalState)
     }
     this.config = config
     this.initialized = true
