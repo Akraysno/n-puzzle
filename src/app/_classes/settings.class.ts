@@ -1,5 +1,7 @@
 import { NPuzzleAlgo } from "../__models/enums/n-puzzle-algo.enum"
+import { NPuzzleFinalState } from "../__models/enums/n-puzzle-final-state.enum"
 import { NPuzzleHeuristics } from "../__models/enums/n-puzzle-heuristics.enum"
+import { Board } from "./board.class"
 
 export class Config {
     size: number = 3
@@ -31,8 +33,8 @@ export class TileColor {
     fillColors(type: TileColorType, startColor: Color, endColor?: Color) {
         switch (type) {
             case TileColorType.UNITED: this.setUnitedColor(startColor); break;
-            case TileColorType.DIAGONAL: this.setDiagonalColor(startColor, endColor || startColor)
-            case TileColorType.SPIRAL: this.setSpiralColor(startColor, endColor || startColor)
+            case TileColorType.DIAGONAL: this.setDiagonalColor(startColor, endColor || startColor); break;
+            case TileColorType.SPIRAL: this.setSpiralColor(startColor, endColor || startColor); break;
             default: this.setUnitedColor(startColor); break;
         }
     }
@@ -43,17 +45,21 @@ export class TileColor {
             let redInterval: number = this.getColorInterval(startColor.red, endColor.red, nbStep)
             let greenInterval: number = this.getColorInterval(startColor.green, endColor.green, nbStep)
             let blueInterval: number = this.getColorInterval(startColor.blue, endColor.blue, nbStep)
-            this[s] = new Array(s * s).fill(startColor.toHex())
-            for (let [index, tile] of this[s].entries()) {
-                if (index === 0) {
-                    tile = startColor.toHex()
-                } else if (index === this[s].length) {
-                    tile = endColor.toHex()
+            let spiralBoard = Board.generateFinalBoard(s, NPuzzleFinalState.SPIRAL)
+            let colorTiles = new Array(s * s).fill(startColor.toHex())
+            for (let [index, tile] of colorTiles.entries()) {
+                let tileNumber = spiralBoard[index] - 1
+                console.log(tileNumber, nbStep)
+                if (tileNumber === 0) {
+                    colorTiles[index] = startColor.toHex()
+                } else if (tileNumber === nbStep) {
+                    colorTiles[index] = endColor.toHex()
                 } else {
-                    let tileColor = new Color(startColor.red + (redInterval * index - 1), startColor.green + (greenInterval * index - 1), startColor.blue + (blueInterval * index - 1))
-                    tile = tileColor.toHex()
+                    let tileColor = new Color(startColor.red + (redInterval * tileNumber), startColor.green + (greenInterval * tileNumber), startColor.blue + (blueInterval * tileNumber))
+                    colorTiles[index] = tileColor.toHex()
                 }
             }
+            this[s] = colorTiles
         }
     }
 
@@ -63,18 +69,19 @@ export class TileColor {
             let redInterval: number = this.getColorInterval(startColor.red, endColor.red, nbStep)
             let greenInterval: number = this.getColorInterval(startColor.green, endColor.green, nbStep)
             let blueInterval: number = this.getColorInterval(startColor.blue, endColor.blue, nbStep)
-            this[s] = new Array(s * s).fill(startColor.toHex())
-            for (let [index, tile] of this[s].entries()) {
+            let colorTiles = new Array(s * s).fill(startColor.toHex())
+            for (let [index, tile] of colorTiles.entries()) {
                 let currentStep = (index % s) + Math.floor(index / s)
                 if (currentStep === 0) {
-                    tile = startColor.toHex()
+                    colorTiles[index] = startColor.toHex()
                 } else if (currentStep === nbStep) {
-                    tile = endColor.toHex()
+                    colorTiles[index] = endColor.toHex()
                 } else {
                     let tileColor = new Color(startColor.red + (redInterval * currentStep - 1), startColor.green + (greenInterval * currentStep - 1), startColor.blue + (blueInterval * currentStep - 1))
-                    tile = tileColor.toHex()
+                    colorTiles[index] = tileColor.toHex()
                 }
             }
+            this[s] = colorTiles
         }
     }
 
@@ -85,9 +92,8 @@ export class TileColor {
     }
 
     private getColorInterval(c1: number, c2: number, nbStep: number) {
-        return Math.floor((c1 - c2)  / nbStep)
+        return Math.floor((c2 - c1)  / nbStep)
     }
-
 
 }
 

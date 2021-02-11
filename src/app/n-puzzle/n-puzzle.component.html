@@ -69,6 +69,7 @@
           (@moveTop.done)="goToNextStep($event, result && result.currentMove && result.currentMove.back ? tileMoveDirection.TOP : tileMoveDirection.BOTTOM)"
           class="tile tile-{{tileIndex}}" 
           [ngClass]="{'tile-border': tile !== 0, 'tile-empty': tile === 0}"
+          [ngStyle]="{'backgroundColor': tile !== 0 && settings.tilesColor[result?.puzzle?.size][result.puzzle.final.indexOf(tile)]}"
           id="solved-puzzle-tile-{{tile}}" 
           *ngFor="let tile of result.currentState; let tileIndex = index"
         >

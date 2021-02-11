@@ -14,8 +14,8 @@ export class PuzzleSettingsComponent implements OnInit {
   settings: Settings
   tileColorType = TileColorType
   boardColorType = BoardColorType
-  color1: string
-  color2: string
+  color1: string = '#FFFFFF'
+  color2: string = '#FFFFFF'
 
   constructor() { }
 
@@ -36,7 +36,7 @@ export class PuzzleSettingsComponent implements OnInit {
 
   onTileColorChange(type: TileColorType) {
     this.settings.tileColorType = type
-    this.emit()
+    this.updateTileColor()
   }
 
   onBoardColorChange(type: BoardColorType) {
