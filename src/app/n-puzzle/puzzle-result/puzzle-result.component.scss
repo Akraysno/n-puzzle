@@ -28,6 +28,23 @@
                 align-items: center;
                 justify-content: space-between;
             }
+            .movement-list {
+                display: flex;
+                flex-direction: row;
+                flex-wrap: wrap;
+                justify-content: flex-start;
+                align-items: center;
+                margin-top: 10px;
+                .movement {
+                    display: flex;
+                    flex-direction: row;
+                    align-items: center;
+                    justify-content: space-around;
+                    padding: 5px;
+                    width: calc(20% - 12px);
+                    border: 1px solid rgba(0, 0, 0, 0.12);
+                }
+            }
         }
     }
 } 
