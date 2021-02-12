@@ -1,5 +1,5 @@
 import { BrowserModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
+import { LOCALE_ID, NgModule } from '@angular/core';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { NPuzzleComponent } from './n-puzzle/n-puzzle.component';
@@ -14,6 +14,10 @@ import { PuzzleConfigComponent } from './n-puzzle/puzzle-config/puzzle-config.co
 import { PuzzleSettingsComponent } from './n-puzzle/puzzle-settings/puzzle-settings.component';
 import { PuzzleResultComponent } from './n-puzzle/puzzle-result/puzzle-result.component';
 import { ColorPickerModule } from 'ngx-color-picker'
+import { registerLocaleData } from '@angular/common';
+import localeFr from '@angular/common/locales/fr';
+
+registerLocaleData(localeFr);
 
 @NgModule({
   declarations: [
@@ -34,6 +38,7 @@ import { ColorPickerModule } from 'ngx-color-picker'
     ColorPickerModule,
   ],
   providers: [
+    { provide: LOCALE_ID, useValue: 'fr-FR'},
     ErrorsService,
     SnackbarService,
   ],

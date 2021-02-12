@@ -54,32 +54,16 @@
     <div class="stat">
       <div class="separator"></div>
       <div class="row">
-        <div class="label">Size complexity :</div>
-        <div class="value np-result">Coming Soon</div>
+        <div class="label">Complexité en taille :</div>
+        <div class="value">{{result.sizeComplexity | number:'':'fr-FR'}}</div>
       </div>
     </div>
 
     <div class="stat">
       <div class="separator"></div>
       <div class="row">
-        <div class="label">Time complexity :</div>
-        <div class="value np-result">Coming Soon</div>
-      </div>
-    </div>
-
-    <div class="stat">
-      <div class="separator"></div>
-      <div class="row">
-        <div class="label">Liste ouverte :</div>
-        <div class="value">{{result.nbOpenList}}</div>
-      </div>
-    </div>
-
-    <div class="stat">
-      <div class="separator"></div>
-      <div class="row">
-        <div class="label">Liste fermée :</div>
-        <div class="value">{{result.nbCloseList}}</div>
+        <div class="label">Complexité dans le temps :</div>
+        <div class="value">{{result.timeComplexity | number:'':'fr-FR'}}</div>
       </div>
     </div>
 

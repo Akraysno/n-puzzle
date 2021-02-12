@@ -16,6 +16,8 @@ export class Result {
     solvable: boolean;
     nbOpenList: number;
     nbCloseList: number;
+    sizeComplexity: number;
+    timeComplexity: number;
 
     constructor(base?: State, final?: State) {
         if (!base) return
@@ -26,7 +28,9 @@ export class Result {
         this.heuristic = base.heuristic
         this.solvable = base.isSolvable
         this.nbCloseList = base.closedList.size
+        this.timeComplexity = base.closedList.size
         this.nbOpenList = base.openedList.count()
+        this.sizeComplexity = base.openedList.sizeComplexity
         this.durationResolve = base.execTime.diffT
 
         if (final) {

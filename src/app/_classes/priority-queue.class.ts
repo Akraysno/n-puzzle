@@ -4,10 +4,12 @@ export class PriorityQueue {
     private _nodes: Map<number, State[]> = new Map()
     private _minCost: number = -1
     private _length: number = 0
+    private _sizeComplexity: number = 0
 
     get length() { return this._length }//{ return this.count() }//
     get minCost() { return this._minCost }//{ return Math.min(...Array.from(this.nodes.keys())) }//
     get nodes() { return this._nodes }
+    get sizeComplexity() { return this._sizeComplexity }
   
     /**
      * Return the number of items in queue.
@@ -34,6 +36,7 @@ export class PriorityQueue {
       this._nodes.set(key, pack)
       this._length++
       this._minCost = this.minCost === -1 || this.minCost > key ? key : this.minCost
+      this._sizeComplexity = Math.max(this._sizeComplexity, this.count())
     }
   
     /**
