@@ -10,7 +10,7 @@ export class Config {
     selectedTile: number = undefined
     isSolvable: boolean = false
     heuristic: NPuzzleHeuristics = NPuzzleHeuristics.MANHATTAN
-    algo: NPuzzleAlgo = NPuzzleAlgo.ASTAR
+    algo: NPuzzleAlgo = NPuzzleAlgo.WEIGHTED_ASTAR
 }
 
 export class Settings {
