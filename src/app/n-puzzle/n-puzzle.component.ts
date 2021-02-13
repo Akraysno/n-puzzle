@@ -9,6 +9,8 @@ import { State } from '../_classes/state.class';
 import { Result } from '../_classes/result.class';
 import { ErrorsService } from '../_services/errors.service';
 import { BoardColorType, Config, Settings, TileColorType } from '../_classes/settings.class';
+import { BehaviorSubject } from 'rxjs';
+import { first, filter } from 'rxjs/operators'
 
 const TILE_SIZE: number = 100
 
@@ -76,6 +78,7 @@ export class NPuzzleComponent implements OnInit {
   boardColorType = BoardColorType
   menuTab = MenuTab
   currentMenuTab: MenuTab = MenuTab.CONFIGURATION
+  tileMoving: BehaviorSubject<boolean> = new BehaviorSubject(false)
 
   constructor(
     private errorsService: ErrorsService,
@@ -111,6 +114,7 @@ export class NPuzzleComponent implements OnInit {
       this.result.autoRun = false
       return
     }
+    this.tileMoving.next(true)
     this.result.running = true
     let nextMove: TileMove = this.result.puzzle.operations[nextStepIndex + (back === true ? 1 : 0)]
     nextMove.back = back
@@ -126,6 +130,7 @@ export class NPuzzleComponent implements OnInit {
 
   goToNextStep(event: any, direction: TileMoveDirection) {
     if (event.totalTime > 0 && event.phaseName === 'done' && event.toState === true) {
+      this.tileMoving.next(false)
       if (!this.result || !this.result.puzzle || !this.result.currentMove || !this.result.running) return
       if (direction !== this.result.currentMove.direction) return
       this.result.currentMove = null
@@ -162,6 +167,19 @@ export class NPuzzleComponent implements OnInit {
   tabMenuChange(event: number) {
     console.log(event)
     this.currentMenuTab = event
+  }
+
+  goToStep(stepIndex: number) {
+    this.result.autoRun = false
+    this.tileMoving.pipe( filter(v => v === false), first() ).subscribe(() => {
+      this.result.currentMove = null
+      this.result.currentState = this.result.puzzle.history[stepIndex].board
+      this.result.nextState = null
+      this.result.running = false
+      this.result.currentStepIndex = stepIndex
+      this.result.puzzle.currentStep = stepIndex
+      this.result.progress = ((this.result.currentStepIndex + 1) / this.result.maxStep) * 100
+    })
   }
 
 }

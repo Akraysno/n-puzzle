@@ -6,10 +6,10 @@ import { State } from "./state.class";
 export class Result {
     algo: NPuzzleAlgo;
     size: number;
-    start: number[];
-    final: number[];
+    start: number[] = [];
+    final: number[] = [];
     heuristic: NPuzzleHeuristics
-    operations: TileMove[];
+    operations: TileMove[] = [];
     nbMoves: number;
     durationResolve: number;
     durationTotal: number;
@@ -19,6 +19,7 @@ export class Result {
     sizeComplexity: number;
     timeComplexity: number;
     currentStep: number;
+    history: State[] = [];
 
     constructor(base?: State, final?: State) {
         if (!base) return
@@ -36,9 +37,9 @@ export class Result {
         this.currentStep = 0
 
         if (final) {
-            let history = final.getHistory()
-            this.nbMoves = history.length - 1 // Remove start state from count
-            this.operations = history.map(s => s.move)
+            this.history = final.getHistory()
+            this.nbMoves = this.history.length - 1 // Remove start state from count
+            this.operations = this.history.map(s => s.move)
         }
 
     }

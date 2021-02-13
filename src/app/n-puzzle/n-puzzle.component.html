@@ -9,7 +9,7 @@
     <mat-tab>
       <ng-template mat-tab-label> Résultat </ng-template>
       <div class="menu-container p-20">
-        <app-puzzle-result [loading]="loading" [result]="result?.puzzle"></app-puzzle-result>
+        <app-puzzle-result [loading]="loading" [result]="result?.puzzle" (stepChange)="goToStep($event)"></app-puzzle-result>
       </div>
     </mat-tab>
     <mat-tab>

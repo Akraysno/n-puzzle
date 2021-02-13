@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, ViewEncapsulation } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, ViewEncapsulation } from '@angular/core';
 import { Result } from 'src/app/_classes/result.class';
 import { NPuzzleAlgoLabel } from 'src/app/__models/enums/n-puzzle-algo.enum';
 import { NPuzzleHeuristicsLabel } from 'src/app/__models/enums/n-puzzle-heuristics.enum';
@@ -14,6 +14,7 @@ import { TileMoveDirection } from 'src/app/__models/enums/tile-move-direction.en
 export class PuzzleResultComponent implements OnInit {
   @Input() result: Result
   @Input() loading: boolean = false
+  @Output() stepChange: EventEmitter<number> = new EventEmitter()
   algoLabel = NPuzzleAlgoLabel
   heuristicLabel = NPuzzleHeuristicsLabel
   tileMoveDirection = TileMoveDirection
@@ -41,6 +42,10 @@ export class PuzzleResultComponent implements OnInit {
       res += ` ${ms}ms`
     }
     return res
+  }
+
+  goToStep(index: number) {
+    this.stepChange.emit(index)
   }
 
 }
