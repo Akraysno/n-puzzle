@@ -18,7 +18,7 @@
     </div>
   </div>
 
-  <div class="algo-selector">
+  <div class="heuristic-selector">
     <div class="separator"></div>
     <h3 class="sub-title">Heuristique : </h3>
     <div class="heuristic-group">
@@ -26,7 +26,7 @@
       <button class="heuristic-option custom-button" (click)="onHeuristicChange(heuristics.HAMMING)" [ngClass]="{'selected': config.heuristic === heuristics.HAMMING}"> Hamming </button>
       <button class="heuristic-option custom-button" (click)="onHeuristicChange(heuristics.CARTESIAN)" [ngClass]="{'selected': config.heuristic === heuristics.CARTESIAN}"> Cartesian </button>
       <button class="heuristic-option custom-button" (click)="onHeuristicChange(heuristics.LINEAR_CONFLICT)" [ngClass]="{'selected': config.heuristic === heuristics.LINEAR_CONFLICT}"> Linear Conflict </button>
-      <button class="heuristic-option custom-button" (click)="onHeuristicChange(heuristics.UNIFORM)" [ngClass]="{'selected': config.heuristic === heuristics.UNIFORM}"> Uniform </button>
+      <button class="heuristic-option custom-button" (click)="onHeuristicChange(heuristics.UNIFORM)" [ngClass]="{'selected': config.heuristic === heuristics.UNIFORM}"> Uniform Cost</button>
       <div class="heuristic-option placeholder-button"></div>
     </div>
   </div>

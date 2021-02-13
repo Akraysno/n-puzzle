@@ -3,7 +3,7 @@ export enum NPuzzleHeuristics {
     CARTESIAN = 'CARTESIAN',
     MANHATTAN = 'MANHATTAN',
     LINEAR_CONFLICT = 'LINEAR_CONFLICT',
-    UNIFORM = 'UNIFORM'
+    UNIFORM = 'UNIFORM',
 }
 
 export enum NPuzzleHeuristicsLabel {
@@ -11,5 +11,5 @@ export enum NPuzzleHeuristicsLabel {
     CARTESIAN = 'Cartesian',
     MANHATTAN = 'Manhattan',
     LINEAR_CONFLICT = 'Linear Conflict',
-    UNIFORM = 'Uniform'
+    UNIFORM = 'Uniform',
 }
