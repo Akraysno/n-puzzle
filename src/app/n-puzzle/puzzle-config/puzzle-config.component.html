@@ -26,6 +26,8 @@
       <button class="heuristic-option custom-button" (click)="onHeuristicChange(heuristics.HAMMING)" [ngClass]="{'selected': config.heuristic === heuristics.HAMMING}"> Hamming </button>
       <button class="heuristic-option custom-button" (click)="onHeuristicChange(heuristics.CARTESIAN)" [ngClass]="{'selected': config.heuristic === heuristics.CARTESIAN}"> Cartesian </button>
       <button class="heuristic-option custom-button" (click)="onHeuristicChange(heuristics.LINEAR_CONFLICT)" [ngClass]="{'selected': config.heuristic === heuristics.LINEAR_CONFLICT}"> Linear Conflict </button>
+      <button class="heuristic-option custom-button" (click)="onHeuristicChange(heuristics.UNIFORM)" [ngClass]="{'selected': config.heuristic === heuristics.UNIFORM}"> Uniform </button>
+      <div class="heuristic-option placeholder-button"></div>
     </div>
   </div>
 

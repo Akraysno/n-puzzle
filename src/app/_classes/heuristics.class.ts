@@ -12,6 +12,7 @@ export class Heuristics {
         [NPuzzleHeuristics.HAMMING]: Heuristics.hamming,
         [NPuzzleHeuristics.LINEAR_CONFLICT]: Heuristics.linearConflict,
         [NPuzzleHeuristics.MANHATTAN]: Heuristics.manhattan,
+        [NPuzzleHeuristics.UNIFORM]: Heuristics.uniform,
     }
 
     /** 
@@ -114,6 +115,13 @@ export class Heuristics {
             }
         }
         return Heuristics.manhattan(board, final, size) + conflicts;
+    }
+
+    /**
+     * Return 0 everytime
+     */
+    static uniform(board: number[], final: number[], size: number): number {
+        return 0
     }
 
 }
