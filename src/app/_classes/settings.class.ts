@@ -11,6 +11,7 @@ export class Config {
     isSolvable: boolean = false
     heuristic: NPuzzleHeuristics = NPuzzleHeuristics.MANHATTAN
     algo: NPuzzleAlgo = NPuzzleAlgo.WEIGHTED_ASTAR
+    greedySearch: boolean = false
 }
 
 export class Settings {

@@ -90,6 +90,10 @@ export class PuzzleConfigComponent implements OnInit {
     this.config.heuristic = heuristic
   }
 
+  onGreedyChange(greedy: boolean) {
+    this.config.greedySearch = greedy
+  }
+
   private generateValidRandomBoard(size?: number, type: NPuzzleFinalState = NPuzzleFinalState.SPIRAL): Config {
     if (!this.settings) return
     if (!size || size <= 0) {

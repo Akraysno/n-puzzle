@@ -31,6 +31,15 @@
     </div>
   </div>
 
+  <div class="greedy-selector">
+    <div class="separator"></div>
+    <h3 class="sub-title">Greedy search : </h3>
+    <div class="greedy-group">
+      <button class="greedy-option custom-button" (click)="onGreedyChange(true)" [ngClass]="{'selected': config.greedySearch === true}"> Oui </button>
+      <button class="greedy-option custom-button" (click)="onGreedyChange(false)" [ngClass]="{'selected': config.greedySearch === false}"> Non </button>
+    </div>
+  </div>
+
   <div class="start-state" *ngIf="currentSize === config.size">
     <div class="separator"></div>
     <div class="sub-title-container">
