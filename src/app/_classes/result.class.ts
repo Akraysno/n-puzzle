@@ -18,6 +18,7 @@ export class Result {
     nbCloseList: number;
     sizeComplexity: number;
     timeComplexity: number;
+    currentStep: number;
 
     constructor(base?: State, final?: State) {
         if (!base) return
@@ -32,6 +33,7 @@ export class Result {
         this.nbOpenList = base.openedList.count()
         this.sizeComplexity = base.openedList.sizeComplexity
         this.durationResolve = base.execTime.diffT
+        this.currentStep = 0
 
         if (final) {
             let history = final.getHistory()

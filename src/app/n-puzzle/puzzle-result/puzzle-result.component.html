@@ -74,16 +74,17 @@
       </div>
       <div class="movement-list">
         <ng-container *ngFor="let o of result.operations; let i = index">
-          <div class="movement" *ngIf="o">
-            <div class="movement-tile">
-              {{o.tile}}
-            </div>
+          <div class="movement" *ngIf="o" [ngClass]="{'selected': i === result.currentStep}">
+            <div class="movement-tile">{{o.tile}}</div>
             <ng-container [ngSwitch]="o.direction">
               <i class="material-icons" *ngSwitchCase="tileMoveDirection.BOTTOM">north</i>
               <i class="material-icons" *ngSwitchCase="tileMoveDirection.LEFT">east</i>
               <i class="material-icons" *ngSwitchCase="tileMoveDirection.RIGHT">west</i>
               <i class="material-icons" *ngSwitchCase="tileMoveDirection.TOP">south</i>
             </ng-container>
+          </div>
+          <div class="movement" *ngIf="!o" [ngClass]="{'selected': i === result.currentStep}">
+            <div class="movement-tile">/</div>
           </div>
         </ng-container>
       </div>

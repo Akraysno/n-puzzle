@@ -133,6 +133,7 @@ export class NPuzzleComponent implements OnInit {
       this.result.nextState = null
       this.result.running = false
       this.result.currentStepIndex = this.result.nextStepIndex
+      this.result.puzzle.currentStep = this.result.currentStepIndex
       this.result.progress = ((this.result.currentStepIndex + 1) / this.result.maxStep) * 100
       setTimeout(() => {
         if (this.result.puzzle.final.join(',') === this.result.currentState.join(',')) {
