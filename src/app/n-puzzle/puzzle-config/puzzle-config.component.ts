@@ -13,6 +13,7 @@ import { Board } from 'src/app/_classes/board.class';
     './puzzle-config.component.scss',
     '../puzzle.scss',
     '../popover.scss',
+    '../side-menu.scss',
   ],
   encapsulation: ViewEncapsulation.None,
 })

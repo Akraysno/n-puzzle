@@ -7,7 +7,8 @@ import { TileColorType, Settings, BoardColorType, TileColor, Color } from '../..
   templateUrl: './puzzle-settings.component.html',
   styleUrls: [
     './puzzle-settings.component.scss',
-    '../popover.scss'
+    '../popover.scss',
+    '../side-menu.scss',
   ],
   encapsulation: ViewEncapsulation.None,
 })

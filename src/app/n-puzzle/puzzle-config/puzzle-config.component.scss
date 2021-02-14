@@ -1,30 +1,6 @@
 @import '../../../assets/scss/variables';
 
 .puzzle-config-container {
-    height: 100%;
-    min-width: 100%;
-    max-width: 100%;
-    .size-group,
-    .algo-group,
-    .heuristic-group,
-    .greedy-group {
-        display: flex;
-        flex-direction: row;
-        justify-content: space-around;
-        align-items: center;
-        padding-bottom: 5px;
-        flex-wrap: wrap;
-        .size-option,
-        .algo-option {
-            margin-bottom: 5px;
-            width: 30%;
-        }
-        .heuristic-option,
-        .greedy-option {
-            margin-bottom: 5px;
-            width: 48%;
-        }
-    }
     .puzzle-container {
         display: flex;
         align-items: center;
@@ -40,25 +16,5 @@
         .button-container {
             width: 90%;
         }
-    }
-    .config-title {
-        display: flex;
-        flex-direction: row;
-        justify-content: flex-start;
-        align-items: center;
-        margin-bottom: 15px;
-        h3 {
-            margin: 0;
-        }
-        .material-icons {
-            margin-left: 15px;
-            cursor: pointer;
-            font-size: 18px;
-        }
-    }
-    .separator {
-        width: 80%;
-        margin: 20px auto;
-        border-bottom: 1px solid rgba(0, 0, 0, 0.12);
     }
 }

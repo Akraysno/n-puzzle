@@ -1,6 +1,6 @@
-<div class="puzzle-config-container" *ngIf="settings && config">
-  <div class="size-selector option-container" [ngClass]="{'show-help': currentHelp === helpType.SIZE}">
-    <div class="config-title">
+<div class="puzzle-config-container main-settings-container" *ngIf="settings && config">
+  <div class="size option-container" [ngClass]="{'show-help': currentHelp === helpType.SIZE}">
+    <div class="settings-title">
       <h3 class="sub-title">Taille : </h3>
       <i
         class="material-icons"
@@ -11,10 +11,10 @@
         (onHidden)="hideHelp()"
       >help_outline</i>
     </div>
-    <div class="size-group">
-      <button class="size-option custom-button" (click)="sizeChanged(3)" [ngClass]="{'selected': currentSize === 3}"> 3 x 3 </button>
-      <button class="size-option custom-button" (click)="sizeChanged(4)" [ngClass]="{'selected': currentSize === 4}"> 4 x 4 </button>
-      <button class="size-option custom-button" (click)="sizeChanged(5)" [ngClass]="{'selected': currentSize === 5}"> 5 x 5 </button>
+    <div class="settings-group">
+      <button class="settings-option-3 custom-button" (click)="sizeChanged(3)" [ngClass]="{'selected': currentSize === 3}"> 3 x 3 </button>
+      <button class="settings-option-3 custom-button" (click)="sizeChanged(4)" [ngClass]="{'selected': currentSize === 4}"> 4 x 4 </button>
+      <button class="settings-option-3 custom-button" (click)="sizeChanged(5)" [ngClass]="{'selected': currentSize === 5}"> 5 x 5 </button>
     </div>
     <popover-content #PopoverSize placement="bottom" [closeOnClickOutside]="true">
       <div class="po-content">
@@ -29,9 +29,9 @@
     </popover-content>
   </div>
 
-  <div class="algo-selector option-container" [ngClass]="{'show-help': currentHelp === helpType.ALGO}">
+  <div class="algo option-container" [ngClass]="{'show-help': currentHelp === helpType.ALGO}">
     <div class="separator"></div>
-    <div class="config-title">
+    <div class="settings-title">
       <h3 class="sub-title">Algorithme :</h3>
       <i
         class="material-icons"
@@ -42,10 +42,10 @@
         (onHidden)="hideHelp()"
       >help_outline</i>
     </div>
-    <div class="algo-group">
-      <button class="algo-option custom-button" (click)="onAlgoChange(algorithms.ASTAR)" [ngClass]="{'selected': config.algo === algorithms.ASTAR}"> {{algoLabel[algorithms.ASTAR]}} </button>
-      <button class="algo-option custom-button" (click)="onAlgoChange(algorithms.WEIGHTED_ASTAR)" [ngClass]="{'selected': config.algo === algorithms.WEIGHTED_ASTAR}"> {{algoLabel[algorithms.WEIGHTED_ASTAR]}} </button>
-      <button class="algo-option custom-button" (click)="onAlgoChange(algorithms.BEST_FIRST)" [ngClass]="{'selected': config.algo === algorithms.BEST_FIRST}"> {{algoLabel[algorithms.BEST_FIRST]}} </button>
+    <div class="settings-group">
+      <button class="settings-option-3 custom-button" (click)="onAlgoChange(algorithms.ASTAR)" [ngClass]="{'selected': config.algo === algorithms.ASTAR}"> {{algoLabel[algorithms.ASTAR]}} </button>
+      <button class="settings-option-3 custom-button" (click)="onAlgoChange(algorithms.WEIGHTED_ASTAR)" [ngClass]="{'selected': config.algo === algorithms.WEIGHTED_ASTAR}"> {{algoLabel[algorithms.WEIGHTED_ASTAR]}} </button>
+      <button class="settings-option-3 custom-button" (click)="onAlgoChange(algorithms.BEST_FIRST)" [ngClass]="{'selected': config.algo === algorithms.BEST_FIRST}"> {{algoLabel[algorithms.BEST_FIRST]}} </button>
     </div>
     <popover-content #PopoverAlgo placement="bottom" [closeOnClickOutside]="true">
       <div class="po-content">
@@ -71,9 +71,9 @@
     </popover-content>
   </div>
 
-  <div class="heuristic-selector option-container" [ngClass]="{'show-help': currentHelp === helpType.HEURISTIC}">
+  <div class="heuristic option-container" [ngClass]="{'show-help': currentHelp === helpType.HEURISTIC}">
     <div class="separator"></div>
-    <div class="config-title">
+    <div class="settings-title">
       <h3 class="sub-title">Heuristique : </h3>
       <i
         class="material-icons"
@@ -84,13 +84,13 @@
         (onHidden)="hideHelp()"
       >help_outline</i>
     </div>
-    <div class="heuristic-group">
-      <button class="heuristic-option custom-button" (click)="onHeuristicChange(heuristics.MANHATTAN)" [ngClass]="{'selected': config.heuristic === heuristics.MANHATTAN}"> {{heuristicLabel[heuristics.MANHATTAN]}} </button>
-      <button class="heuristic-option custom-button" (click)="onHeuristicChange(heuristics.HAMMING)" [ngClass]="{'selected': config.heuristic === heuristics.HAMMING}"> {{heuristicLabel[heuristics.HAMMING]}} </button>
-      <button class="heuristic-option custom-button" (click)="onHeuristicChange(heuristics.CARTESIAN)" [ngClass]="{'selected': config.heuristic === heuristics.CARTESIAN}"> {{heuristicLabel[heuristics.CARTESIAN]}} </button>
-      <button class="heuristic-option custom-button" (click)="onHeuristicChange(heuristics.LINEAR_CONFLICT)" [ngClass]="{'selected': config.heuristic === heuristics.LINEAR_CONFLICT}"> {{heuristicLabel[heuristics.LINEAR_CONFLICT]}} </button>
-      <button class="heuristic-option custom-button" (click)="onHeuristicChange(heuristics.UNIFORM)" [ngClass]="{'selected': config.heuristic === heuristics.UNIFORM}"> {{heuristicLabel[heuristics.UNIFORM]}} </button>
-      <div class="heuristic-option placeholder-button"></div>
+    <div class="settings-group">
+      <button class="settings-option-2 custom-button" (click)="onHeuristicChange(heuristics.MANHATTAN)" [ngClass]="{'selected': config.heuristic === heuristics.MANHATTAN}"> {{heuristicLabel[heuristics.MANHATTAN]}} </button>
+      <button class="settings-option-2 custom-button" (click)="onHeuristicChange(heuristics.HAMMING)" [ngClass]="{'selected': config.heuristic === heuristics.HAMMING}"> {{heuristicLabel[heuristics.HAMMING]}} </button>
+      <button class="settings-option-2 custom-button" (click)="onHeuristicChange(heuristics.CARTESIAN)" [ngClass]="{'selected': config.heuristic === heuristics.CARTESIAN}"> {{heuristicLabel[heuristics.CARTESIAN]}} </button>
+      <button class="settings-option-2 custom-button" (click)="onHeuristicChange(heuristics.LINEAR_CONFLICT)" [ngClass]="{'selected': config.heuristic === heuristics.LINEAR_CONFLICT}"> {{heuristicLabel[heuristics.LINEAR_CONFLICT]}} </button>
+      <button class="settings-option-2 custom-button" (click)="onHeuristicChange(heuristics.UNIFORM)" [ngClass]="{'selected': config.heuristic === heuristics.UNIFORM}"> {{heuristicLabel[heuristics.UNIFORM]}} </button>
+      <div class="settings-option-2 placeholder-button"></div>
     </div>
     <popover-content #PopoverHeuristic placement="bottom" [closeOnClickOutside]="true">
       <div class="po-content">
@@ -113,9 +113,9 @@
     </popover-content>
   </div>
 
-  <div class="greedy-selector option-container" [ngClass]="{'show-help': currentHelp === helpType.GREEDY}">
+  <div class="greedy option-container" [ngClass]="{'show-help': currentHelp === helpType.GREEDY}">
     <div class="separator"></div>
-    <div class="config-title">
+    <div class="settings-title">
       <h3 class="sub-title">Greedy search : </h3>
       <i
         class="material-icons"
@@ -126,9 +126,9 @@
         (onHidden)="hideHelp()"
       >help_outline</i>
     </div>
-    <div class="greedy-group">
-      <button class="greedy-option custom-button" (click)="onGreedyChange(true)" [ngClass]="{'selected': config.greedySearch === true}"> Oui </button>
-      <button class="greedy-option custom-button" (click)="onGreedyChange(false)" [ngClass]="{'selected': config.greedySearch === false}"> Non </button>
+    <div class="settings-group">
+      <button class="settings-option-2 custom-button" (click)="onGreedyChange(true)" [ngClass]="{'selected': config.greedySearch === true}"> Oui </button>
+      <button class="settings-option-2 custom-button" (click)="onGreedyChange(false)" [ngClass]="{'selected': config.greedySearch === false}"> Non </button>
     </div>
     <popover-content #PopoverGreedy placement="bottom" [closeOnClickOutside]="true">
       <div class="po-content">

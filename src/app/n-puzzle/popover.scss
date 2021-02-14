@@ -63,19 +63,19 @@
         }
     }
     &.show-help {
-        &.shuffle-selector .popover.popover-content {
+        &.shuffle .popover.popover-content {
             top: 90px !important;
         }
-        &.size-selector .popover.popover-content {
+        &.size .popover.popover-content {
             top: 72px !important;
         }
-        &.algo-selector .popover.popover-content {
+        &.algo .popover.popover-content {
             top: 94px !important;
         }
-        &.heuristic-selector .popover.popover-content {
+        &.heuristic .popover.popover-content {
             top: 150px !important;
         }
-        &.greedy-selector .popover.popover-content {
+        &.greedy .popover.popover-content {
             top: 90px !important;
         }
         .popover {

@@ -7,7 +7,10 @@ import { TileMoveDirection } from 'src/app/__models/enums/tile-move-direction.en
 @Component({
   selector: 'app-puzzle-result',
   templateUrl: './puzzle-result.component.html',
-  styleUrls: ['./puzzle-result.component.scss'],
+  styleUrls: [
+    './puzzle-result.component.scss',
+    '../side-menu.scss',
+  ],
   encapsulation: ViewEncapsulation.None,
 })
 

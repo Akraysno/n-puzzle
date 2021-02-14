@@ -1,41 +1,6 @@
 @import '../../../assets/scss/variables';
 
 .puzzle-settings-container {
-    height: 100%;
-    min-width: 100%;
-    max-width: 100%;
-    .shuffle-group {
-        display: flex;
-        flex-direction: row;
-        justify-content: space-around;
-        align-items: center;
-        padding-bottom: 5px;
-        flex-wrap: wrap;
-        .mat-slider {
-            min-width: calc(100% - 80px);
-        }
-        .nb-iterations {
-            width: 80px;
-            text-align: center;
-        }
-    }
-    .board-group,
-    .color-group {
-        display: flex;
-        flex-direction: row;
-        justify-content: space-around;
-        align-items: center;
-        padding-bottom: 5px;
-        flex-wrap: wrap;
-        .color-option {
-            margin-bottom: 5px;
-            width: 30%;
-        }
-        .board-option {
-            margin-bottom: 5px;
-            width: 48%;
-        }
-    }
     .color-picker-group {
         display: flex;
         flex-direction: row;
@@ -81,25 +46,5 @@
                 border: 1px solid rgba(0, 0, 0, 0.12);
             }
         }
-    }
-    .settings-title {
-        display: flex;
-        flex-direction: row;
-        justify-content: flex-start;
-        align-items: center;
-        margin-bottom: 15px;
-        h3 {
-            margin: 0;
-        }
-        .material-icons {
-            margin-left: 15px;
-            cursor: pointer;
-            font-size: 18px;
-        }
-    }
-    .separator {
-        width: 80%;
-        margin: 20px auto;
-        border-bottom: 1px solid rgba(0, 0, 0, 0.12);
     }
 }

@@ -1,5 +1,5 @@
-<div class="puzzle-settings-container" *ngIf="settings">
-  <div class="option-container shuffle-selector" [ngClass]="{'show-help': currentHelp === helpType.SHUFFLE}">
+<div class="puzzle-settings-container main-settings-container" *ngIf="settings">
+  <div class="option-container shuffle" [ngClass]="{'show-help': currentHelp === helpType.SHUFFLE}">
     <div class="settings-title">
       <h3 class="sub-title">Compléxité du mélange : </h3>
       <i
@@ -11,7 +11,7 @@
         (onHidden)="hideHelp()"
       >help_outline</i>
     </div>
-    <div class="shuffle-group">
+    <div class="settings-group">
       <mat-slider
         max="1000"
         min="0"
@@ -23,7 +23,7 @@
         [displayWith]="iterationLabel"
         (change)="nbIterationsChange($event)"
       ></mat-slider>
-      <div class="nb-iterations">{{settings.nbShuffleIterations > 0 ? settings.nbShuffleIterations : 'Complet'}}</div>
+      <div class="slider-label">{{settings.nbShuffleIterations > 0 ? settings.nbShuffleIterations : 'Complet'}}</div>
     </div>
     <popover-content #PopoverShuffle placement="bottom" [closeOnClickOutside]="true">
       <div class="po-content">
@@ -48,26 +48,26 @@
     </popover-content>
   </div>
 
-  <div class="board-selector">
+  <div class="option-container board">
     <div class="separator"></div>
     <div class="settings-title">
       <h3 class="sub-title">Couleur du plateau : </h3>
     </div>
-    <div class="board-group">
-      <button class="board-option custom-button" (click)="onBoardColorChange(boardColorType.DARK)" [ngClass]="{'selected': settings.boardColorType === boardColorType.DARK}"> Sombre </button>
-      <button class="board-option custom-button" (click)="onBoardColorChange(boardColorType.LIGHT)" [ngClass]="{'selected': settings.boardColorType === boardColorType.LIGHT}"> Clair </button>
+    <div class="settings-group">
+      <button class="settings-option-2 custom-button" (click)="onBoardColorChange(boardColorType.DARK)" [ngClass]="{'selected': settings.boardColorType === boardColorType.DARK}"> Sombre </button>
+      <button class="settings-option-2 custom-button" (click)="onBoardColorChange(boardColorType.LIGHT)" [ngClass]="{'selected': settings.boardColorType === boardColorType.LIGHT}"> Clair </button>
     </div>
   </div>
 
-  <div class="color-selector">
+  <div class="option-container color">
     <div class="separator"></div>
     <div class="settings-title">
       <h3 class="sub-title">Couleur des tuiles : </h3>
     </div>
-    <div class="color-group">
-      <button class="color-option custom-button" (click)="onTileColorChange(tileColorType.UNITED)" [ngClass]="{'selected': settings.tileColorType === tileColorType.UNITED}"> Unies </button>
-      <button class="color-option custom-button" (click)="onTileColorChange(tileColorType.SPIRAL)" [ngClass]="{'selected': settings.tileColorType === tileColorType.SPIRAL}"> Spirale </button>
-      <button class="color-option custom-button" (click)="onTileColorChange(tileColorType.DIAGONAL)" [ngClass]="{'selected': settings.tileColorType === tileColorType.DIAGONAL}"> Diagonale </button>
+    <div class="settings-group">
+      <button class="settings-option-3 custom-button" (click)="onTileColorChange(tileColorType.UNITED)" [ngClass]="{'selected': settings.tileColorType === tileColorType.UNITED}"> Unies </button>
+      <button class="settings-option-3 custom-button" (click)="onTileColorChange(tileColorType.SPIRAL)" [ngClass]="{'selected': settings.tileColorType === tileColorType.SPIRAL}"> Spirale </button>
+      <button class="settings-option-3 custom-button" (click)="onTileColorChange(tileColorType.DIAGONAL)" [ngClass]="{'selected': settings.tileColorType === tileColorType.DIAGONAL}"> Diagonale </button>
     </div>
   </div>
 
