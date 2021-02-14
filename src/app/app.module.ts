@@ -16,6 +16,7 @@ import { PuzzleResultComponent } from './n-puzzle/puzzle-result/puzzle-result.co
 import { ColorPickerModule } from 'ngx-color-picker'
 import { registerLocaleData } from '@angular/common';
 import localeFr from '@angular/common/locales/fr';
+import { PopoverModule } from 'ngx-smart-popover';
 
 registerLocaleData(localeFr);
 
@@ -36,6 +37,7 @@ registerLocaleData(localeFr);
     MaterialModule,
     HttpClientModule,
     ColorPickerModule,
+    PopoverModule,
   ],
   providers: [
     { provide: LOCALE_ID, useValue: 'fr-FR'},

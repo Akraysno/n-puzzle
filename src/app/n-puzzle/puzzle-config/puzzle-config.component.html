@@ -1,43 +1,163 @@
 <div class="puzzle-config-container" *ngIf="settings && config">
-  <div class="size-selector">
-    <h3 class="sub-title">Taille : </h3>
+  <div class="size-selector option-container" [ngClass]="{'show-help': currentHelp === helpType.SIZE}">
+    <div class="config-title">
+      <h3 class="sub-title">Taille : </h3>
+      <i
+        class="material-icons"
+        popoverSize="auto"
+        [popover]="PopoverSize"
+        [popoverOnHover]="false"
+        (onShown)="showHelp(helpType.SIZE)"
+        (onHidden)="hideHelp()"
+      >help_outline</i>
+    </div>
     <div class="size-group">
       <button class="size-option custom-button" (click)="sizeChanged(3)" [ngClass]="{'selected': currentSize === 3}"> 3 x 3 </button>
       <button class="size-option custom-button" (click)="sizeChanged(4)" [ngClass]="{'selected': currentSize === 4}"> 4 x 4 </button>
       <button class="size-option custom-button" (click)="sizeChanged(5)" [ngClass]="{'selected': currentSize === 5}"> 5 x 5 </button>
     </div>
+    <popover-content #PopoverSize placement="bottom" [closeOnClickOutside]="true">
+      <div class="po-content">
+        <div class="po-text">Tailles possibles pour le puzzle.</div>
+        <br />
+        <div class="po-advice">
+          Pour les puzzles <span class="surligne">4 x 4</span> et <span class="surligne">5 x 5</span>
+          il est conseillé d'utiliser l'algorithme <span class="surligne underline" [matTooltip]="helpTooltip.algo" matTooltipPosition="before">Weigthed A*</span> ou
+          d'activer l'option <span class="surligne underline" [matTooltip]="helpTooltip.greedy" matTooltipPosition="before">Greedy Search</span>.
+        </div>
+      </div>
+    </popover-content>
   </div>
 
-  <div class="algo-selector">
+  <div class="algo-selector option-container" [ngClass]="{'show-help': currentHelp === helpType.ALGO}">
     <div class="separator"></div>
-    <h3 class="sub-title">Algorithme : </h3>
-    <div class="algo-group">
-      <button class="algo-option custom-button" (click)="onAlgoChange(algorithms.WEIGHTED_ASTAR)" [ngClass]="{'selected': config.algo === algorithms.WEIGHTED_ASTAR}"> Weighted A* </button>
-      <button class="algo-option custom-button" (click)="onAlgoChange(algorithms.ASTAR)" [ngClass]="{'selected': config.algo === algorithms.ASTAR}"> A* </button>
-      <button class="algo-option custom-button" (click)="onAlgoChange(algorithms.BEST_FIRST)" [ngClass]="{'selected': config.algo === algorithms.BEST_FIRST}"> Best First </button>
+    <div class="config-title">
+      <h3 class="sub-title">Algorithme :</h3>
+      <i
+        class="material-icons"
+        popoverSize="auto"
+        [popover]="PopoverAlgo"
+        [popoverOnHover]="false"
+        (onShown)="showHelp(helpType.ALGO)"
+        (onHidden)="hideHelp()"
+      >help_outline</i>
     </div>
+    <div class="algo-group">
+      <button class="algo-option custom-button" (click)="onAlgoChange(algorithms.ASTAR)" [ngClass]="{'selected': config.algo === algorithms.ASTAR}"> {{algoLabel[algorithms.ASTAR]}} </button>
+      <button class="algo-option custom-button" (click)="onAlgoChange(algorithms.WEIGHTED_ASTAR)" [ngClass]="{'selected': config.algo === algorithms.WEIGHTED_ASTAR}"> {{algoLabel[algorithms.WEIGHTED_ASTAR]}} </button>
+      <button class="algo-option custom-button" (click)="onAlgoChange(algorithms.BEST_FIRST)" [ngClass]="{'selected': config.algo === algorithms.BEST_FIRST}"> {{algoLabel[algorithms.BEST_FIRST]}} </button>
+    </div>
+    <popover-content #PopoverAlgo placement="bottom" [closeOnClickOutside]="true">
+      <div class="po-content">
+        <div class="po-text">Algorithmes disponibles pour résoudre le puzzle</div>
+        <br />
+        <div class="po-explain">
+          <span class="small">Les formules encadrées correspondent à la façon de calculer le <span class="surligne underline" [matTooltip]="helpTooltip.cost" matTooltipPosition="before">coût</span> pour une position du puzzle.</span>
+          <ul>
+            <li><span class="surligne">{{algoLabel[algorithms.ASTAR]}}</span> : <span class="cadre">g(x) + h(x)</span> : Récupère un élément dans la <span class="surligne underline" [matTooltip]="helpTooltip.openList" matTooltipPosition="before">Liste Ouverte</span> pour vérifié si c'est la solution, sinon cherche les positions suivantes et les ajoute dans la <span class="surligne underline" [matTooltip]="helpTooltip.openList" matTooltipPosition="before">Liste Ouverte</span>.</li>
+            <li><span class="surligne">{{algoLabel[algorithms.WEIGHTED_ASTAR]}}</span> : <span class="cadre">g(x) + n * h(x)</span> : Variante de <span class="surligne">{{algoLabel[algorithms.ASTAR]}}</span> qui permet d'arriver plus rapidement à la solution.</li>
+            <li><span class="surligne">{{algoLabel[algorithms.BEST_FIRST]}}</span> : <span class="cadre">g(x) + h(x)</span> : Variante de <span class="surligne">{{algoLabel[algorithms.ASTAR]}}</span> qui vérifie les états avant de les ajouter à la <span class="surligne underline" [matTooltip]="helpTooltip.openList" matTooltipPosition="before">Liste Ouverte</span>.</li>
+          </ul>
+        </div>
+        <br />
+        <div class="po-advice">
+          <ul>
+            <li><span class="surligne">g(x)</span> : Le coût pour arriver à une étape donnée. </li>
+            <li><span class="surligne">h(x)</span> : Le coût estimé, à l'aide de l'<span class="surligne underline" [matTooltip]="helpTooltip.heuristic" matTooltipPosition="before">heuristique</span>, pour arriver à l'étape finale.</li>
+            <li><span class="surligne">n</span>    : Une constante.</li>
+          </ul>
+        </div>
+      </div>
+    </popover-content>
   </div>
 
-  <div class="heuristic-selector">
+  <div class="heuristic-selector option-container" [ngClass]="{'show-help': currentHelp === helpType.HEURISTIC}">
     <div class="separator"></div>
-    <h3 class="sub-title">Heuristique : </h3>
+    <div class="config-title">
+      <h3 class="sub-title">Heuristique : </h3>
+      <i
+        class="material-icons"
+        popoverSize="auto"
+        [popover]="PopoverHeuristic"
+        [popoverOnHover]="false"
+        (onShown)="showHelp(helpType.HEURISTIC)"
+        (onHidden)="hideHelp()"
+      >help_outline</i>
+    </div>
     <div class="heuristic-group">
-      <button class="heuristic-option custom-button" (click)="onHeuristicChange(heuristics.MANHATTAN)" [ngClass]="{'selected': config.heuristic === heuristics.MANHATTAN}"> Manhattan </button>
-      <button class="heuristic-option custom-button" (click)="onHeuristicChange(heuristics.HAMMING)" [ngClass]="{'selected': config.heuristic === heuristics.HAMMING}"> Hamming </button>
-      <button class="heuristic-option custom-button" (click)="onHeuristicChange(heuristics.CARTESIAN)" [ngClass]="{'selected': config.heuristic === heuristics.CARTESIAN}"> Cartesian </button>
-      <button class="heuristic-option custom-button" (click)="onHeuristicChange(heuristics.LINEAR_CONFLICT)" [ngClass]="{'selected': config.heuristic === heuristics.LINEAR_CONFLICT}"> Linear Conflict </button>
-      <button class="heuristic-option custom-button" (click)="onHeuristicChange(heuristics.UNIFORM)" [ngClass]="{'selected': config.heuristic === heuristics.UNIFORM}"> Uniform Cost</button>
+      <button class="heuristic-option custom-button" (click)="onHeuristicChange(heuristics.MANHATTAN)" [ngClass]="{'selected': config.heuristic === heuristics.MANHATTAN}"> {{heuristicLabel[heuristics.MANHATTAN]}} </button>
+      <button class="heuristic-option custom-button" (click)="onHeuristicChange(heuristics.HAMMING)" [ngClass]="{'selected': config.heuristic === heuristics.HAMMING}"> {{heuristicLabel[heuristics.HAMMING]}} </button>
+      <button class="heuristic-option custom-button" (click)="onHeuristicChange(heuristics.CARTESIAN)" [ngClass]="{'selected': config.heuristic === heuristics.CARTESIAN}"> {{heuristicLabel[heuristics.CARTESIAN]}} </button>
+      <button class="heuristic-option custom-button" (click)="onHeuristicChange(heuristics.LINEAR_CONFLICT)" [ngClass]="{'selected': config.heuristic === heuristics.LINEAR_CONFLICT}"> {{heuristicLabel[heuristics.LINEAR_CONFLICT]}} </button>
+      <button class="heuristic-option custom-button" (click)="onHeuristicChange(heuristics.UNIFORM)" [ngClass]="{'selected': config.heuristic === heuristics.UNIFORM}"> {{heuristicLabel[heuristics.UNIFORM]}} </button>
       <div class="heuristic-option placeholder-button"></div>
     </div>
+    <popover-content #PopoverHeuristic placement="bottom" [closeOnClickOutside]="true">
+      <div class="po-content">
+        <div class="po-text">Heuristiques disponibles pour le calcul du <span class="surligne underline" [matTooltip]="helpTooltip.cost" matTooltipPosition="before">coût</span>.</div>
+        <br />
+        <div class="po-advice">
+          Section dédiée au calcul de <span class="surligne">h(x)</span>.
+        </div>
+        <br />
+        <div class="po-explain">
+          <ul>
+            <li><span class="surligne">{{heuristicLabel[heuristics.MANHATTAN]}}</span> : Retourne la somme des déplacements, horizontaux et verticaux, nécessaires à chaque pièce pour atteindre leur position finale.</li>
+            <li><span class="surligne">{{heuristicLabel[heuristics.HAMMING]}}</span> : Retourne le nombre de pièces mal placées.</li>
+            <li><span class="surligne">{{heuristicLabel[heuristics.CARTESIAN]}}</span> : Retourne la somme des <span class="surligne underline" [matTooltip]="helpTooltip.distance" matTooltipPosition="before">distances</span> entre les positions de départ et d'arrivé pour chaque pièce.</li>
+            <li><span class="surligne">{{heuristicLabel[heuristics.LINEAR_CONFLICT]}}</span> : Retourne la somme des <span class="surligne underline" [matTooltip]="helpTooltip.conflicts" matTooltipPosition="before">conflits</span>, horizontaux et verticaux, pour chaque pièce.</li>
+            <li><span class="surligne">{{heuristicLabel[heuristics.UNIFORM]}}</span> : Represente l'absence d'heuristique. Retourne toujours 0.</li>
+          </ul>
+        </div>
+      </div>
+    </popover-content>
   </div>
 
-  <div class="greedy-selector">
+  <div class="greedy-selector option-container" [ngClass]="{'show-help': currentHelp === helpType.GREEDY}">
     <div class="separator"></div>
-    <h3 class="sub-title">Greedy search : </h3>
+    <div class="config-title">
+      <h3 class="sub-title">Greedy search : </h3>
+      <i
+        class="material-icons"
+        popoverSize="auto"
+        [popover]="PopoverGreedy"
+        [popoverOnHover]="false"
+        (onShown)="showHelp(helpType.GREEDY)"
+        (onHidden)="hideHelp()"
+      >help_outline</i>
+    </div>
     <div class="greedy-group">
       <button class="greedy-option custom-button" (click)="onGreedyChange(true)" [ngClass]="{'selected': config.greedySearch === true}"> Oui </button>
       <button class="greedy-option custom-button" (click)="onGreedyChange(false)" [ngClass]="{'selected': config.greedySearch === false}"> Non </button>
     </div>
+    <popover-content #PopoverGreedy placement="bottom" [closeOnClickOutside]="true">
+      <div class="po-content">
+        <div class="po-text">Activer ou non l'option Greedy Search (Recherche Gloutonne) influence la façon dont sont traités les éléments dans la <span class="underline surligne" [matTooltip]="helpTooltip.openList" matTooltipPosition="before">Liste Ouverte</span>.</div>
+        <br />
+        <div class="po-advice">
+          Section dédiée au calcul de <span class="surligne">g(x)</span>.
+        </div>
+        <br />
+        <div class="po-explain">
+          Lorsque l'option <span class="surligne">Greedy Search</span> est activée <span class="surligne">g(x)</span> retourne toujours 0,
+          ce qui permet de choisir le meilleur chemin sans prendre en compte le chemin déjà parcouru.
+        </div>
+        <br />
+        <div class="po-advice">
+          Quand l'option Greedy Search est activée:
+          <ul>
+            <li>
+              Les algorithmes <span class="surligne">{{algoLabel[algorithms.ASTAR]}}</span> et 
+              <span class="surligne">{{algoLabel[algorithms.WEIGHTED_ASTAR]}}</span> sont identiques
+            </li>
+            <li>
+              Si l'heuristique <span class="surligne">{{heuristicLabel[heuristics.UNIFORM]}}</span> est utilisée, 
+              la <span class="surligne underline" [matTooltip]="helpTooltip.openList" matTooltipPosition="before">Liste Ouverte</span> se comporte comme une <span class="surligne underline" [matTooltip]="helpTooltip.FIFO" matTooltipPosition="before">Queue FIFO</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </popover-content>
   </div>
 
   <div class="start-state" *ngIf="currentSize === config.size">

@@ -1,6 +1,16 @@
 <div class="puzzle-settings-container" *ngIf="settings">
-  <div class="shuffles-selector">
-    <h3 class="sub-title">Compléxité du mélange : </h3>
+  <div class="option-container shuffle-selector" [ngClass]="{'show-help': currentHelp === helpType.SHUFFLE}">
+    <div class="settings-title">
+      <h3 class="sub-title">Compléxité du mélange : </h3>
+      <i
+        class="material-icons"
+        popoverSize="auto"
+        [popover]="PopoverShuffle"
+        [popoverOnHover]="false"
+        (onShown)="showHelp(helpType.SHUFFLE)"
+        (onHidden)="hideHelp()"
+      >help_outline</i>
+    </div>
     <div class="shuffle-group">
       <mat-slider
         max="1000"
@@ -15,11 +25,34 @@
       ></mat-slider>
       <div class="nb-iterations">{{settings.nbShuffleIterations > 0 ? settings.nbShuffleIterations : 'Complet'}}</div>
     </div>
+    <popover-content #PopoverShuffle placement="bottom" [closeOnClickOutside]="true">
+      <div class="po-content">
+        <div class="po-text">La compléxité du mélange permet de générer un puzzle sans le mélanger completement.</div>
+        <br />
+        <div class="po-advice">
+          Il y a deux modes disponibles pour mélanger le puzzle :
+          <ul>
+            <li>
+              <span class="surligne">Complet</span> : Ce mode s'active lorsque le curseur est au minimum (le plus à gauche possible). 
+              Ce mode mélange tout le plateau et n'est donc pas recommandé pour les puzzle de tailles
+              <span class="surligne">4 x 4</span> et <span class="surligne">5 x 5</span>
+            </li>
+            <li>
+              <span class="surligne">Partiel</span> : Ce mode s'active lorsque le curseur n'est pas au minimum.
+              Le nombre choisi via le curseur est le nombre de déplacement fait par la pièce 0 (la pièce vide).
+              Plus le nombre séléctionné est grand plus le mélange se rapprochera d'un mélange complet.
+            </li>
+          </ul>
+        </div>
+      </div>
+    </popover-content>
   </div>
 
   <div class="board-selector">
     <div class="separator"></div>
-    <h3 class="sub-title">Couleur du plateau : </h3>
+    <div class="settings-title">
+      <h3 class="sub-title">Couleur du plateau : </h3>
+    </div>
     <div class="board-group">
       <button class="board-option custom-button" (click)="onBoardColorChange(boardColorType.DARK)" [ngClass]="{'selected': settings.boardColorType === boardColorType.DARK}"> Sombre </button>
       <button class="board-option custom-button" (click)="onBoardColorChange(boardColorType.LIGHT)" [ngClass]="{'selected': settings.boardColorType === boardColorType.LIGHT}"> Clair </button>
@@ -28,7 +61,9 @@
 
   <div class="color-selector">
     <div class="separator"></div>
-    <h3 class="sub-title">Couleur des tuiles : </h3>
+    <div class="settings-title">
+      <h3 class="sub-title">Couleur des tuiles : </h3>
+    </div>
     <div class="color-group">
       <button class="color-option custom-button" (click)="onTileColorChange(tileColorType.UNITED)" [ngClass]="{'selected': settings.tileColorType === tileColorType.UNITED}"> Unies </button>
       <button class="color-option custom-button" (click)="onTileColorChange(tileColorType.SPIRAL)" [ngClass]="{'selected': settings.tileColorType === tileColorType.SPIRAL}"> Spirale </button>

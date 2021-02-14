@@ -11,5 +11,5 @@ export enum NPuzzleHeuristicsLabel {
     CARTESIAN = 'Cartesian',
     MANHATTAN = 'Manhattan',
     LINEAR_CONFLICT = 'Linear Conflict',
-    UNIFORM = 'Uniform',
+    UNIFORM = 'Uniform Cost',
 }

@@ -5,17 +5,23 @@ import { TileColorType, Settings, BoardColorType, TileColor, Color } from '../..
 @Component({
   selector: 'app-puzzle-settings',
   templateUrl: './puzzle-settings.component.html',
-  styleUrls: ['./puzzle-settings.component.scss'],
+  styleUrls: [
+    './puzzle-settings.component.scss',
+    '../popover.scss'
+  ],
   encapsulation: ViewEncapsulation.None,
 })
 
 export class PuzzleSettingsComponent implements OnInit {
   @Output() onChange: EventEmitter<Settings> = new EventEmitter()
   settings: Settings
-  tileColorType = TileColorType
-  boardColorType = BoardColorType
   color1: string = '#FFFFFF'
   color2: string = '#FFFFFF'
+  currentHelp: HelpType
+
+  tileColorType = TileColorType
+  boardColorType = BoardColorType
+  helpType = HelpType
 
   constructor() { }
 
@@ -55,4 +61,16 @@ export class PuzzleSettingsComponent implements OnInit {
     this.emit()
   }
 
+  showHelp(type: HelpType) {
+    this.currentHelp = type
+  }
+
+  hideHelp() {
+    this.currentHelp = null
+  }
+
+}
+
+enum HelpType {
+  SHUFFLE = 'SHUFFLE',
 }

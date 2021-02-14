@@ -82,9 +82,24 @@
             }
         }
     }
-} 
-.separator {
-    width: 80%;
-    margin: 20px auto;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+    .settings-title {
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-start;
+        align-items: center;
+        margin-bottom: 15px;
+        h3 {
+            margin: 0;
+        }
+        .material-icons {
+            margin-left: 15px;
+            cursor: pointer;
+            font-size: 18px;
+        }
+    }
+    .separator {
+        width: 80%;
+        margin: 20px auto;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+    }
 }

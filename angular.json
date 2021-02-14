@@ -29,7 +29,8 @@
             ],
             "styles": [
               "src/styles.scss",
-              "src/assets/scss/_config.scss"
+              "src/assets/scss/_config.scss",
+              "node_modules/ngx-smart-popover/scss/popover-content.component.scss"
             ],
             "scripts": []
           },
