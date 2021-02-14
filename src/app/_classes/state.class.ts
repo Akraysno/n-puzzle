@@ -8,6 +8,7 @@ import { NPuzzleSolver, Solvers } from "./solvers.class"
 import { ExecTime } from "./exec-time.class"
 import { Result } from "./result.class"
 import { TileMove } from "../__models/n-puzzle.entity"
+import { Utils } from "./utils.class"
 
 export type ClosedList = Set<String>
 export type OpenedList = PriorityQueue
@@ -19,6 +20,7 @@ export class State {
   public size: number = 0
   public swapNumber: number
   public moveDirection: TileMoveDirection
+  public greedy: boolean
   public g: number;
   public h: number;
   public w: number;
@@ -42,43 +44,15 @@ export class State {
   public get result() { return this._result }
   public get move() { return this._move }
 
-  constructor(board: number[], final: number[], size: number, parent: State = null, move?: TileMove) {
+  constructor(board: number[], final: number[], size: number, greedy: boolean, parent: State = null, move?: TileMove) {
     this.board = board
     this.final = final
     this.size = size
     this.parent = parent
     this._move = move
-    this.g = parent ? parent.g + 1 : 0
+    this.greedy = greedy
+    this.g = parent && !greedy ? parent.g + 1 : 0
     this.w = parent ? parent.w : 1
-  }
-
-  /**
-   * Function to replace lodash's function _.chunk()
-   * 
-   * @param arr Array to chunk
-   * @param size Max size of each chunk
-   */
-  private _chunkArray(arr: any[], size: number) {
-    let resultArray: any[][] = []
-    let nbRow: number = Math.ceil(arr.length / size)
-    for (let i = 0; i < nbRow; i++) {
-      let index = i * size
-      resultArray.push(arr.slice(index, index + size))
-    }
-    return resultArray
-  }
-
-  /**
-   * Function to replace lodash's function _.flatten()
-   * 
-   * @param arr Array to flatten
-   */
-  private _flattenArray(arr: any[][]) {
-    let resultArray: any[] = []
-    for (let cell of arr) {
-      resultArray = resultArray.concat(cell)
-    }
-    return resultArray
   }
 
   static equals(stateA: State, stateB: State): boolean {
@@ -94,7 +68,7 @@ export class State {
       let newBoard = [...this.board];
       newBoard[a] = this.board[b];
       newBoard[b] = this.board[a];
-      return new State(newBoard, [...this.final], this.size, this, new TileMove(this.board[b], direction));
+      return new State(newBoard, [...this.final], this.size, this.greedy, this, new TileMove(this.board[b], direction));
     }
 
     let zeroIndex: number = this.findEmptyTileIndex()
@@ -178,8 +152,8 @@ export class State {
    * Verify solvability of current State
    */
   validateInversions() {
-    let start: number[][] = this._chunkArray(this.board, this.size)
-    let final: number[][] = this._chunkArray(this.final, this.size)
+    let start: number[][] = Utils.chunkArray(this.board, this.size)
+    let final: number[][] = Utils.chunkArray(this.final, this.size)
     const findD = () => {
       let xi: number
       let yi: number

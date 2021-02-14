@@ -1,5 +1,8 @@
 @import '../../assets/scss/variables';
 
+.popover-content {
+    position: absolute;
+}
 .option-container {
     position: relative;
     .popover {
