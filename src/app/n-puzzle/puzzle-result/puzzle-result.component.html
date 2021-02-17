@@ -10,81 +10,238 @@
   ></mat-progress-spinner>
   <div class="no-result">Puzzle en cours de résolution...</div>
 </div>
+
 <div class="puzzle-result-container" *ngIf="result">
   <div class="statistics-container">
-    <div class="stat">
+
+    <div class="stat option-container" [ngClass]="{'show-help': currentHelp === helpType.SIZE}">
       <div class="row">
-        <div class="label">Taille :</div>
+        <div class="label">
+          <span>Taille :</span>
+          <i
+            *ngIf="false"
+            class="material-icons"
+            popoverSize="auto"
+            [popover]="PopoverSize"
+            [popoverOnHover]="false"
+            (onShown)="showHelp(helpType.SIZE)"
+            (onHidden)="hideHelp()"
+          >help_outline</i>
+        </div>
         <div class="value">{{result.size}}</div>
       </div>
+      <popover-content #PopoverSize placement="bottom" [closeOnClickOutside]="true">
+        <div class="po-content">
+          <div class="po-text">
+            <span class="surligne">Taille</span> du puzzle résolu.
+          </div>
+        </div>
+      </popover-content>
     </div>
 
-    <div class="stat">
+    <div class="stat option-container" [ngClass]="{'show-help': currentHelp === helpType.ALGO}">
       <div class="separator"></div>
       <div class="row">
-        <div class="label">Algorithme :</div>
+        <div class="label">
+          <span>Algorithme :</span>
+          <i
+            *ngIf="false"
+            class="material-icons"
+            popoverSize="auto"
+            [popover]="PopoverAlgo"
+            [popoverOnHover]="false"
+            (onShown)="showHelp(helpType.ALGO)"
+            (onHidden)="hideHelp()"
+          >help_outline</i>
+        </div>
         <div class="value">{{algoLabel[result.algo]}}</div>
       </div>
+      <popover-content #PopoverAlgo placement="bottom" [closeOnClickOutside]="true">
+        <div class="po-content">
+          <div class="po-text">
+            <span class="surligne">Algorithme</span> utilisé pour résoudre le puzzle.
+          </div>
+        </div>
+      </popover-content>
     </div>
 
-    <div class="stat">
+    <div class="stat option-container" [ngClass]="{'show-help': currentHelp === helpType.HEURISTIC}">
       <div class="separator"></div>
       <div class="row">
-        <div class="label">Heuristique :</div>
+        <div class="label">
+          <span>Heuristique :</span>
+          <i
+            *ngIf="false"
+            class="material-icons"
+            popoverSize="auto"
+            [popover]="PopoverHeuristic"
+            [popoverOnHover]="false"
+            (onShown)="showHelp(helpType.HEURISTIC)"
+            (onHidden)="hideHelp()"
+          >help_outline</i>
+        </div>
         <div class="value">{{heuristicLabel[result.heuristic]}}</div>
       </div>
+      <popover-content #PopoverHeuristic placement="bottom" [closeOnClickOutside]="true">
+        <div class="po-content">
+          <div class="po-text">
+            <span class="surligne">Heuristique</span> utilisée pour résoudre le puzzle.
+          </div>
+        </div>
+      </popover-content>
     </div>
 
-    <div class="stat">
+    <div class="stat option-container" [ngClass]="{'show-help': currentHelp === helpType.RESOLVE_TIME}">
       <div class="separator"></div>
       <div class="row">
-        <div class="label">Temps de résolution :</div>
+        <div class="label">
+          <span>Temps de résolution :</span>
+          <i
+            class="material-icons"
+            popoverSize="auto"
+            [popover]="PopoverResolveTime"
+            [popoverOnHover]="false"
+            (onShown)="showHelp(helpType.RESOLVE_TIME)"
+            (onHidden)="hideHelp()"
+          >help_outline</i>
+        </div>
         <div class="value">{{formatDuration(result.durationResolve)}}</div>
       </div>
+      <popover-content #PopoverResolveTime placement="bottom" [closeOnClickOutside]="true">
+        <div class="po-content">
+          <div class="po-text">
+            La durée affiché est la durée réelle entre le moment où la résolution a commencée et le moment où une solution a été trouvée.
+          </div>
+          <br />
+          <div class="po-advice">
+            Si le navigateur subit des ralentissements durant la résolution du puzzle le temps de résolution augmente.
+            Cela peut arriver quand la mémoire utilisée pour stocker la <span class="surligne underline" [matTooltip]="helpTooltip.openList" matTooltipPosition="before">Liste Ouverte</span> et la <span class="surligne underline" [matTooltip]="helpTooltip.closeList" matTooltipPosition="before">Liste Fermée</span> dépasse un certain seuil.
+          </div>
+        </div>
+      </popover-content>
     </div>
 
-    <div class="stat">
+    <div class="stat option-container" [ngClass]="{'show-help': currentHelp === helpType.NB_MOVES}">
       <div class="separator"></div>
       <div class="row">
-        <div class="label">Nombre de mouvements :</div>
+        <div class="label">
+          <span>Nombre de mouvements :</span>
+          <i
+            *ngIf="false"
+            class="material-icons"
+            popoverSize="auto"
+            [popover]="PopoverNbMoves"
+            [popoverOnHover]="false"
+            (onShown)="showHelp(helpType.NB_MOVES)"
+            (onHidden)="hideHelp()"
+          >help_outline</i>
+        </div>
         <div class="value">{{result.nbMoves}}</div>
       </div>
+      <popover-content #PopoverNbMoves placement="bottom" [closeOnClickOutside]="true">
+        <div class="po-content">
+          <div class="po-text">
+            Nombre de mouvements nécessaires pour arriver à la solution.
+          </div>
+        </div>
+      </popover-content>
     </div>
 
-    <div class="stat">
+    <div class="stat option-container" [ngClass]="{'show-help': currentHelp === helpType.SIZE_COMPLEXITY}">
       <div class="separator"></div>
       <div class="row">
-        <div class="label">Complexité en taille :</div>
+        <div class="label">
+          <span>Complexité en taille :</span>
+          <i
+            class="material-icons"
+            popoverSize="auto"
+            [popover]="PopoverSizeComplexity"
+            [popoverOnHover]="false"
+            (onShown)="showHelp(helpType.SIZE_COMPLEXITY)"
+            (onHidden)="hideHelp()"
+          >help_outline</i>
+        </div>
         <div class="value">{{result.sizeComplexity | number:'':'fr-FR'}}</div>
       </div>
+      <popover-content #PopoverSizeComplexity placement="bottom" [closeOnClickOutside]="true">
+        <div class="po-content">
+          <div class="po-text">
+            Correspond au plus grand nombre d'éléments présent en même temps dans la <span class="surligne underline" [matTooltip]="helpTooltip.openList" matTooltipPosition="before">Liste Ouverte</span>.
+          </div>
+        </div>
+      </popover-content>
     </div>
 
-    <div class="stat">
+    <div class="stat option-container" [ngClass]="{'show-help': currentHelp === helpType.TIME_COMPLEXITY}">
       <div class="separator"></div>
       <div class="row">
-        <div class="label">Complexité dans le temps :</div>
+        <div class="label">
+          <span>Complexité dans le temps :</span>
+          <i
+            class="material-icons"
+            popoverSize="auto"
+            [popover]="PopoverTimeComplexity"
+            [popoverOnHover]="false"
+            (onShown)="showHelp(helpType.TIME_COMPLEXITY)"
+            (onHidden)="hideHelp()"
+          >help_outline</i>
+        </div>
         <div class="value">{{result.timeComplexity | number:'':'fr-FR'}}</div>
       </div>
+      <popover-content #PopoverTimeComplexity placement="bottom" [closeOnClickOutside]="true">
+        <div class="po-content">
+          <div class="po-text">
+            Correspond au nombre d'élément dans la liste fermée <span class="surligne underline" [matTooltip]="helpTooltip.closeList" matTooltipPosition="before">Liste Fermée</span>
+          </div>
+        </div>
+      </popover-content>
     </div>
 
-    <div class="stat">
+    <div class="stat movements option-container top-popover" [ngClass]="{'show-help': currentHelp === helpType.MOVEMENTS}">
       <div class="separator"></div>
       <div class="row">
-        <div class="label">Mouvements :</div>
+        <div class="label">
+          <span>Mouvements :</span>
+          <i
+            class="material-icons"
+            popoverSize="auto"
+            [popover]="PopoverMovements"
+            [popoverOnHover]="false"
+            (onShown)="showHelp(helpType.MOVEMENTS)"
+            (onHidden)="hideHelp()"
+          >help_outline</i>
+        </div>
       </div>
-      <div class="movement-list">
-        <ng-container *ngFor="let o of result.operations; let i = index">
-          <div class="movement" [ngClass]="{'selected': i === result.currentStep}" (click)="goToStep(i)">
-            <div class="movement-tile">{{o ? o.tile : '/'}}</div>
-            <ng-container [ngSwitch]="o.direction" *ngIf="o">
-              <i class="material-icons" *ngSwitchCase="tileMoveDirection.BOTTOM">north</i>
-              <i class="material-icons" *ngSwitchCase="tileMoveDirection.LEFT">east</i>
-              <i class="material-icons" *ngSwitchCase="tileMoveDirection.RIGHT">west</i>
-              <i class="material-icons" *ngSwitchCase="tileMoveDirection.TOP">south</i>
-            </ng-container>
+      <popover-content #PopoverMovements placement="top" [closeOnClickOutside]="true">
+        <div class="po-content">
+          <div class="po-text">
+            Répresente la liste de tous les mouvements nécessaires pour arriver à la solution.
           </div>
-        </ng-container>
-      </div>
+          <br />
+          <div class="po-advice">
+            Pour chaque case:
+            <ul>
+              <li>Le nombre correpond à la tuile à déplacée.</li>
+              <li>La fléche désigne la direction vers laquelle déplacée la tuile (correspond aussi la position de la tuile vide.</li>
+            </ul>
+            <br />
+            Il est possible de cliquer sur un case pour allez directement à la position voulue.
+          </div>
+        </div>
+      </popover-content>
+    </div>
+    <div class="movement-list">
+      <ng-container *ngFor="let o of result.operations; let i = index">
+        <div class="movement" [ngClass]="{'selected': i === result.currentStep}" (click)="goToStep(i)">
+          <div class="movement-tile">{{o ? o.tile : '/'}}</div>
+          <ng-container [ngSwitch]="o.direction" *ngIf="o">
+            <i class="material-icons" *ngSwitchCase="tileMoveDirection.BOTTOM">north</i>
+            <i class="material-icons" *ngSwitchCase="tileMoveDirection.LEFT">east</i>
+            <i class="material-icons" *ngSwitchCase="tileMoveDirection.RIGHT">west</i>
+            <i class="material-icons" *ngSwitchCase="tileMoveDirection.TOP">south</i>
+          </ng-container>
+        </div>
+      </ng-container>
     </div>
 
   </div>

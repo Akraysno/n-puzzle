@@ -10,6 +10,7 @@ import { TileMoveDirection } from 'src/app/__models/enums/tile-move-direction.en
   styleUrls: [
     './puzzle-result.component.scss',
     '../side-menu.scss',
+    '../popover.scss',
   ],
   encapsulation: ViewEncapsulation.None,
 })
@@ -18,9 +19,24 @@ export class PuzzleResultComponent implements OnInit {
   @Input() result: Result
   @Input() loading: boolean = false
   @Output() stepChange: EventEmitter<number> = new EventEmitter()
+  currentHelp: HelpType
+
   algoLabel = NPuzzleAlgoLabel
   heuristicLabel = NPuzzleHeuristicsLabel
   tileMoveDirection = TileMoveDirection
+  helpType = HelpType
+
+  helpTooltip = {
+    cost: `Valeur estimée du nombre de mouvements à faire pour arriver à la solution.`,
+    openList: `La Liste Ouverte est la liste où sont stockées toutes les positions du puzzle à tester. Les positions sont triées par ordre croissant de coût.`,
+    closeList: `La Liste Fermée est la liste des positions du puzzle déjà trouvées (ou testée)`,
+    heuristic: `Voir l'aide de la section Heuristiques.`,
+    algo: `Voir l'aide de la section Algorithmes.`,
+    greedy: `Voir l'aide de la section Greedy Search.`,
+    distance: `Dans notre cas la distance Cartésienne correspond aussi à la distance Euclidienne et à la distance de Pythagore soit: d = √(x² + y²) où x et y correspondent à la difference de coordonnées entre la position de départ et la position d'arrivée.`,
+    conflicts: `Un conflit existe lorsque sur même ligne, ou colonne, une pièce empêche une autre d'atteindre sa position finale.`,
+    FIFO: `Une Queue FIFO (First In, First Out) est, comme sont nom l'indique, une file ou les éléments sortent dans l'ordre où ils sont rentrés.`
+  }
 
   constructor() { }
 
@@ -51,4 +67,22 @@ export class PuzzleResultComponent implements OnInit {
     this.stepChange.emit(index)
   }
 
+  showHelp(type: HelpType) {
+    this.currentHelp = type
+  }
+
+  hideHelp() {
+    this.currentHelp = null
+  }
+}
+
+enum HelpType {
+  SIZE = 'SIZE',
+  ALGO = 'ALGO',
+  HEURISTIC = 'HEURISTIC',
+  RESOLVE_TIME = 'RESOLVE_TIME',
+  NB_MOVE = 'NB_MOVES',
+  SIZE_COMPLEXITY = 'SIZE_COMPLEXITY',
+  TIME_COMPLEXITY = 'TIME_COMPLEXITY',
+  MOVEMENTS = 'MOVEMENTS',
 }

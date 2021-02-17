@@ -78,9 +78,24 @@
         &.greedy .popover.popover-content {
             top: 90px !important;
         }
+        &.movements .popover.popover-content {
+            top: unset !important;
+            bottom: 49px;
+        }
         .popover {
             &.popover-content {
                 left: 0 !important;
+            }
+        }
+    }
+    &.top-popover {
+        .popover {
+            .arrow {
+                top: unset;
+                bottom: -17px;
+            }
+            &.popover-content {
+                margin-top: 0;
             }
         }
     }

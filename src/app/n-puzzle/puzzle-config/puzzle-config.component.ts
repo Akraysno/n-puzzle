@@ -52,7 +52,8 @@ export class PuzzleConfigComponent implements OnInit {
     greedy: `Voir l'aide de la section Greedy Search.`,
     distance: `Dans notre cas la distance Cartésienne correspond aussi à la distance Euclidienne et à la distance de Pythagore soit: d = √(x² + y²) où x et y correspondent à la difference de coordonnées entre la position de départ et la position d'arrivée.`,
     conflicts: `Un conflit existe lorsque sur même ligne, ou colonne, une pièce empêche une autre d'atteindre sa position finale.`,
-    FIFO: `Une Queue FIFO (First In, First Out) est, comme sont nom l'indique, une file ou les éléments sortent dans l'ordre où ils sont rentrés.`
+    FIFO: `Une Queue FIFO (First In, First Out) est, comme sont nom l'indique, une file ou les éléments sortent dans l'ordre où ils sont rentrés.`,
+    mixingLevel: `Voir l'onglet Paramètres`
   }
 
   constructor() { }
@@ -145,5 +146,6 @@ enum HelpType {
   SIZE = 'SIZE',
   ALGO = 'ALGO',
   HEURISTIC = 'HEURISTIC',
-  GREEDY = 'GREEDY'
+  GREEDY = 'GREEDY',
+  START = 'START'
 }

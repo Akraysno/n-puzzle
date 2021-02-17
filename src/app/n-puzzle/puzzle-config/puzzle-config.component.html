@@ -160,10 +160,20 @@
     </popover-content>
   </div>
 
-  <div class="start-state" *ngIf="currentSize === config.size">
+  <div class="start option-container" *ngIf="currentSize === config.size" [ngClass]="{'show-help': currentHelp === helpType.START}">
     <div class="separator"></div>
     <div class="sub-title-container">
-      <h3 class="sub-title">Etat de départ :</h3>
+      <div class="settings-title">
+        <h3 class="sub-title">Etat de départ :</h3>
+        <i
+          class="material-icons"
+          popoverSize="auto"
+          [popover]="PopoverStart"
+          [popoverOnHover]="false"
+          (onShown)="showHelp(helpType.START)"
+          (onHidden)="hideHelp()"
+        >help_outline</i>
+      </div>
       <button class="custom-button witdh-100" (click)="onGenerateRandomBoard()">Mélanger</button>
     </div>
     <div class="puzzle-container">
@@ -175,7 +185,6 @@
             'tile-border': tile !== 0,
             'selected': tile === config.selectedTile,
             'tile-empty': tile === 0
-            
           }"
           *ngFor="let tile of config.startState"
         >
@@ -186,6 +195,17 @@
       </div>
     </div>
     <p class="error" *ngIf="!config.isSolvable">Cette configuration ne peut pas être résolue.</p>
+    <popover-content #PopoverStart placement="bottom" [closeOnClickOutside]="true">
+      <div class="po-content">
+        <div class="po-text">
+          Deux moyen de mélanger le puzzle :
+          <ul>
+            <li>Cliquer sur le bouton <span class="surligne">Mélanger</span>, le mélange se basera sur la <span class="surligne underline" [matTooltip]="helpTooltip.mixingLevel" matTooltipPosition="before">Compléxité du mélange</span></li>
+            <li>Cliquer sur deux tuiles pour échanger leur position</li>
+          </ul>
+        </div>
+      </div>
+    </popover-content>
   </div>
 
   <div class="final-state" *ngIf="currentSize === config.size">
