@@ -13,7 +13,7 @@
       </div>
     </mat-tab>
     <mat-tab>
-      <ng-template mat-tab-label> <i class="material-icons">settings</i> </ng-template>
+      <ng-template mat-tab-label> Paramètres<i *ngIf="false" class="material-icons">settings</i> </ng-template>
       <div class="menu-container p-20">
         <app-puzzle-settings (onChange)="settings = $event"></app-puzzle-settings>
       </div>
