@@ -45,7 +45,7 @@
     <div class="settings-group">
       <button class="settings-option-3 custom-button" (click)="onAlgoChange(algorithms.ASTAR)" [ngClass]="{'selected': config.algo === algorithms.ASTAR}"> {{algoLabel[algorithms.ASTAR]}} </button>
       <button class="settings-option-3 custom-button" (click)="onAlgoChange(algorithms.WEIGHTED_ASTAR)" [ngClass]="{'selected': config.algo === algorithms.WEIGHTED_ASTAR}"> {{algoLabel[algorithms.WEIGHTED_ASTAR]}} </button>
-      <button class="settings-option-3 custom-button" (click)="onAlgoChange(algorithms.BEST_FIRST)" [ngClass]="{'selected': config.algo === algorithms.BEST_FIRST}"> {{algoLabel[algorithms.BEST_FIRST]}} </button>
+      <button class="settings-option-3 custom-button" (click)="onAlgoChange(algorithms.A_STAR_ALT)" [ngClass]="{'selected': config.algo === algorithms.A_STAR_ALT}"> {{algoLabel[algorithms.A_STAR_ALT]}} </button>
     </div>
     <popover-content #PopoverAlgo placement="bottom" [closeOnClickOutside]="true">
       <div class="po-content">
@@ -56,7 +56,7 @@
           <ul>
             <li><span class="surligne">{{algoLabel[algorithms.ASTAR]}}</span> : <span class="cadre">g(x) + h(x)</span> : Récupère un élément dans la <span class="surligne underline" [matTooltip]="helpTooltip.openList" matTooltipPosition="before">Liste Ouverte</span> pour vérifié si c'est la solution, sinon cherche les positions suivantes et les ajoute dans la <span class="surligne underline" [matTooltip]="helpTooltip.openList" matTooltipPosition="before">Liste Ouverte</span>.</li>
             <li><span class="surligne">{{algoLabel[algorithms.WEIGHTED_ASTAR]}}</span> : <span class="cadre">g(x) + n * h(x)</span> : Variante de <span class="surligne">{{algoLabel[algorithms.ASTAR]}}</span> qui permet d'arriver plus rapidement à la solution.</li>
-            <li><span class="surligne">{{algoLabel[algorithms.BEST_FIRST]}}</span> : <span class="cadre">g(x) + h(x)</span> : Variante de <span class="surligne">{{algoLabel[algorithms.ASTAR]}}</span> qui vérifie les états avant de les ajouter à la <span class="surligne underline" [matTooltip]="helpTooltip.openList" matTooltipPosition="before">Liste Ouverte</span>.</li>
+            <li><span class="surligne">{{algoLabel[algorithms.A_STAR_ALT]}}</span> : <span class="cadre">g(x) + h(x)</span> : Variante de <span class="surligne">{{algoLabel[algorithms.ASTAR]}}</span> qui vérifie les états avant de les ajouter à la <span class="surligne underline" [matTooltip]="helpTooltip.openList" matTooltipPosition="before">Liste Ouverte</span>.</li>
           </ul>
         </div>
         <br />

@@ -13,11 +13,11 @@ export type NPuzzleSolver = (start: State, heuristic: DistHeuristic, openedList:
 export class Solvers {
     static solvers = {
         [NPuzzleAlgo.ASTAR]: Solvers.aStar,
-        [NPuzzleAlgo.BEST_FIRST]: Solvers.bestFirst,
+        [NPuzzleAlgo.A_STAR_ALT]: Solvers.aStarAlt,
         [NPuzzleAlgo.WEIGHTED_ASTAR]: Solvers.aStar,
     }
 
-    static bestFirst(start: State, heuristic: DistHeuristic, openedList: OpenedList, closedList: ClosedList): State {
+    static aStarAlt(start: State, heuristic: DistHeuristic, openedList: OpenedList, closedList: ClosedList): State {
         openedList.addItem(start, start.getDist(heuristic));
         while (openedList.count() > 0) {
             const current = openedList.getFirst();

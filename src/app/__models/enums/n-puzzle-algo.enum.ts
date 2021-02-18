@@ -2,12 +2,12 @@ export enum NPuzzleAlgo {
     ASTAR = 'ASTAR',
     WEIGHTED_ASTAR = 'WEIGHTED_ASTAR',
     ITERATIVE_DEEPENING_ASTAR = 'ITERATIVE_DEEPENING_ASTAR',
-    BEST_FIRST = 'BEST_FIRST'
+    A_STAR_ALT = 'A_STAR_ALT'
 }
 
 export enum NPuzzleAlgoLabel {
     ASTAR = 'A*',
     WEIGHTED_ASTAR = 'Weighted A*',
     ITERATIVE_DEEPENING_ASTAR = 'IDA*',
-    BEST_FIRST = 'Best First'
+    A_STAR_ALT = 'A* Alt.'
 }
