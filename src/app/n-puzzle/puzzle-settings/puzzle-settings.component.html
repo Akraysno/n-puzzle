@@ -1,7 +1,7 @@
 <div class="puzzle-settings-container main-settings-container" *ngIf="settings">
   <div class="option-container shuffle" [ngClass]="{'show-help': currentHelp === helpType.SHUFFLE}">
     <div class="settings-title">
-      <h3 class="sub-title">Compléxité du mélange : </h3>
+      <h3 class="sub-title">Compléxité du mélange&nbsp;: </h3>
       <i
         class="material-icons"
         popoverSize="auto"
@@ -51,7 +51,7 @@
   <div class="option-container board">
     <div class="separator"></div>
     <div class="settings-title">
-      <h3 class="sub-title">Couleur du plateau : </h3>
+      <h3 class="sub-title">Couleur du plateau&nbsp;: </h3>
     </div>
     <div class="settings-group">
       <button class="settings-option-2 custom-button" (click)="onBoardColorChange(boardColorType.DARK)" [ngClass]="{'selected': settings.boardColorType === boardColorType.DARK}"> Sombre </button>
@@ -62,7 +62,7 @@
   <div class="option-container color">
     <div class="separator"></div>
     <div class="settings-title">
-      <h3 class="sub-title">Couleur des tuiles : </h3>
+      <h3 class="sub-title">Couleur des tuiles&nbsp;: </h3>
     </div>
     <div class="settings-group">
       <button class="settings-option-3 custom-button" (click)="onTileColorChange(tileColorType.UNITED)" [ngClass]="{'selected': settings.tileColorType === tileColorType.UNITED}"> Unies </button>

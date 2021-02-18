@@ -1,7 +1,7 @@
 <div class="puzzle-config-container main-settings-container" *ngIf="settings && config">
   <div class="size option-container" [ngClass]="{'show-help': currentHelp === helpType.SIZE}">
     <div class="settings-title">
-      <h3 class="sub-title">Taille : </h3>
+      <h3 class="sub-title">Taille&nbsp;: </h3>
       <i
         class="material-icons"
         popoverSize="auto"
@@ -32,7 +32,7 @@
   <div class="algo option-container" [ngClass]="{'show-help': currentHelp === helpType.ALGO}">
     <div class="separator"></div>
     <div class="settings-title">
-      <h3 class="sub-title">Algorithme :</h3>
+      <h3 class="sub-title">Algorithme&nbsp;:</h3>
       <i
         class="material-icons"
         popoverSize="auto"
@@ -74,7 +74,7 @@
   <div class="heuristic option-container" [ngClass]="{'show-help': currentHelp === helpType.HEURISTIC}">
     <div class="separator"></div>
     <div class="settings-title">
-      <h3 class="sub-title">Heuristique : </h3>
+      <h3 class="sub-title">Heuristique&nbsp;: </h3>
       <i
         class="material-icons"
         popoverSize="auto"
@@ -116,7 +116,7 @@
   <div class="greedy option-container" [ngClass]="{'show-help': currentHelp === helpType.GREEDY}">
     <div class="separator"></div>
     <div class="settings-title">
-      <h3 class="sub-title">Greedy search : </h3>
+      <h3 class="sub-title">Greedy search&nbsp;: </h3>
       <i
         class="material-icons"
         popoverSize="auto"
@@ -164,7 +164,7 @@
     <div class="separator"></div>
     <div class="sub-title-container">
       <div class="settings-title">
-        <h3 class="sub-title">Etat de départ :</h3>
+        <h3 class="sub-title">Etat de départ&nbsp;:</h3>
         <i
           class="material-icons"
           popoverSize="auto"
@@ -211,7 +211,7 @@
   <div class="final-state" *ngIf="currentSize === config.size">
     <div class="separator"></div>
     <div class="sub-title-container">
-      <h3 class="sub-title">Etat final :</h3>
+      <h3 class="sub-title">Etat final&nbsp;:</h3>
       <button class="custom-button witdh-100" [ngClass]="{'selected': currentFinalStateType === finalStateType.SPIRAL}" (click)="onFinalStateTypeChange(finalStateType.SPIRAL)">Spirale</button>
       <button class="custom-button witdh-100" [ngClass]="{'selected': currentFinalStateType === finalStateType.LINE}" (click)="onFinalStateTypeChange(finalStateType.LINE)">Ligne</button>
     </div>
