@@ -16,7 +16,7 @@
             margin: 0 !important;
             &::after,
             &::before {
-                border-width: 0 1.1rem 1.1rem 1.1rem;
+                border-width: 0 1.1rem 1.1rem 1.1rem !important;
                 top: 1px !important;
                 left: 0 !important;
                 border-bottom-color: #757575;
@@ -93,6 +93,10 @@
             .arrow {
                 top: unset;
                 bottom: -17px;
+                &::after,
+                &::before {
+                    border-width: 1.1rem 1.1rem 0 !important;
+                }
             }
             &.popover-content {
                 margin-top: 0;
