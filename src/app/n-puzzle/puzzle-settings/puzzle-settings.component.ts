@@ -2,7 +2,7 @@ import { Component, EventEmitter, Input, OnInit, Output, ViewEncapsulation } fro
 import { MatSliderChange } from '@angular/material/slider';
 import { Subscription } from 'rxjs';
 import { TileColorType, Settings, BoardColorType, Color } from '../../_classes/settings.class';
-import { NPuzzleService } from '../puzzle-config.service';
+import { NPuzzleService } from '../n-puzzle.service';
 
 @Component({
   selector: 'app-puzzle-settings',

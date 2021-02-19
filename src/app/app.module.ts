@@ -17,7 +17,7 @@ import { ColorPickerModule } from 'ngx-color-picker'
 import { registerLocaleData } from '@angular/common';
 import localeFr from '@angular/common/locales/fr';
 import { PopoverModule } from 'ngx-smart-popover';
-import { NPuzzleService } from './n-puzzle/puzzle-config.service';
+import { NPuzzleService } from './n-puzzle/n-puzzle.service';
 
 registerLocaleData(localeFr);
 

@@ -5,7 +5,7 @@ import { NPuzzleAlgo, NPuzzleAlgoLabel } from '../../__models/enums/n-puzzle-alg
 import { NPuzzleHeuristics, NPuzzleHeuristicsLabel } from '../../__models/enums/n-puzzle-heuristics.enum'
 import { TileMoveDirection } from '../../__models/enums/tile-move-direction.enum';
 import { Board } from 'src/app/_classes/board.class';
-import { NPuzzleService } from '../puzzle-config.service';
+import { NPuzzleService } from '../n-puzzle.service';
 
 @Component({
   selector: 'app-puzzle-config',
