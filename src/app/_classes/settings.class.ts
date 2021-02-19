@@ -15,85 +15,126 @@ export class Config {
 }
 
 export class Settings {
+    private defaultTileColor: string = '#FFFFFF'
+    private defaultTextColor: string = '#000000'
     nbShuffleIterations: number = 100
     boardColorType: BoardColorType = BoardColorType.DARK
     tileColorType: TileColorType = TileColorType.UNITED
-    tilesColor: TileColor = new TileColor(this.tileColorType, new Color(255, 255, 255))
+    currentSizeColor: number = 3
+    colors: string[] = TileColor.calcColors(this.tileColorType, 3, new Color(255, 255, 255))
+    textColors: string[] = TileColor.calcTextColor(this.colors)
+
+    refreshColors(tileColorType: TileColorType, size: number, color1: Color, color2: Color) {
+        this.currentSizeColor = size
+        this.tileColorType = tileColorType
+        this.colors = TileColor.calcColors(this.tileColorType, this.currentSizeColor, color1, color2)
+        this.textColors = TileColor.calcTextColor(this.colors)
+    }
+
+    calcColor(tileIndex: number, size: number): string {
+        if (this.tileColorType === TileColorType.UNITED) {
+            if (this.colors && this.colors.length) {
+                return this.colors[0]
+            }
+        } else if (size === this.currentSizeColor && tileIndex < this.colors.length && tileIndex >= 0) {
+            return this.colors[tileIndex]
+        }
+        return this.defaultTileColor
+    }
+
+    calcTextColor(tileIndex: number, size: number) {
+        if (this.tileColorType === TileColorType.UNITED) {
+            if (this.textColors && this.textColors.length) {
+                return this.textColors[0]
+            }
+        } else if (size === this.currentSizeColor && tileIndex < this.textColors.length && tileIndex >= 0) {
+            return this.textColors[tileIndex]
+        }
+        return this.defaultTextColor
+    }
 }
 
 export class TileColor {
-    static sizes: number[] = [3, 4, 5]
-    3: string[] = []
-    4: string[] = []
-    5: string[] = []
-
-    constructor(type: TileColorType, startColor: Color, endColor?: Color) {
-        this.fillColors(type, startColor, endColor)
-    }
-
-    fillColors(type: TileColorType, startColor: Color, endColor?: Color) {
+    static calcColors(type: TileColorType, size: number, startColor: Color, endColor?: Color): string[] {
+        let colors: string[] = []
         switch (type) {
-            case TileColorType.UNITED: this.setUnitedColor(startColor); break;
-            case TileColorType.DIAGONAL: this.setDiagonalColor(startColor, endColor || startColor); break;
-            case TileColorType.SPIRAL: this.setSpiralColor(startColor, endColor || startColor); break;
-            default: this.setUnitedColor(startColor); break;
+            case TileColorType.UNITED: colors = TileColor.calcUnitedColor(startColor); break;
+            case TileColorType.DIAGONAL: colors = TileColor.calcDiagonalColor(size, startColor, endColor || startColor); break;
+            case TileColorType.SPIRAL: colors = TileColor.calcSpiralColor(size, startColor, endColor || startColor); break;
+            default: colors = TileColor.calcUnitedColor(startColor); break;
         }
+        return colors
     }
 
-    private setSpiralColor(startColor: Color, endColor: Color) {
-        for (let s of TileColor.sizes) {
-            let nbStep: number = (s * s) - 1
-            let redInterval: number = this.getColorInterval(startColor.red, endColor.red, nbStep)
-            let greenInterval: number = this.getColorInterval(startColor.green, endColor.green, nbStep)
-            let blueInterval: number = this.getColorInterval(startColor.blue, endColor.blue, nbStep)
-            let spiralBoard = Board.generateFinalBoard(s, NPuzzleFinalState.SPIRAL)
-            let colorTiles = new Array(s * s).fill(startColor.toHex())
-            for (let [index, tile] of colorTiles.entries()) {
-                let tileNumber = spiralBoard[index] - 1
-                console.log(tileNumber, nbStep)
-                if (tileNumber === 0) {
-                    colorTiles[index] = startColor.toHex()
-                } else if (tileNumber === nbStep) {
-                    colorTiles[index] = endColor.toHex()
-                } else {
-                    let tileColor = new Color(startColor.red + (redInterval * tileNumber), startColor.green + (greenInterval * tileNumber), startColor.blue + (blueInterval * tileNumber))
-                    colorTiles[index] = tileColor.toHex()
-                }
+    static calcSpiralColor(size: number, startColor: Color, endColor: Color): string[] {
+        let nbStep: number = (size * size) - 1
+        let redInterval: number = TileColor.getColorInterval(startColor.red, endColor.red, nbStep)
+        let greenInterval: number = TileColor.getColorInterval(startColor.green, endColor.green, nbStep)
+        let blueInterval: number = TileColor.getColorInterval(startColor.blue, endColor.blue, nbStep)
+        let spiralBoard = Board.generateFinalBoard(size, NPuzzleFinalState.SPIRAL)
+        let colorTiles = new Array(size * size).fill(startColor.toHex())
+        for (let [index, tile] of colorTiles.entries()) {
+            let tileNumber = spiralBoard[index] - 1
+            if (tileNumber === 0) {
+                colorTiles[index] = startColor.toHex()
+            } else if (tileNumber === nbStep) {
+                colorTiles[index] = endColor.toHex()
+            } else {
+                let tileColor = new Color(startColor.red + (redInterval * tileNumber), startColor.green + (greenInterval * tileNumber), startColor.blue + (blueInterval * tileNumber))
+                colorTiles[index] = tileColor.toHex()
             }
-            this[s] = colorTiles
         }
+        return colorTiles
     }
 
-    private setDiagonalColor(startColor: Color, endColor: Color) {
-        for (let s of TileColor.sizes) {
-            let nbStep: number = (s - 1) + (s - 1)
-            let redInterval: number = this.getColorInterval(startColor.red, endColor.red, nbStep)
-            let greenInterval: number = this.getColorInterval(startColor.green, endColor.green, nbStep)
-            let blueInterval: number = this.getColorInterval(startColor.blue, endColor.blue, nbStep)
-            let colorTiles = new Array(s * s).fill(startColor.toHex())
-            for (let [index, tile] of colorTiles.entries()) {
-                let currentStep = (index % s) + Math.floor(index / s)
-                if (currentStep === 0) {
-                    colorTiles[index] = startColor.toHex()
-                } else if (currentStep === nbStep) {
-                    colorTiles[index] = endColor.toHex()
-                } else {
-                    let tileColor = new Color(startColor.red + (redInterval * currentStep - 1), startColor.green + (greenInterval * currentStep - 1), startColor.blue + (blueInterval * currentStep - 1))
-                    colorTiles[index] = tileColor.toHex()
-                }
+    static calcDiagonalColor(size: number, startColor: Color, endColor: Color) {
+        let nbStep: number = (size - 1) + (size - 1)
+        let redInterval: number = TileColor.getColorInterval(startColor.red, endColor.red, nbStep)
+        let greenInterval: number = TileColor.getColorInterval(startColor.green, endColor.green, nbStep)
+        let blueInterval: number = TileColor.getColorInterval(startColor.blue, endColor.blue, nbStep)
+        let colorTiles = new Array(size * size).fill(startColor.toHex())
+        for (let [index, tile] of colorTiles.entries()) {
+            let currentStep = (index % size) + Math.floor(index / size)
+            if (currentStep === 0) {
+                colorTiles[index] = startColor.toHex()
+            } else if (currentStep === nbStep) {
+                colorTiles[index] = endColor.toHex()
+            } else {
+                let tileColor = new Color(startColor.red + (redInterval * currentStep - 1), startColor.green + (greenInterval * currentStep - 1), startColor.blue + (blueInterval * currentStep - 1))
+                colorTiles[index] = tileColor.toHex()
             }
-            this[s] = colorTiles
         }
+        return colorTiles
     }
 
-    private setUnitedColor(color: Color) {
-        for (let s of TileColor.sizes) {
-            this[s] = new Array(s * s).fill(color.toHex())
-        }
+    static calcUnitedColor(color: Color) {
+        return [color.toHex()]
     }
 
-    private getColorInterval(c1: number, c2: number, nbStep: number) {
-        return Math.floor((c2 - c1)  / nbStep)
+    static getColorInterval(c1: number, c2: number, nbStep: number) {
+        return Math.floor((c2 - c1) / nbStep)
+    }
+
+    static calcTextColor(colors: string[]) {
+        let textColors: string[] = []
+
+        const isLight = (color: Color) => {
+            let hsp = Math.sqrt(0.299 * (color.red * color.red) + 0.587 * (color.green * color.green) + 0.114 * (color.blue * color.blue))
+            if (hsp > 127.5) {
+                return true
+            } else {
+                return false
+            }
+        }
+
+        for (let c of colors) {
+            if (isLight(Color.hexaToColor(c)) === true) {
+                textColors.push('#000000')
+            } else {
+                textColors.push('#FFFFFF')
+            }
+        }
+        return textColors
     }
 
 }

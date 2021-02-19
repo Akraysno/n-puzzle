@@ -165,7 +165,6 @@ export class NPuzzleComponent implements OnInit {
   }
 
   tabMenuChange(event: number) {
-    console.log(event)
     this.currentMenuTab = event
   }
 

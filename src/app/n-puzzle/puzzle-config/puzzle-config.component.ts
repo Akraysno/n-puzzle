@@ -5,6 +5,7 @@ import { NPuzzleAlgo, NPuzzleAlgoLabel } from '../../__models/enums/n-puzzle-alg
 import { NPuzzleHeuristics, NPuzzleHeuristicsLabel } from '../../__models/enums/n-puzzle-heuristics.enum'
 import { TileMoveDirection } from '../../__models/enums/tile-move-direction.enum';
 import { Board } from 'src/app/_classes/board.class';
+import { NPuzzleService } from '../puzzle-config.service';
 
 @Component({
   selector: 'app-puzzle-config',
@@ -56,7 +57,9 @@ export class PuzzleConfigComponent implements OnInit {
     mixingLevel: `Voir l'onglet Paramètres`
   }
 
-  constructor() { }
+  constructor(
+    private nPuzzleService: NPuzzleService,
+  ) { }
 
   ngOnInit() {
     this.generateValidRandomBoard()
@@ -129,6 +132,7 @@ export class PuzzleConfigComponent implements OnInit {
   }
 
   resolve() {
+    this.nPuzzleService.sizeChanged.next(this.config.size)
     this.onResolve.emit(this.config)
   }
 

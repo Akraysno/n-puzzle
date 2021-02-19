@@ -1,6 +1,8 @@
 import { Component, EventEmitter, Input, OnInit, Output, ViewEncapsulation } from '@angular/core';
 import { MatSliderChange } from '@angular/material/slider';
-import { TileColorType, Settings, BoardColorType, TileColor, Color } from '../../_classes/settings.class';
+import { Subscription } from 'rxjs';
+import { TileColorType, Settings, BoardColorType, Color } from '../../_classes/settings.class';
+import { NPuzzleService } from '../puzzle-config.service';
 
 @Component({
   selector: 'app-puzzle-settings',
@@ -19,17 +21,32 @@ export class PuzzleSettingsComponent implements OnInit {
   color1: string = '#FFFFFF'
   color2: string = '#FFFFFF'
   currentHelp: HelpType
+  size: number = 3
 
   tileColorType = TileColorType
   boardColorType = BoardColorType
   helpType = HelpType
 
-  constructor() { }
+  sizeChanged$: Subscription
+
+  constructor(
+    private nPuzzleService: NPuzzleService,
+  ) { }
 
   ngOnInit() {
     this.settings = new Settings()
-    console.log(this.settings)
     this.emit()
+    this.sizeChanged$ = this.nPuzzleService.sizeChanged.subscribe(size => {
+      this.size = size
+      this.updateTileColor()
+    })
+  }
+
+  ngOnDestoy() {
+    if (this.sizeChanged$) {
+      this.sizeChanged$.unsubscribe()
+      this.sizeChanged$ = null
+    }
   }
 
   nbIterationsChange(event: MatSliderChange) {
@@ -58,7 +75,7 @@ export class PuzzleSettingsComponent implements OnInit {
   updateTileColor() {
     let color1 = Color.hexaToColor(this.color1)
     let color2 = Color.hexaToColor(this.color2)
-    this.settings.tilesColor = new TileColor(this.settings.tileColorType, color1, color2)
+    this.settings.refreshColors(this.settings.tileColorType, this.size, color1, color2)
     this.emit()
   }
 

@@ -118,7 +118,6 @@ export class Board {
                 i += 1;
             }
         }
-        console.log(shuffleArray)
         return shuffleArray
     }
 
@@ -140,7 +139,6 @@ export class Board {
             let xNeg: boolean = false
             let yNeg: boolean = false
             let nbCaseFilled: number = 0
-
             while (nbCase !== nbCaseFilled) {
                 final[x][y] = nbCaseFilled + 1 < nbCase ? nbCaseFilled + 1 : 0
                 if (dirIsHoriz === true) {

@@ -37,14 +37,14 @@
           (@moveTop.done)="goToNextStep($event, result && result.currentMove && result.currentMove.back ? tileMoveDirection.TOP : tileMoveDirection.BOTTOM)"
           class="tile tile-{{tileIndex}}" 
           [ngClass]="{'tile-border': tile !== 0, 'tile-empty': tile === 0}"
-          [ngStyle]="{'backgroundColor': tile !== 0 && settings.tilesColor[result?.puzzle?.size][result.puzzle.final.indexOf(tile)]}"
+          [ngStyle]="{'backgroundColor': tile !== 0 && settings.calcColor(result.puzzle.final.indexOf(tile), result?.puzzle?.size)}"
           id="solved-puzzle-tile-{{tile}}" 
           *ngFor="let tile of result.currentState; let tileIndex = index"
         >
           <span
             *ngIf="tile !== 0"
             class="tile-label"
-            [ngStyle]="{'color': settings.tilesColor[result?.puzzle?.size][result.puzzle.final.indexOf(tile)]}"
+            [ngStyle]="{'color': settings.calcTextColor(result.puzzle.final.indexOf(tile), result?.puzzle?.size)}"
           >
             {{tile}}
           </span>

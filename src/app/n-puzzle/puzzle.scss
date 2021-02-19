@@ -29,9 +29,6 @@ $tileLight: #fff;
         &.selected {
             background-color: $blue;
         }
-        .tile-label {
-            filter: invert(100%);
-        }
     }
     .tile-empty {
         background-color: transparent;
