@@ -12,9 +12,7 @@
       >help_outline</i>
     </div>
     <div class="settings-group">
-      <button class="settings-option-3 custom-button" (click)="sizeChanged(3)" [ngClass]="{'selected': currentSize === 3}"> 3 x 3 </button>
-      <button class="settings-option-3 custom-button" (click)="sizeChanged(4)" [ngClass]="{'selected': currentSize === 4}"> 4 x 4 </button>
-      <button class="settings-option-3 custom-button" (click)="sizeChanged(5)" [ngClass]="{'selected': currentSize === 5}"> 5 x 5 </button>
+      <button class="custom-button" *ngFor="let size of sizes" (click)="sizeChanged(size)" [ngClass]="{'selected': currentSize === size, 'settings-option-2': sizes.length % 2 === 0, 'settings-option-3': sizes.length % 2 !== 0}"> {{size}} x {{size}} </button>
     </div>
     <popover-content #PopoverSize placement="bottom" [closeOnClickOutside]="true">
       <div class="po-content">
@@ -24,6 +22,12 @@
           Pour les puzzles <span class="surligne">4 x 4</span> et <span class="surligne">5 x 5</span>
           il est conseillé d'utiliser l'algorithme <span class="surligne underline" [matTooltip]="helpTooltip.algo" matTooltipPosition="before">Weigthed A*</span> ou
           d'activer l'option <span class="surligne underline" [matTooltip]="helpTooltip.greedy" matTooltipPosition="before">Greedy Search</span>.
+        </div>
+        <br />
+        <div class="po-advice">
+          Il est possible d'utiliser différentes tailles de puzzle en ajoutant le paramètre <span class="surligne">size</span> dans l'URL.<br />
+          La taille minimum possible est 2. Une taille inférieure n'est pas possible car aucune tuile ne sera posée sur le plateau.<br />
+          La taille maximum possible est 20. Une taille supérieur n'est pas disponible car le rendu visuel devient trop illisible.
         </div>
       </div>
     </popover-content>

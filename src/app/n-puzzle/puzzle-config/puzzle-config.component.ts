@@ -6,6 +6,8 @@ import { NPuzzleHeuristics, NPuzzleHeuristicsLabel } from '../../__models/enums/
 import { TileMoveDirection } from '../../__models/enums/tile-move-direction.enum';
 import { Board } from 'src/app/_classes/board.class';
 import { NPuzzleService } from '../n-puzzle.service';
+import { ActivatedRoute } from '@angular/router';
+import { ErrorsService } from 'src/app/_services/errors.service';
 
 @Component({
   selector: 'app-puzzle-config',
@@ -28,12 +30,14 @@ export class PuzzleConfigComponent implements OnInit {
   }
   @Input() loading: boolean = false
   @Output() onResolve: EventEmitter<Config> = new EventEmitter()
+  sizes: number[] = [3, 4, 5]
   config: Config
   settings: Settings
   currentSize: number = 3
   currentFinalStateType: NPuzzleFinalState = NPuzzleFinalState.SPIRAL
   initialized: boolean = false
   currentHelp: HelpType
+  customSize: number = 0
   
   tileMoveDirection = TileMoveDirection
   finalStateType = NPuzzleFinalState
@@ -59,10 +63,31 @@ export class PuzzleConfigComponent implements OnInit {
 
   constructor(
     private nPuzzleService: NPuzzleService,
+    private route: ActivatedRoute,
+    private errorsService: ErrorsService,
   ) { }
 
   ngOnInit() {
     this.generateValidRandomBoard()
+    this.route.queryParams.subscribe(params => {
+      if (params && params.size) {
+        let size = +params.size
+        if (isNaN(size)) {
+          this.errorsService.displayError(`La taille doit être un nombre. Taille par défaut utilisée.`)
+        } else if (size < 2) {
+          this.errorsService.displayError(`La taille doit être supérieur à 1. Taille par défaut utilisée.`)
+        } else if (size > 20) {
+          this.errorsService.displayError(`La taille doit être inférieur à 20, la taille est limité à 20 pour la lisibilité du rendu. Taille par défaut utilisée.`)
+        } else {
+          if (size < 3 || size > 5) {
+            this.customSize = size
+            this.sizes.push(size)
+            this.sizes.sort((a, b) => a < b ? -1 : 1)
+          }
+          this.sizeChanged(size)
+        }
+      }
+    })
   }
 
   sizeChanged(size: number) {
