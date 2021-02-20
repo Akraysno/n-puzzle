@@ -84,7 +84,7 @@ export class Board {
         return (findD() % 2) === (findP() % 2)
     }
 
-    static generateRandomBoard(size: number, finalBoard: number[], nbShuffleIterations: number = 100): number[] {
+    static generateRandomBoard(size: number, finalBoard: number[], mixingComplexity: number = 100): number[] {
         const getRandomIndex = (i: number, size: number) => {
             const indexes = [];
             if (i % size > 0) indexes.push(i - 1);
@@ -98,7 +98,7 @@ export class Board {
             size = 3
         }
         let shuffleArray: number[] = []
-        if (nbShuffleIterations < 0) {
+        if (mixingComplexity < 0) {
             let tmpArray: number[] = Array(Math.pow(size, 2)).fill(-1).map((v, i) => i)
             while (tmpArray.length > 0) {
                 let r = Math.floor(Math.random() * tmpArray.length);
@@ -107,7 +107,7 @@ export class Board {
         } else {
             let i = 0;
             shuffleArray = [...finalBoard];
-            while (i < nbShuffleIterations) {
+            while (i < mixingComplexity) {
                 const index = shuffleArray.findIndex(el => el === 0);
                 let next: number = -1;
                 while (next >= shuffleArray.length || next < 0) {

@@ -122,6 +122,7 @@ export class PuzzleConfigComponent implements OnInit {
   }
 
   onFinalStateTypeChange(type: NPuzzleFinalState) {
+    this.config.finalStateType = type
     this.config.finalState = Board.generateFinalBoard(this.config.size, type)
     this.config.isSolvable = Board.validateInversions(this.config.size, this.config.startState, this.config.finalState)
     this.currentFinalStateType = type
@@ -149,7 +150,7 @@ export class PuzzleConfigComponent implements OnInit {
     config.size = size
     while (!config.isSolvable) {
       config.finalState = Board.generateFinalBoard(size, type)
-      config.startState = Board.generateRandomBoard(size, config.finalState, this.settings.nbShuffleIterations)
+      config.startState = Board.generateRandomBoard(size, config.finalState, this.settings.mixingComplexity)
       config.isSolvable = Board.validateInversions(config.size, config.startState, config.finalState)
     }
     this.config = config

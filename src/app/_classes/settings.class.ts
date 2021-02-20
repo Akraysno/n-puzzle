@@ -8,6 +8,7 @@ export class Config {
     size: number = 3
     startState: number[] = []
     finalState: number[] = []
+    finalStateType: NPuzzleFinalState = NPuzzleFinalState.SPIRAL
     selectedTile: number = undefined
     isSolvable: boolean = false
     heuristic: NPuzzleHeuristics = NPuzzleHeuristics.MANHATTAN
@@ -18,7 +19,7 @@ export class Config {
 export class Settings {
     private defaultTileColor: string = '#FFFFFF'
     private defaultTextColor: string = '#000000'
-    nbShuffleIterations: number = 100
+    mixingComplexity: number = 100
     boardColorType: BoardColorType = BoardColorType.DARK
     tileColorType: TileColorType = TileColorType.UNITED
     gradientType: GradientType = GradientType.HSL

@@ -50,7 +50,7 @@ export class PuzzleSettingsComponent implements OnInit {
   }
 
   nbIterationsChange(event: MatSliderChange) {
-    this.settings.nbShuffleIterations = event.value
+    this.settings.mixingComplexity = event.value
     this.emit()
   }
 

@@ -19,11 +19,11 @@
         autoTicks="true"
         color="primary"
         thumbLabel="true"
-        [value]="settings.nbShuffleIterations"
+        [value]="settings.mixingComplexity"
         [displayWith]="iterationLabel"
         (change)="nbIterationsChange($event)"
       ></mat-slider>
-      <div class="slider-label">{{settings.nbShuffleIterations > 0 ? settings.nbShuffleIterations : 'Complet'}}</div>
+      <div class="slider-label">{{settings.mixingComplexity > 0 ? settings.mixingComplexity : 'Complet'}}</div>
     </div>
     <popover-content #PopoverShuffle placement="bottom" [closeOnClickOutside]="true">
       <div class="po-content">
