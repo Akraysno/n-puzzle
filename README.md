@@ -1,27 +1,32 @@
 # NPuzzle
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 10.1.3.
+Projet fait dans le cadre du cursus de l'[école 42](https://www.42.fr/).
 
-## Development server
+Projet disponible sur cette [page](https://akraysno.github.io/n-puzzle/).
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+## Objectif
 
-## Code scaffolding
+La but de ce projet est de résoudre un **N-Puzzle** (aussi appelé *taquin*) en utilisant l'algorithme de recherche A* ou une de ces variantes.
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+## Mise en place
 
-## Build
+### Tailles disponible par defaut:
+- 3 x 3
+- 4 x 4
+- 5 x 5
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
+### Algorithmes de recherche disponible:
+*Pour les calculs ci-dessous: `g(x)` représente le nombre de déplacements nécessaires pour arriver à une étape donnée, `h(x)` représente la valeur de l'heuristique et `n` est une constante.*
+- A* &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`g(x) + h(x)`
+- Weighted A* &nbsp;&nbsp;`g(x) + ( n * h(x) )`
+- A* Alt. &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`g(x) + h(x)` (Une variante de A* fait maison)
 
-## Running unit tests
+### Heuristiques disponible ( `h(x)` ):
+- **Manhattan** &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Calcul la somme des déplacements, horizontaux et verticaux, nécessaires à chaque pièce pour atteindre leur position finale.
+- **Hamming** &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Compte de le nombre de pièces mal placées.
+- **Cartesian** &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Calcul la somme des distances entre les positions de départ et d'arrivé pour chaque pièce grâce à leurs coordonnées.
+- **Linear Conflict** &nbsp; Calcul la somme des conflits horizontaux et verticaux pour chaque pièce.
+- **Uniform Cost** &nbsp;&nbsp;&nbsp;&nbsp; Représente l'absence d'heuristique. Sa valeur est toujours 0.
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
-
-## Running end-to-end tests
-
-Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
-
-## Further help
-
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
+### Greedy Search:
+Quand cette option est activée `g(x)` est toujours égal à 0.
