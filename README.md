@@ -30,3 +30,21 @@ La but de ce projet est de résoudre un **N-Puzzle** (aussi appelé *taquin*) en
 
 ### Greedy Search:
 Quand cette option est activée `g(x)` est toujours égal à 0.
+
+## Preview
+
+- Configuration du Puzzle
+
+![Image de configuration du Puzzle](https://github.com/Akraysno/n-puzzle/blob/master/resources/preview-1.png)
+
+- Résultat trouvé
+
+![Image d'un résultat trouvé](https://github.com/Akraysno/n-puzzle/blob/master/resources/preview-1.png)
+
+- Modification de la couleur du puzzle
+
+![Image de odification de la couleur du puzzle](https://github.com/Akraysno/n-puzzle/blob/master/resources/preview-1.png)
+
+- Déplacement des pièces terminé
+
+![Image du déplacement des pièces terminé](https://github.com/Akraysno/n-puzzle/blob/master/resources/preview-1.png)
