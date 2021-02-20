@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, OnInit, Output, ViewEncapsulation } from '@angular/core';
 import { MatSliderChange } from '@angular/material/slider';
 import { Subscription } from 'rxjs';
-import { TileColorType, Settings, BoardColorType, Color } from '../../_classes/settings.class';
+import { TileColorType, Settings, BoardColorType, Color, GradientType } from '../../_classes/settings.class';
 import { NPuzzleService } from '../n-puzzle.service';
 
 @Component({
@@ -22,7 +22,7 @@ export class PuzzleSettingsComponent implements OnInit {
   color2: string = '#FFFFFF'
   currentHelp: HelpType
   size: number = 3
-
+  gradientType = GradientType
   tileColorType = TileColorType
   boardColorType = BoardColorType
   helpType = HelpType
@@ -68,6 +68,11 @@ export class PuzzleSettingsComponent implements OnInit {
     this.emit()
   }
 
+  onGradientTypeChange(type: GradientType) {
+    this.settings.gradientType = type
+    this.updateTileColor()
+  }
+
   emit() {
     this.onChange.emit(this.settings)
   }
@@ -75,7 +80,7 @@ export class PuzzleSettingsComponent implements OnInit {
   updateTileColor() {
     let color1 = Color.hexaToColor(this.color1)
     let color2 = Color.hexaToColor(this.color2)
-    this.settings.refreshColors(this.settings.tileColorType, this.size, color1, color2)
+    this.settings.refreshColors(this.settings.tileColorType, this.size, color1, color2, this.settings.gradientType)
     this.emit()
   }
 
@@ -91,4 +96,5 @@ export class PuzzleSettingsComponent implements OnInit {
 
 enum HelpType {
   SHUFFLE = 'SHUFFLE',
+  GRADIENT = 'GRADIENT'
 }

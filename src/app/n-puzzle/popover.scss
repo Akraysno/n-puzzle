@@ -82,6 +82,9 @@
             top: unset !important;
             bottom: 49px;
         }
+        &.gradient .popover.popover-content {
+            top: 90px !important;
+        }
         .popover {
             &.popover-content {
                 left: 0 !important;

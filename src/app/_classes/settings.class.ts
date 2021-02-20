@@ -2,6 +2,7 @@ import { NPuzzleAlgo } from "../__models/enums/n-puzzle-algo.enum"
 import { NPuzzleFinalState } from "../__models/enums/n-puzzle-final-state.enum"
 import { NPuzzleHeuristics } from "../__models/enums/n-puzzle-heuristics.enum"
 import { Board } from "./board.class"
+import * as chroma from 'chroma-js'
 
 export class Config {
     size: number = 3
@@ -20,15 +21,17 @@ export class Settings {
     nbShuffleIterations: number = 100
     boardColorType: BoardColorType = BoardColorType.DARK
     tileColorType: TileColorType = TileColorType.UNITED
+    gradientType: GradientType = GradientType.HSL
     currentSizeColor: number = 3
     colors: string[] = TileColor.calcColors(this.tileColorType, 3, new Color(255, 255, 255))
     textColors: string[] = TileColor.calcTextColor(this.colors)
 
-    refreshColors(tileColorType: TileColorType, size: number, color1: Color, color2: Color) {
+    refreshColors(tileColorType: TileColorType, size: number, color1: Color, color2: Color, gradientType: GradientType) {
         this.currentSizeColor = size
         this.tileColorType = tileColorType
-        this.colors = TileColor.calcColors(this.tileColorType, this.currentSizeColor, color1, color2)
+        this.colors = TileColor.calcColors(this.tileColorType, this.currentSizeColor, color1, color2, gradientType)
         this.textColors = TileColor.calcTextColor(this.colors)
+        this.gradientType = gradientType
     }
 
     calcColor(tileIndex: number, size: number): string {
@@ -55,54 +58,42 @@ export class Settings {
 }
 
 export class TileColor {
-    static calcColors(type: TileColorType, size: number, startColor: Color, endColor?: Color): string[] {
+    static calcColors(type: TileColorType, size: number, startColor: Color, endColor?: Color, gradientType: GradientType = GradientType.HSL): string[] {
         let colors: string[] = []
         switch (type) {
             case TileColorType.UNITED: colors = TileColor.calcUnitedColor(startColor); break;
-            case TileColorType.DIAGONAL: colors = TileColor.calcDiagonalColor(size, startColor, endColor || startColor); break;
-            case TileColorType.SPIRAL: colors = TileColor.calcSpiralColor(size, startColor, endColor || startColor); break;
+            case TileColorType.DIAGONAL: colors = TileColor.calcDiagonalColor(size, startColor, endColor || startColor, gradientType); break;
+            case TileColorType.SPIRAL: colors = TileColor.calcSpiralColor(size, startColor, endColor || startColor, gradientType); break;
             default: colors = TileColor.calcUnitedColor(startColor); break;
         }
         return colors
     }
 
-    static calcSpiralColor(size: number, startColor: Color, endColor: Color): string[] {
+    static calcSpiralColor(size: number, startColor: Color, endColor: Color, gradientType: GradientType = GradientType.HSL): string[] {
         let nbStep: number = (size * size) - 1
-        let redInterval: number = TileColor.getColorInterval(startColor.red, endColor.red, nbStep)
-        let greenInterval: number = TileColor.getColorInterval(startColor.green, endColor.green, nbStep)
-        let blueInterval: number = TileColor.getColorInterval(startColor.blue, endColor.blue, nbStep)
+
+        let baseColor = chroma.scale([startColor.toHex(), endColor.toHex()]).mode(gradientType)
         let spiralBoard = Board.generateFinalBoard(size, NPuzzleFinalState.SPIRAL)
         let colorTiles = new Array(size * size).fill(startColor.toHex())
         for (let [index, tile] of colorTiles.entries()) {
+        //for (let i = 0; i < nbStep; i++) {
             let tileNumber = spiralBoard[index] - 1
-            if (tileNumber === 0) {
-                colorTiles[index] = startColor.toHex()
-            } else if (tileNumber === nbStep) {
-                colorTiles[index] = endColor.toHex()
-            } else {
-                let tileColor = new Color(startColor.red + (redInterval * tileNumber), startColor.green + (greenInterval * tileNumber), startColor.blue + (blueInterval * tileNumber))
-                colorTiles[index] = tileColor.toHex()
-            }
+            let s = (1 / nbStep) * tileNumber
+            let col = baseColor(s).hex()
+            colorTiles[index] = col
         }
         return colorTiles
     }
 
-    static calcDiagonalColor(size: number, startColor: Color, endColor: Color) {
+    static calcDiagonalColor(size: number, startColor: Color, endColor: Color, gradientType: GradientType = GradientType.HSL) {
         let nbStep: number = (size - 1) + (size - 1)
-        let redInterval: number = TileColor.getColorInterval(startColor.red, endColor.red, nbStep)
-        let greenInterval: number = TileColor.getColorInterval(startColor.green, endColor.green, nbStep)
-        let blueInterval: number = TileColor.getColorInterval(startColor.blue, endColor.blue, nbStep)
+        let baseColor = chroma.scale([startColor.toHex(), endColor.toHex()]).mode(gradientType)
         let colorTiles = new Array(size * size).fill(startColor.toHex())
         for (let [index, tile] of colorTiles.entries()) {
             let currentStep = (index % size) + Math.floor(index / size)
-            if (currentStep === 0) {
-                colorTiles[index] = startColor.toHex()
-            } else if (currentStep === nbStep) {
-                colorTiles[index] = endColor.toHex()
-            } else {
-                let tileColor = new Color(startColor.red + (redInterval * currentStep - 1), startColor.green + (greenInterval * currentStep - 1), startColor.blue + (blueInterval * currentStep - 1))
-                colorTiles[index] = tileColor.toHex()
-            }
+            let s = (1 / nbStep) * currentStep
+            let col = baseColor(s).hex()
+            colorTiles[index] = col
         }
         return colorTiles
     }
@@ -190,4 +181,15 @@ export enum TileColorType {
     UNITED = 'UNITED',
     SPIRAL = 'SPIRAL',
     DIAGONAL = 'DIAGONAL'
+}
+
+export enum GradientType {
+    HCL = 'hcl',
+    HSI = 'hsi',
+    HSL = 'hsl',
+    HSV = 'hsv',
+    LAB = 'lab',
+    LCH = 'lch',
+    LRGB = 'lrgb',
+    RGB = 'rgb'
 }

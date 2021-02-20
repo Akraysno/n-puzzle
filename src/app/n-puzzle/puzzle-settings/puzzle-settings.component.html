@@ -107,4 +107,43 @@
       </div>
     </div>
   </div>
+
+  <div class="option-container gradient" *ngIf="settings.tileColorType !== tileColorType.UNITED"  [ngClass]="{'show-help': currentHelp === helpType.GRADIENT}">
+    <div class="separator"></div>
+    <div class="settings-title">
+      <h3 class="sub-title">Calcul du dégradé de couleur&nbsp;: </h3>
+      <i
+        class="material-icons"
+        popoverSize="auto"
+        [popover]="PopoverGradient"
+        [popoverOnHover]="false"
+        (onShown)="showHelp(helpType.GRADIENT)"
+        (onHidden)="hideHelp()"
+      >help_outline</i>
+    </div>
+    <div class="settings-group">
+      <button class="settings-option-3 custom-button" (click)="onGradientTypeChange(gradientType.HSL)" [ngClass]="{'selected': settings.gradientType === gradientType.HSL}"> {{gradientType.HSL}} </button>
+      <button class="settings-option-3 custom-button" (click)="onGradientTypeChange(gradientType.LCH)" [ngClass]="{'selected': settings.gradientType === gradientType.LCH}"> {{gradientType.LCH}} </button>
+      <button class="settings-option-3 custom-button" (click)="onGradientTypeChange(gradientType.RGB)" [ngClass]="{'selected': settings.gradientType === gradientType.RGB}"> {{gradientType.RGB}} </button>
+    </div>
+    <popover-content #PopoverGradient placement="bottom" [closeOnClickOutside]="true">
+      <div class="po-content">
+        <div class="po-text">Méthode utilisée pour calculer la teinte de chaque case.</div>
+        <br />
+        <div class="po-advice">
+          <ul>
+            <li>
+              <span class="surligne">hsl</span> : Dégradé qui se base sur les paramètres <span class="surligne">Teinte</span>, <span class="surligne">Saturation</span> et <span class="surligne">Luminosité</span>.
+            </li>
+            <li>
+              <span class="surligne">lch</span> : Dégradé qui se base sur les paramètres <span class="surligne">Teinte</span>, <span class="surligne">Chrominance</span> et <span class="surligne">Luminance</span>.
+            </li>
+            <li>
+              <span class="surligne">rgb</span> : Dégradé qui se base sur les paramètres <span class="surligne">Rouge</span>, <span class="surligne">Vert</span> et <span class="surligne">Bleu</span>.
+            </li>
+          </ul>
+        </div>
+      </div>
+    </popover-content>
+  </div>
 </div>
