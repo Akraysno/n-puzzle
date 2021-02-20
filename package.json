@@ -1,5 +1,7 @@
 {
   "name": "n-puzzle",
+  "author": "gauffret",
+  "repository": "https://github.com/Akraysno/n-puzzle",
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
