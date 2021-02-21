@@ -98,7 +98,7 @@ export class Board {
             size = 3
         }
         let shuffleArray: number[] = []
-        if (mixingComplexity < 0) {
+        if (mixingComplexity <= 0) {
             let tmpArray: number[] = Array(Math.pow(size, 2)).fill(-1).map((v, i) => i)
             while (tmpArray.length > 0) {
                 let r = Math.floor(Math.random() * tmpArray.length);
