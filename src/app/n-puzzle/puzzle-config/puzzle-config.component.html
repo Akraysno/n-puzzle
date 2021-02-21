@@ -27,7 +27,7 @@
         <div class="po-advice">
           Il est possible d'utiliser différentes tailles de puzzle en ajoutant le paramètre <span class="surligne">size</span> dans l'URL.<br />
           La taille minimum possible est 2. Une taille inférieure n'est pas possible car aucune tuile ne sera posée sur le plateau.<br />
-          La taille maximum possible est 20. Une taille supérieur n'est pas disponible car le rendu visuel devient trop illisible.
+          La taille maximum possible est 20. Une taille supérieure n'est pas disponible car le rendu visuel devient trop illisible.
         </div>
       </div>
     </popover-content>
@@ -53,12 +53,12 @@
     </div>
     <popover-content #PopoverAlgo placement="bottom" [closeOnClickOutside]="true">
       <div class="po-content">
-        <div class="po-text">Algorithmes disponibles pour résoudre le puzzle</div>
+        <div class="po-text">Algorithmes disponibles pour résoudre le puzzle.</div>
         <br />
         <div class="po-explain">
           <span class="small">Les formules encadrées correspondent à la façon de calculer le <span class="surligne underline" [matTooltip]="helpTooltip.cost" matTooltipPosition="before">coût</span> pour une position du puzzle.</span>
           <ul>
-            <li><span class="surligne">{{algoLabel[algorithms.ASTAR]}}</span> : <span class="cadre">g(x) + h(x)</span> : Récupère un élément dans la <span class="surligne underline" [matTooltip]="helpTooltip.openList" matTooltipPosition="before">Liste Ouverte</span> pour vérifié si c'est la solution, sinon cherche les positions suivantes et les ajoute dans la <span class="surligne underline" [matTooltip]="helpTooltip.openList" matTooltipPosition="before">Liste Ouverte</span>.</li>
+            <li><span class="surligne">{{algoLabel[algorithms.ASTAR]}}</span> : <span class="cadre">g(x) + h(x)</span> : Récupère un élément dans la <span class="surligne underline" [matTooltip]="helpTooltip.openList" matTooltipPosition="before">Liste Ouverte</span> pour vérifier si c'est la solution, sinon cherche les positions suivantes et les ajoute dans la <span class="surligne underline" [matTooltip]="helpTooltip.openList" matTooltipPosition="before">Liste Ouverte</span>.</li>
             <li><span class="surligne">{{algoLabel[algorithms.WEIGHTED_ASTAR]}}</span> : <span class="cadre">g(x) + n * h(x)</span> : Variante de <span class="surligne">{{algoLabel[algorithms.ASTAR]}}</span> qui permet d'arriver plus rapidement à la solution.</li>
             <li><span class="surligne">{{algoLabel[algorithms.A_STAR_ALT]}}</span> : <span class="cadre">g(x) + h(x)</span> : Variante de <span class="surligne">{{algoLabel[algorithms.ASTAR]}}</span> qui vérifie les états avant de les ajouter à la <span class="surligne underline" [matTooltip]="helpTooltip.openList" matTooltipPosition="before">Liste Ouverte</span>.</li>
           </ul>
@@ -108,7 +108,7 @@
           <ul>
             <li><span class="surligne">{{heuristicLabel[heuristics.MANHATTAN]}}</span> : Retourne la somme des déplacements, horizontaux et verticaux, nécessaires à chaque pièce pour atteindre leur position finale.</li>
             <li><span class="surligne">{{heuristicLabel[heuristics.HAMMING]}}</span> : Retourne le nombre de pièces mal placées.</li>
-            <li><span class="surligne">{{heuristicLabel[heuristics.CARTESIAN]}}</span> : Retourne la somme des <span class="surligne underline" [matTooltip]="helpTooltip.distance" matTooltipPosition="before">distances</span> entre les positions de départ et d'arrivé pour chaque pièce.</li>
+            <li><span class="surligne">{{heuristicLabel[heuristics.CARTESIAN]}}</span> : Retourne la somme des <span class="surligne underline" [matTooltip]="helpTooltip.distance" matTooltipPosition="before">distances</span> entre les positions de départ et d'arrivée pour chaque pièce.</li>
             <li><span class="surligne">{{heuristicLabel[heuristics.LINEAR_CONFLICT]}}</span> : Retourne la somme des <span class="surligne underline" [matTooltip]="helpTooltip.conflicts" matTooltipPosition="before">conflits</span>, horizontaux et verticaux, pour chaque pièce.</li>
             <li><span class="surligne">{{heuristicLabel[heuristics.UNIFORM]}}</span> : Represente l'absence d'heuristique. Retourne toujours 0.</li>
           </ul>
@@ -198,9 +198,9 @@
     <popover-content #PopoverStart placement="bottom" [closeOnClickOutside]="true">
       <div class="po-content">
         <div class="po-text">
-          Deux moyen de mélanger le puzzle :
+          Deux moyens de mélanger le puzzle :
           <ul>
-            <li>Cliquer sur le bouton <span class="surligne">Mélanger</span>, le mélange se basera sur la <span class="surligne underline" [matTooltip]="helpTooltip.mixingLevel" matTooltipPosition="before">Compléxité du mélange</span></li>
+            <li>Cliquer sur le bouton <span class="surligne">Mélanger</span>. Le mélange se basera sur la <span class="surligne underline" [matTooltip]="helpTooltip.mixingLevel" matTooltipPosition="before">Compléxité du mélange</span></li>
             <li>Cliquer sur deux tuiles pour échanger leur position</li>
           </ul>
         </div>
